@@ -1,120 +1,251 @@
 ---
+/**
+ * PSUCheck — 404 Not Found Page
+ * ─────────────────────────────────────────────
+ * Google Search Console guidelines:
+ * - noindex, nofollow (error pages must not be indexed)
+ * - No canonical tag (avoids soft 404 indexing issues)
+ * - Clear messaging with helpful internal links for users AND Googlebot
+ * - Returns HTTP 404 status code (handled by Astro automatically for 404.astro)
+ */
 import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout
-  title="Page Not Found — VoltForge"
-  description="The page you are looking for doesn't exist. Return to VoltForge to use the free PSU calculator and PC build cost estimator."
+  title="Page Not Found — PSUCheck"
+  description="The page you're looking for doesn't exist. Return to PSUCheck to use the free PSU calculator and PC build cost estimator."
   noIndex={true}
 >
   <section class="notfound-section">
     <div class="container">
       <div class="notfound-inner">
+
+        <!-- Floating compass / search icon -->
+        <div class="notfound-icon" aria-hidden="true">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="compass-icon">
+            <circle cx="40" cy="40" r="28" stroke="currentColor" stroke-width="2.5"/>
+            <circle cx="40" cy="40" r="4" fill="currentColor"/>
+            <!-- Compass arrow pointing north -->
+            <polygon points="40,16 36,40 40,36 44,40" fill="var(--accent-primary, #06b6d4)" class="compass-north"/>
+            <!-- Compass arrow pointing south -->
+            <polygon points="40,64 36,40 40,44 44,40" fill="currentColor" opacity="0.35" class="compass-south"/>
+            <!-- Cardinal markers -->
+            <line x1="40" y1="12" x2="40" y2="8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="40" y1="72" x2="40" y2="68" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="12" y1="40" x2="8" y2="40" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="72" y1="40" x2="68" y2="40" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
         <div class="notfound-code" aria-hidden="true">404</div>
         <h1>Page Not Found</h1>
-        <p>The page you're looking for doesn't exist or may have been moved.</p>
+        <p class="notfound-desc">
+          The page you're looking for doesn't exist or may have been moved.
+          Let's get you back on track.
+        </p>
+
         <div class="notfound-links">
-          <a href="/" class="btn-primary">← Back to Home</a>
-          <a href="/psu-calculator" class="btn-secondary">PSU Calculator</a>
-          <a href="/pc-builder" class="btn-secondary">PC Builder</a>
-          <a href="/guides" class="btn-secondary">Guides</a>
+          <a href="/" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Back to Home
+          </a>
+          <a href="/psu-calculator" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+            PSU Calculator
+          </a>
+          <a href="/pc-builder" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            PC Builder
+          </a>
+          <a href="/guides" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            Guides
+          </a>
         </div>
+
+        <!-- Popular pages — helps Googlebot rediscover content from 404 pages -->
         <div class="notfound-popular">
-          <h2>Popular Pages</h2>
+          <h2>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            Popular Pages
+          </h2>
           <ul>
-            <li><a href="/psu-calculator">PSU Wattage Calculator — Find the right PSU for your build</a></li>
-            <li><a href="/pc-builder">PC Build Cost Calculator — Budget your next build</a></li>
-            <li><a href="/psu-checker">PSU Upgrade Checker — Will my PSU support a new GPU?</a></li>
-            <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide — Everything about the new PSU standard</a></li>
-            <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide — How much wattage do I need?</a></li>
-            <li><a href="/guides/how-to-build-a-pc">How to Build a PC — Step-by-step guide</a></li>
+            <li>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <a href="/psu-calculator">PSU Wattage Calculator — Find the right PSU for your build</a>
+            </li>
+            <li>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <a href="/pc-builder">PC Build Cost Calculator — Budget your next build</a>
+            </li>
+            <li>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              <a href="/psu-checker">PSU Upgrade Checker — Will my PSU support a new GPU?</a>
+            </li>
+            <li>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <a href="/guides/atx-3-1-guide">ATX 3.1 Guide — Everything about the new PSU standard</a>
+            </li>
+            <li>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <a href="/guides/psu-sizing-guide">PSU Sizing Guide — How much wattage do I need?</a>
+            </li>
+            <li>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <a href="/guides/how-to-build-a-pc">How to Build a PC — Complete step-by-step guide</a>
+            </li>
           </ul>
         </div>
+
       </div>
     </div>
   </section>
 </Layout>
 
 <style>
+/* ── Layout ── */
 .notfound-section {
-  min-height: 80vh;
+  min-height: 85vh;
   display: flex;
   align-items: center;
-  padding: 5rem 0;
+  padding: 4rem 1rem;
 }
 .notfound-inner {
-  max-width: 640px;
+  max-width: 620px;
   margin: 0 auto;
   text-align: center;
 }
+
+/* ── Compass icon ── */
+.notfound-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  width: 100px;
+  height: 100px;
+  background: var(--bg-secondary, rgba(255,255,255,0.04));
+  border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+  border-radius: 24px;
+  color: var(--text-tertiary, #6b7280);
+}
+.compass-icon {
+  width: 56px;
+  height: 56px;
+  animation: compass-spin 8s linear infinite;
+  transform-origin: center;
+}
+@keyframes compass-spin {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(15deg); }
+  40%  { transform: rotate(-20deg); }
+  60%  { transform: rotate(10deg); }
+  80%  { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ── Error code ── */
 .notfound-code {
-  font-size: clamp(6rem, 15vw, 10rem);
+  font-size: clamp(5rem, 15vw, 9rem);
   font-weight: 900;
-  font-family: var(--font-mono);
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary, #7c3aed));
+  font-family: var(--font-mono, monospace);
+  background: linear-gradient(135deg, var(--accent-primary, #06b6d4), var(--accent-secondary, #7c3aed));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1;
-  margin-bottom: 1rem;
-  opacity: 0.8;
+  margin-bottom: 0.75rem;
+  opacity: 0.85;
 }
+
+/* ── Text ── */
 h1 {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
   font-weight: 800;
   letter-spacing: -0.03em;
-  margin-bottom: 1rem;
+  margin-bottom: 0.875rem;
+  color: var(--text-primary, #f9fafb);
 }
-p {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
+.notfound-desc {
+  font-size: 1.0625rem;
+  color: var(--text-secondary, #9ca3af);
+  line-height: 1.6;
   margin-bottom: 2rem;
 }
+
+/* ── Action buttons ── */
 .notfound-links {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 .btn-primary {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: var(--accent-primary);
+  background: var(--accent-primary, #06b6d4);
   color: #000;
   font-weight: 700;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   text-decoration: none;
-  transition: opacity 150ms;
+  font-size: 0.9375rem;
+  transition: opacity 150ms, transform 150ms;
 }
-.btn-primary:hover { opacity: 0.85; text-decoration: none; }
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); text-decoration: none; }
 .btn-secondary {
   display: inline-flex;
   align-items: center;
-  padding: 0.75rem 1.25rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  gap: 0.5rem;
+  padding: 0.75rem 1.125rem;
+  background: var(--bg-secondary, rgba(255,255,255,0.06));
+  color: var(--text-primary, #f9fafb);
   font-weight: 600;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  border: 1px solid var(--border-default, rgba(255,255,255,0.12));
   text-decoration: none;
-  transition: border-color 150ms;
+  font-size: 0.875rem;
+  transition: border-color 150ms, transform 150ms;
 }
-.btn-secondary:hover { border-color: var(--accent-primary); text-decoration: none; }
+.btn-secondary:hover {
+  border-color: var(--accent-primary, #06b6d4);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+/* ── Popular pages ── */
 .notfound-popular {
   text-align: left;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem 1.75rem;
+  background: var(--bg-secondary, rgba(255,255,255,0.04));
+  border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+  border-radius: 14px;
+  padding: 1.375rem 1.5rem;
 }
 .notfound-popular h2 {
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-tertiary);
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary, #6b7280);
   margin-bottom: 1rem;
 }
 .notfound-popular ul {
@@ -125,10 +256,20 @@ p {
   flex-direction: column;
   gap: 0.625rem;
 }
+.notfound-popular li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-tertiary, #6b7280);
+}
 .notfound-popular a {
-  color: var(--accent-primary);
-  font-size: 0.9375rem;
+  color: var(--text-secondary, #9ca3af);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 150ms;
+}
+.notfound-popular a:hover {
+  color: var(--accent-primary, #06b6d4);
   text-decoration: none;
 }
-.notfound-popular a:hover { text-decoration: underline; }
 </style>

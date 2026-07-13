@@ -1,18 +1,25 @@
 /** @jsxImportSource preact */
 // ============================================================
-// VoltForge — Bay Component Base
+// PSUCheck — Bay Component Base
 // Shared logic for all component bay cards.
 // Each bay: left accent border (state), selector drawer,
 //           keyboard navigation, touch targets ≥44px.
+//
+// UI-UX-Pro-Max rules applied:
+// - Touch targets ≥ 44px
+// - Color-independent status (icon + text + color)
+// - Explicit transition properties (no `transition: all`)
+// - Keyboard + screen reader compliant
+// - SVG icon box with dynamic state-based colors
 // ============================================================
 
-import { useState, useRef, useCallback, useId } from 'preact/hooks';
+import { useRef, useCallback, useId } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 
 export type BayState = 'empty' | 'filled' | 'warning' | 'danger';
 
 interface BayCardProps {
-  icon:        string;
+  icon:        ComponentChildren; // JSX SVG icon
   label:       string;
   sublabel?:   string;
   state:       BayState;
@@ -44,6 +51,14 @@ const STATE_ARIA: Record<BayState, string> = {
   danger:  'Danger — configuration issue',
 };
 
+// Icon box visual styles per state
+const ICON_BOX_STYLE: Record<BayState, string> = {
+  empty:   'background:var(--color-surface-raised,rgba(255,255,255,0.04));color:var(--color-text-tertiary,#6b7280);border:1.5px solid var(--color-border-subtle,rgba(255,255,255,0.08));',
+  filled:  'background:rgba(6,182,212,0.12);color:var(--color-accent-cyan,#06b6d4);border:1.5px solid rgba(6,182,212,0.35);',
+  warning: 'background:rgba(245,158,11,0.12);color:#f59e0b;border:1.5px solid rgba(245,158,11,0.35);',
+  danger:  'background:rgba(239,68,68,0.12);color:#ef4444;border:1.5px solid rgba(239,68,68,0.35);',
+};
+
 export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClear, children, id }: BayCardProps) {
   const trayId  = useId();
   const btnRef  = useRef<HTMLButtonElement>(null);
@@ -68,9 +83,15 @@ export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClea
           aria-label={`${label}: ${sublabel ?? STATE_ARIA[state]}. ${isOpen ? 'Click to close selector' : 'Click to open selector'}`}
           type="button"
         >
-          {/* Left: icon + state indicator */}
+          {/* Left: SVG icon box + state indicator dot */}
           <div class="bay-left">
-            <span class="bay-component-icon" aria-hidden="true">{icon}</span>
+            <div
+              class="bay-icon-box"
+              aria-hidden="true"
+              style={ICON_BOX_STYLE[state]}
+            >
+              {icon}
+            </div>
             <span
               class={`bay-state-dot bay-state-dot--${state}`}
               aria-label={`Status: ${STATE_ARIA[state]}`}
@@ -90,7 +111,7 @@ export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClea
             )}
           </div>
 
-          {/* Right: chevron */}
+          {/* Right: chevron arrow */}
           <svg
             class="bay-chevron"
             width="16" height="16" viewBox="0 0 24 24"
@@ -123,7 +144,7 @@ export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClea
         )}
       </div>
 
-      {/* Selector tray — animated expand/collapse (max-height, no height animation) */}
+      {/* Selector tray — animated expand/collapse via max-height */}
       <div
         id={trayId}
         class={`selector-tray ${isOpen ? 'open' : ''}`}

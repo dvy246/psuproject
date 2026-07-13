@@ -1,12 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
-import AdSlot from '../components/AdSlot.astro';
 
 const schema = {
   "@type": "WebApplication",
-  "name": "VoltForge PC Build Cost Calculator",
-  "url": "https://voltforge.app/pc-builder",
+  "name": "PSUCheck PC Build Cost Calculator",
+  "url": "https://psucheck.com/pc-builder",
   "applicationCategory": "UtilitiesApplication",
   "description": "Free PC builder and cost calculator with budget allocation visual charts, real-time optimization advice, sales tax, assembly fee, and custom OS/peripheral selectors.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -23,15 +22,15 @@ const faqSchema = {
     { "@type": "Question", "name": "What CPU should I pair with an RTX 5080?", "acceptedAnswer": { "@type": "Answer", "text": "For RTX 5080, pair with AMD Ryzen 7 9800X3D ($479) or Intel Core Ultra 9 285K ($589) to avoid CPU bottlenecks at 1440p and 4K. Pairing RTX 5080 with a budget CPU will create a significant bottleneck in CPU-heavy games." } },
     { "@type": "Question", "name": "Is DDR5 worth it over DDR4 in 2025?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. DDR5 is the standard for all modern AM5 and LGA1851 platforms. DDR5-6000 CL30 is the sweet spot for AMD Ryzen, providing optimal memory controller performance. DDR4 systems are limited to older LGA1700 (Intel) platforms and offer no upgrade path." } },
     { "@type": "Question", "name": "How much storage do I need for a gaming PC?", "acceptedAnswer": { "@type": "Answer", "text": "2TB NVMe SSD is the ideal minimum for a gaming PC in 2025. Modern AAA games can take 80–150GB each. A 1TB SSD fills up fast with 10–15 games installed. Consider a 2TB primary drive + 4TB HDD for game archives." } },
-    { "@type": "Question", "name": "What is a CPU bottleneck?", "acceptedAnswer": { "@type": "Answer", "text": "A CPU bottleneck occurs when your CPU cannot feed frames to your GPU fast enough, limiting frame rates. This is common when pairing budget CPUs with high-end GPUs like RTX 5090. Use VoltForge's bottleneck guide to identify mismatched configurations." } },
+    { "@type": "Question", "name": "What is a CPU bottleneck?", "acceptedAnswer": { "@type": "Answer", "text": "A CPU bottleneck occurs when your CPU cannot feed frames to your GPU fast enough, limiting frame rates. This is common when pairing budget CPUs with high-end GPUs like RTX 5090. Use PSUCheck's bottleneck guide to identify mismatched configurations." } },
     { "@type": "Question", "name": "Should I get an AIO cooler or air cooler?", "acceptedAnswer": { "@type": "Answer", "text": "For CPUs up to 65W TDP, a quality air cooler ($30–$70) is sufficient and quieter. For 125W+ TDP CPUs like Ryzen 9 9950X or Intel i9-14900K running all-core workloads, a 240mm or 360mm AIO ($80–$150) prevents thermal throttling and maintains boost clocks." } },
-    { "@type": "Question", "name": "What sales tax do I pay on PC parts?", "acceptedAnswer": { "@type": "Answer", "text": "US sales tax on PC parts varies by state: 0% in Oregon, Montana, Delaware, and New Hampshire; 7–10% in most states. California charges 7.25%+. Major retailers (Amazon, Newegg, Micro Center) collect sales tax in all states. Use VoltForge's tax slider to factor your local rate into build cost." } }
+    { "@type": "Question", "name": "What sales tax do I pay on PC parts?", "acceptedAnswer": { "@type": "Answer", "text": "US sales tax on PC parts varies by state: 0% in Oregon, Montana, Delaware, and New Hampshire; 7–10% in most states. California charges 7.25%+. Major retailers (Amazon, Newegg, Micro Center) collect sales tax in all states. Use PSUCheck's tax slider to factor your local rate into build cost." } }
   ]
 };
 ---
 
 <Layout
-  title="PC Build Cost Calculator — VoltForge: Budget Allocation & Cost Optimizer"
+  title="PC Build Cost Calculator — PSUCheck: Budget Allocation & Cost Optimizer"
   description="Build your custom PC and estimate total cost in real time. Get visual budget allocation breakdowns, sales tax calculations, assembly fee add-ons, and real-time cost-saving suggestions."
   schema={[schema, faqSchema]}
 >
@@ -179,11 +178,6 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- Ad Placement -->
-  <div class="container" style="margin-top: 3rem; margin-bottom: 1rem;">
-    <AdSlot slot="7601234567" type="leaderboard" />
-  </div>
-
   <!-- ===== FAQ SECTION ===== -->
   <section class="faq-section" aria-labelledby="faq-heading-builder">
     <div class="container">
@@ -297,7 +291,7 @@ const faqSchema = {
             <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
           </summary>
           <div class="faq-answer">
-            <p>US sales tax on PC parts varies by state: 0% in Oregon, Montana, Delaware, and New Hampshire; 7–10% in most states. California charges 7.25%+. Major retailers (Amazon, Newegg, Micro Center) collect tax in all states. Use VoltForge's tax rate slider to factor your local rate into the total build cost.</p>
+            <p>US sales tax on PC parts varies by state: 0% in Oregon, Montana, Delaware, and New Hampshire; 7–10% in most states. California charges 7.25%+. Major retailers (Amazon, Newegg, Micro Center) collect tax in all states. Use PSUCheck's tax rate slider to factor your local rate into the total build cost.</p>
           </div>
         </details>
       </div>

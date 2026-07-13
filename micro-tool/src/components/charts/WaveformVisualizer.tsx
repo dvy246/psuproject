@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 // ============================================================
-// VoltForge — Live Transient Waveform Visualizer
+// PSUCheck — Live Transient Waveform Visualizer
 // Pure SVG + requestAnimationFrame. No canvas, no Chart.js.
 // Shows: sustained load line (cyan), transient spike (red/amber),
 //        PSU rating dashed limit line.

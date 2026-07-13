@@ -4,6 +4,8 @@ import { BayCard } from './BayCard';
 import type { MotherboardIndex, CpuIndex } from '../../../types/components';
 import moboData from '../../../data/index/motherboards.index.json';
 
+import { MotherboardIcon } from './BayIcons';
+
 const ALL_MOBOS = moboData.items as MotherboardIndex[];
 
 interface Props {
@@ -29,7 +31,7 @@ export function BayMotherboard({ selected, selectedCpu, onSelect }: Props) {
 
   return (
     <BayCard
-      icon="🟡"
+      icon={<MotherboardIcon />}
       label="Motherboard"
       sublabel={selected ? `${selected.name}${!compatible ? ' ✕ Socket mismatch' : ''}` : undefined}
       state={state}

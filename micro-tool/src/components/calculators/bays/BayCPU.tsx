@@ -4,6 +4,8 @@ import { BayCard } from './BayCard';
 import type { CpuIndex } from '../../../types/components';
 import cpuData from '../../../data/index/cpus.index.json';
 
+import { CpuIcon } from './BayIcons';
+
 const ALL_CPUS = cpuData.items as CpuIndex[];
 const BRANDS = ['All', 'AMD', 'Intel'] as const;
 
@@ -36,7 +38,7 @@ export function BayCPU({ selected, onSelect }: Props) {
 
   return (
     <BayCard
-      icon="🔵"
+      icon={<CpuIcon />}
       label="CPU"
       sublabel={selected?.name}
       state={state}

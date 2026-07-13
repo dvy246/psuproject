@@ -22,6 +22,9 @@ export interface DeserializedBuild {
   storage: StorageConfig[];
   cooling: CoolingConfig | null;
   psu: PsuIndex | null;
+  cpuOcPercent?: number;
+  gpuOcPercent?: number;
+  safetyBufferPercent?: number;
 }
 
 /**
@@ -34,7 +37,10 @@ export function serializeBuild(
   ram: RamConfig | null,
   storage: StorageConfig[],
   cooling: CoolingConfig | null,
-  psu: PsuIndex | null
+  psu: PsuIndex | null,
+  cpuOcPercent?: number,
+  gpuOcPercent?: number,
+  safetyBufferPercent?: number
 ): string {
   const params = new URLSearchParams();
 
@@ -60,6 +66,10 @@ export function serializeBuild(
   }
 
   if (psu) params.set('psu', psu.id);
+
+  if (cpuOcPercent && cpuOcPercent > 0) params.set('cpuoc', cpuOcPercent.toString());
+  if (gpuOcPercent && gpuOcPercent > 0) params.set('gpuoc', gpuOcPercent.toString());
+  if (safetyBufferPercent && safetyBufferPercent !== 10) params.set('sb', safetyBufferPercent.toString());
 
   return params.toString();
 }
@@ -102,5 +112,12 @@ export function deserializeBuild(searchString: string): DeserializedBuild {
 
   const psu = psuId ? allPsus.find(p => p.id === psuId) || null : null;
 
-  return { cpu, gpu, mobo, ram, storage, cooling, psu };
+  const cpuOcStr = params.get('cpuoc');
+  const gpuOcStr = params.get('gpuoc');
+  const sbStr = params.get('sb');
+  const cpuOcPercent = cpuOcStr ? Math.min(Math.max(parseInt(cpuOcStr, 10) || 0, 0), 30) : undefined;
+  const gpuOcPercent = gpuOcStr ? Math.min(Math.max(parseInt(gpuOcStr, 10) || 0, 0), 30) : undefined;
+  const safetyBufferPercent = sbStr ? Math.min(Math.max(parseInt(sbStr, 10) || 0, 0), 30) : undefined;
+
+  return { cpu, gpu, mobo, ram, storage, cooling, psu, cpuOcPercent, gpuOcPercent, safetyBufferPercent };
 }

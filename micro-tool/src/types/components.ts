@@ -1,5 +1,5 @@
 // ============================================================
-// VoltForge — Component & Calculation Type Definitions
+// PSUCheck — Component & Calculation Type Definitions
 // ============================================================
 
 // --- Data Index Types (client-shipped, lightweight) ---
@@ -117,6 +117,11 @@ export interface PeripheralConfig {
   monitorPrice: number;
   keyboardMouse: boolean;
   keyboardMousePrice: number;
+}
+
+export interface OcConfig {
+  cpuOcPercent: number;
+  gpuOcPercent: number;
 }
 
 // --- Full Build Selection ---

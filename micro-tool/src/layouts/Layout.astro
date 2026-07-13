@@ -1,5 +1,5 @@
 ---
-// VoltForge — Base Layout
+// PSUCheck — Base Layout
 // Shared across all MPA routes.
 // Dark/light theme via data-theme on <html>.
 // Every page: meta, OG, schema, skip link, header, footer.
@@ -69,14 +69,14 @@ function formatSlug(seg: string): string {
 
 function buildBreadcrumbSchema(pathname: string) {
   const segments = pathname.split('/').filter(Boolean);
-  const items = [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://voltforge.app/' }];
+  const items = [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://psucheck.com/' }];
   let accumulated = '';
   for (const seg of segments) {
     accumulated += '/' + seg;
     const known = breadcrumbNames[accumulated];
     const name = known || formatSlug(seg);
     if (accumulated !== pathname) {
-      items.push({ '@type': 'ListItem', position: items.length + 1, name, item: 'https://voltforge.app' + accumulated });
+      items.push({ '@type': 'ListItem', position: items.length + 1, name, item: 'https://psucheck.com' + accumulated });
     } else {
       items.push({ '@type': 'ListItem', position: items.length + 1, name });
     }
@@ -103,7 +103,7 @@ const {
   noIndex = false,
 } = Astro.props;
 
-const siteTitle = title.includes('VoltForge') ? title : `${title} | VoltForge`;
+const siteTitle = title.includes('PSUCheck') ? title : `${title} | PSUCheck`;
 const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 'https://schema.org', '@graph': schema } : schema, null, 0) : null;
 ---
 
@@ -122,7 +122,7 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
-  <meta property="og:site_name" content="VoltForge" />
+  <meta property="og:site_name" content="PSUCheck" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={siteTitle} />
   <meta name="twitter:description" content={description} />
@@ -135,7 +135,7 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content="VoltForge" />
+  <meta name="apple-mobile-web-app-title" content="PSUCheck" />
   <link rel="manifest" href="/site.webmanifest" />
   <script is:inline>
     (function() {
@@ -149,10 +149,10 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
   {buildBreadcrumbSchema(Astro.url.pathname) && <script type="application/ld+json" set:html={JSON.stringify(buildBreadcrumbSchema(Astro.url.pathname))} />}
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context":"https://schema.org","@type":"Organization",
-    "name":"VoltForge","url":"https://voltforge.app",
+    "name":"PSUCheck","url":"https://psucheck.com",
     "description":"Independent PC power supply calculator and build cost estimator.",
-    "logo":{"@type":"ImageObject","url":"https://voltforge.app/favicon.svg"},
-    "contactPoint":{"@type":"ContactPoint","contactType":"customer support","url":"https://voltforge.app/contact"}
+    "logo":{"@type":"ImageObject","url":"https://psucheck.com/favicon.svg"},
+    "contactPoint":{"@type":"ContactPoint","contactType":"customer support","url":"https://psucheck.com/contact"}
   })} />
 </head>
 <body>
@@ -161,11 +161,12 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
   <header class="site-header" role="banner">
     <div class="container">
       <nav class="nav-inner" role="navigation" aria-label="Main navigation">
-        <a href="/" class="nav-logo" aria-label="VoltForge home">⚡ VoltForge</a>
+        <a href="/" class="nav-logo" aria-label="PSUCheck home">⚡ PSUCheck</a>
         <ul class="nav-links" id="nav-links">
           <li><a href="/psu-calculator">PSU Calculator</a></li>
           <li><a href="/pc-builder">PC Builder</a></li>
           <li><a href="/psu-checker">PSU Checker</a></li>
+          <li><a href="/builds">Builds</a></li>
           <li><a href="/guides">Guides</a></li>
           <li><a href="/about">About</a></li>
         </ul>
@@ -190,7 +191,7 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
     <div class="container">
       <div class="footer-grid">
         <div class="footer-section">
-          <a href="/" class="nav-logo" style="display:inline-block;margin-bottom:0.75rem;">⚡ VoltForge</a>
+          <a href="/" class="nav-logo" style="display:inline-block;margin-bottom:0.75rem;">⚡ PSUCheck</a>
           <p style="font-size:0.875rem;max-width:28ch;">Independent, unbiased PC power supply calculator and build cost estimator.</p>
           <p style="font-size:0.75rem;margin-top:0.75rem;color:var(--text-tertiary);">Methodology sources: Cybenetics, TechPowerUp, Intel ARK, AMD official specs, 80 PLUS certification data.</p>
         </div>
@@ -228,8 +229,8 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
       </div>
       <div class="footer-bottom">
         <div>
-          <p>&copy; {new Date().getFullYear()} VoltForge. All rights reserved.</p>
-          <p style="margin-top:0.25rem;">VoltForge participates in the Amazon Associates and Newegg affiliate programs. We may earn a commission when you click affiliate links at no extra cost to you.</p>
+          <p>&copy; {new Date().getFullYear()} PSUCheck. All rights reserved.</p>
+          <p style="margin-top:0.25rem;">PSUCheck participates in the Amazon Associates and Newegg affiliate programs. We may earn a commission when you click affiliate links at no extra cost to you.</p>
         </div>
         <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
           <a href="/privacy-policy" style="color:var(--text-tertiary);font-size:0.75rem;">Privacy</a>
@@ -275,6 +276,21 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
         mobileToggle.setAttribute('aria-expanded', 'false');
       }
     });
+
+    // Active navigation link detection
+    try {
+      const currentPath = window.location.pathname;
+      const links = document.querySelectorAll('.nav-links a');
+      links.forEach(link => {
+        const linkPath = new URL(link.href).pathname;
+        if (currentPath === linkPath || (linkPath !== '/' && currentPath.startsWith(linkPath))) {
+          link.classList.add('active');
+          link.setAttribute('aria-current', 'page');
+        }
+      });
+    } catch (err) {
+      console.warn('Active nav state calculation failed', err);
+    }
   </script>
 </body>
 </html>

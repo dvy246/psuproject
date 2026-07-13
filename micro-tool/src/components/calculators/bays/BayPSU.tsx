@@ -4,6 +4,8 @@ import { BayCard } from './BayCard';
 import type { PsuIndex } from '../../../types/components';
 import psuData from '../../../data/index/psus.index.json';
 
+import { PsuIcon } from './BayIcons';
+
 const ALL_PSUS = psuData.items as PsuIndex[];
 
 interface Props {
@@ -44,7 +46,7 @@ export function BayPSU({ selected, mode, onSelect, onModeChange }: Props) {
 
   return (
     <BayCard
-      icon="🟠"
+      icon={<PsuIcon />}
       label="Power Supply"
       sublabel={selected ? `${selected.brand} ${selected.wattage}W ${selected.efficiencyTier} · ATX ${selected.atxVersion}` : undefined}
       state={state}

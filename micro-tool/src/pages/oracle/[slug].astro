@@ -2,7 +2,6 @@
 import Layout from '../../layouts/Layout.astro';
 import { runFullPsuAnalysis } from '../../lib/psu';
 import type { CpuIndex, GpuIndex, PsuIndex } from '../../types/components';
-import AdSlot from '../../components/AdSlot.astro';
 
 import cpuData from '../../data/index/cpus.index.json';
 import gpuData from '../../data/index/gpus.index.json';
@@ -20,7 +19,7 @@ export async function getStaticPaths() {
     for (const wattage of wattages) {
       paths.push({
         params: { slug: `is-${wattage}w-enough-for-${gpu.id}` },
-        props: { gpu, cpu: null, wattage }
+        props: { gpu, cpu: null, wattage, psuAgeYears: 0 }
       });
     }
   }
@@ -34,7 +33,30 @@ export async function getStaticPaths() {
       for (const wattage of wattages) {
         paths.push({
           params: { slug: `is-${wattage}w-enough-for-${gpu.id}-with-${cpu.id}` },
-          props: { gpu, cpu, wattage }
+          props: { gpu, cpu, wattage, psuAgeYears: 0 }
+        });
+      }
+    }
+  }
+
+  // P3: Age-aware oracle pages
+  // Limit to halo+ultra GPUs where aging matters most (high TBP = aging is critical)
+  // Verified: tier field exists in gpus.index.json for all items
+  const ageableTiers = ['halo', 'ultra'];
+  const ageBuckets = [
+    { years: 3, label: 'age-3' }, // 3yr: no derating yet, but targets the search query
+    { years: 5, label: 'age-5' }, // 5yr: 10% derating (capacitorAgingPerYear: 0.05 * 2yr)
+    { years: 8, label: 'age-8' }, // 8yr: 25% derating (0.05 * 5yr)
+  ];
+
+  const highTierGpus = gpus.filter(g => ageableTiers.includes(g.tier));
+
+  for (const gpu of highTierGpus) {
+    for (const wattage of wattages) {
+      for (const bucket of ageBuckets) {
+        paths.push({
+          params: { slug: `is-${wattage}w-enough-for-${gpu.id}-${bucket.label}` },
+          props: { gpu, cpu: null, wattage, psuAgeYears: bucket.years }
         });
       }
     }
@@ -43,9 +65,10 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { gpu, cpu, wattage } = Astro.props as { gpu: GpuIndex; cpu: CpuIndex | null; wattage: number };
+const { gpu, cpu, wattage, psuAgeYears = 0 } = Astro.props as { gpu: GpuIndex; cpu: CpuIndex | null; wattage: number; psuAgeYears: number };
 
-// Run calculations at build time
+// Run calculations at build time — psuAgeYears drives capacitor aging derating
+// Verified: runFullPsuAnalysis(components, psuWattage, atxVersion, safetyBuffer, psuAgeYears) signature in psu.ts:285-316
 const components = {
   cpu,
   gpu,
@@ -55,7 +78,43 @@ const components = {
   fans: 3
 };
 
-const analysis = runFullPsuAnalysis(components, wattage, '3.1');
+const analysis = runFullPsuAnalysis(components, wattage, '3.1', undefined, psuAgeYears);
+
+// Age label for display (only shown when psuAgeYears > 0)
+const ageLabelStr = psuAgeYears === 0 ? '' : psuAgeYears === 3 ? '3-year-old' : psuAgeYears === 5 ? '5-year-old' : '8-year-old';
+const ageNote = psuAgeYears > 3
+  ? `(Derated for ${psuAgeYears}yr-old PSU: +${Math.round((psuAgeYears - 3) * 5)}% capacity loss from capacitor aging)`
+  : psuAgeYears === 3
+  ? '(3yr PSU: no derating applied yet — aging kicks in after year 3)'
+  : '';
+
+// P4: Dynamic related guides — conditioned on GPU tier and connector data
+// Data fields verified: gpu.tier (halo/ultra/high/mid/budget), gpu.connectorType (12v-2x6 / 8pin-x1 / 8pin-x2 / 8pin-x3)
+// cpu.tdpSustained vs cpu.tdp checked to detect overclockable CPUs (Intel K-series have tdpSustained > tdp)
+const relatedLinks: { name: string; href: string; desc: string }[] = [];
+
+if (gpu?.tier === 'halo' || gpu?.tier === 'ultra') {
+  relatedLinks.push({ name: 'PSU Sizing Guide', href: '/guides/psu-sizing-guide', desc: 'Transient spike methodology for high-end builds' });
+  relatedLinks.push({ name: 'Cybenetics vs 80 PLUS', href: '/guides/cybenetics-vs-80-plus', desc: 'Which efficiency standard matters for your GPU' });
+}
+if (gpu?.connectorType === '12v-2x6') {
+  relatedLinks.push({ name: 'ATX 3.1 Guide', href: '/guides/atx-3-1-guide', desc: 'Why ATX 3.1 matters for 12V-2x6 GPUs' });
+  relatedLinks.push({ name: 'GPU Power Connectors', href: '/guides/gpu-power-connectors', desc: 'Safe cabling rules for high-TBP cards' });
+} else if (gpu?.connectorType === '8pin-x3') {
+  relatedLinks.push({ name: 'GPU Power Connectors', href: '/guides/gpu-power-connectors', desc: 'Daisy-chain risks for 3-connector GPUs' });
+  relatedLinks.push({ name: 'PSU Cable Safety', href: '/guides/psu-cable-extensions', desc: 'Why separate runs matter at high wattage' });
+}
+if (cpu && cpu.tdpSustained > cpu.tdp) {
+  // Intel K-series: tdpSustained (e.g. 253W) > tdp (125W) — overclockable
+  relatedLinks.push({ name: 'Overclocking Power Draw', href: '/guides/overclocking-power-draw', desc: 'How PBO and Intel power limits affect PSU needs' });
+}
+// Always ensure at least 2 links; fall back to general guides
+if (relatedLinks.length < 2) {
+  if (!relatedLinks.some(l => l.href === '/guides/psu-sizing-guide'))
+    relatedLinks.push({ name: 'PSU Sizing Guide', href: '/guides/psu-sizing-guide', desc: 'How to calculate the right PSU wattage' });
+  if (relatedLinks.length < 2)
+    relatedLinks.push({ name: 'How to Build a PC', href: '/guides/how-to-build-a-pc', desc: 'Step-by-step build walkthrough' });
+}
 
 const verdictColor = analysis.verdict === 'yes' ? 'safe' : analysis.verdict === 'borderline' ? 'warning' : 'danger';
 const verdictLabel = analysis.verdict === 'yes' ? '✓ YES - SAFE' : analysis.verdict === 'borderline' ? '⚠ BORDERLINE' : '✕ NO - INSUFFICIENT';
@@ -96,8 +155,8 @@ const productSchema = {
 ---
 
 <Layout
-  title={`Is a ${wattage}W PSU enough for ${gpu.name}${cpu ? ` + ${cpu.name}` : ''}? — VoltForge`}
-  description={`Calculate if a ${wattage}W power supply can support ${gpu.name}${cpu ? ` and ${cpu.name}` : ''}. View transient spikes, per-rail amp draws, and PSU upgrade recommendations.`}
+  title={`Is a ${wattage}W PSU enough for ${gpu.name}${psuAgeYears > 0 ? ` (${ageLabelStr} PSU)` : ''}${cpu ? ` + ${cpu.name}` : ''}? — PSUCheck`}
+  description={`${psuAgeYears > 0 ? `${ageLabelStr} PSU aging analysis: ` : ''}Can a ${wattage}W power supply support ${gpu.name}${cpu ? ` and ${cpu.name}` : ''}? View transient spikes, per-rail amp draws${psuAgeYears > 3 ? `, capacitor derating for a ${psuAgeYears}yr-old PSU` : ''}, and upgrade recommendations.`}
   schema={[faqSchema, productSchema]}
 >
   <section class="oracle-page" aria-labelledby="oracle-heading">
@@ -112,10 +171,11 @@ const productSchema = {
 
       <header class="oracle-header">
         <h1 id="oracle-heading">
-          Is a <span class="gradient-text">{wattage}W PSU</span> enough for the <span class="gradient-text">{gpu.name}</span>{cpu && ` and ${cpu.name}`}?
+          Is a <span class="gradient-text">{wattage}W PSU</span> enough for the <span class="gradient-text">{gpu.name}</span>{psuAgeYears > 0 && ` with a ${ageLabelStr} PSU`}{cpu && ` and ${cpu.name}`}?
         </h1>
         <p class="oracle-intro">
           This page runs an automated power compatibility audit modeling transient spikes and ATX 3.1 tolerances.
+          {ageNote && <strong style="color:#f59e0b;display:block;margin-top:0.4rem;">⚠ {ageNote}</strong>}
         </p>
       </header>
 
@@ -238,13 +298,26 @@ const productSchema = {
         </section>
       )}
 
-      <!-- Ad Placement -->
-      <div style="margin-top: 3rem;">
-        <AdSlot slot="5401234567" type="responsive" />
-      </div>
+      {/* P4: Dynamic related guide links */}
+      <section aria-labelledby="related-guides-heading" style="margin-top:3rem;">
+        <h2 id="related-guides-heading" style="font-size:1.25rem;font-weight:700;margin-bottom:1rem;">Related Guides</h2>
+        <div class="related-grid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));">
+          {relatedLinks.map(link => (
+            <a
+              href={link.href}
+              class="related-card card"
+              key={link.href}
+              style="display:block;padding:1.25rem;text-decoration:none;"
+            >
+              <h3 style="font-size:1rem;font-weight:700;color:var(--color-text-primary);margin-bottom:0.35rem;">{link.name}</h3>
+              <p style="font-size:0.8125rem;color:var(--color-text-secondary);margin:0;">{link.desc}</p>
+            </a>
+          ))}
+        </div>
+      </section>
 
-      <!-- Internal quick link -->
-      <div style="margin-top:4rem;text-align:center;">
+      {/* Internal quick link */}
+      <div style="margin-top:3rem;text-align:center;">
         <a href="/psu-calculator" class="btn btn-primary">Run custom PSU analysis on your full PC build →</a>
       </div>
     </div>

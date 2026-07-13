@@ -2,12 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
 import { InteractiveTco } from '../components/calculators/InteractiveTco';
-import AdSlot from '../components/AdSlot.astro';
 
 const schema = {
   "@type": "WebApplication",
-  "name": "VoltForge PSU Calculator",
-  "url": "https://voltforge.app/psu-calculator",
+  "name": "PSUCheck PSU Calculator",
+  "url": "https://psucheck.com/psu-calculator",
   "applicationCategory": "UtilitiesApplication",
   "description": "Free PC power supply calculator with transient spike analysis, ATX 3.1 compliance checking, per-rail analysis, cable safety audit, and 5-year TCO comparison.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -26,13 +25,13 @@ const faqSchema = {
     { "@type": "Question", "name": "Is Gold or Platinum PSU better for gaming?", "acceptedAnswer": { "@type": "Answer", "text": "Gold vs Platinum saves $8–15/year for casual gamers. Platinum is worth it for 24/7 systems. Gold is excellent value for gaming 4–6 hours/day." } },
     { "@type": "Question", "name": "Can I daisy-chain PCIe power cables?", "acceptedAnswer": { "@type": "Answer", "text": "Never daisy-chain 8-pin PCIe cables for high-power GPUs (above 225W). Each cable must run directly from the PSU." } },
     { "@type": "Question", "name": "What does a Cybenetics rating mean?", "acceptedAnswer": { "@type": "Answer", "text": "Cybenetics tests PSU efficiency at more load points than 80 PLUS. ETA-A++ is roughly equivalent to Titanium efficiency." } },
-    { "@type": "Question", "name": "How much does electricity cost to run a gaming PC?", "acceptedAnswer": { "@type": "Answer", "text": "A 500W system at 4 hours/day costs ~$95/year at US average rates ($0.13/kWh). Use VoltForge TCO to compare by efficiency tier." } }
+    { "@type": "Question", "name": "How much does electricity cost to run a gaming PC?", "acceptedAnswer": { "@type": "Answer", "text": "A 500W system at 4 hours/day costs ~$95/year at US average rates ($0.13/kWh). Use PSUCheck TCO to compare by efficiency tier." } }
   ]
 };
 ---
 
 <Layout
-  title="PSU Calculator — VoltForge: Transient Spike Analysis & ATX 3.1 Checker"
+  title="PSU Calculator — PSUCheck: Transient Spike Analysis & ATX 3.1 Checker"
   description="Free PC power supply calculator that models real-world GPU transient spikes, checks ATX 3.1 compliance, audits cable safety (12V-2x6), and calculates 5-year electricity costs. Unbiased. No manufacturer lock-in."
   schema={[schema, faqSchema]}
 >
@@ -139,11 +138,6 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- Ad Placement -->
-  <div class="container" style="margin-top: 3rem; margin-bottom: 1rem;">
-    <AdSlot slot="8501234567" type="leaderboard" />
-  </div>
-
   <!-- ===== FAQ SECTION ===== -->
   <section class="faq-section" aria-labelledby="faq-heading-calc">
     <div class="container">
@@ -157,7 +151,7 @@ const faqSchema = {
             <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
           </summary>
           <div class="faq-answer">
-            <p>To calculate your required PSU wattage: (1) Sum the TDP of your CPU and TBP of your GPU. (2) Add ~50W for RAM, storage, fans, and motherboard overhead. (3) Apply a transient multiplier — typically 1.35× for mid-range GPUs or 1.57× for halo-tier GPUs like RTX 5090. (4) Add a 20–35% safety buffer depending on ATX version. VoltForge automates all of these steps using real Cybenetics-sourced data.</p>
+            <p>To calculate your required PSU wattage: (1) Sum the TDP of your CPU and TBP of your GPU. (2) Add ~50W for RAM, storage, fans, and motherboard overhead. (3) Apply a transient multiplier — typically 1.35× for mid-range GPUs or 1.57× for halo-tier GPUs like RTX 5090. (4) Add a 20–35% safety buffer depending on ATX version. PSUCheck automates all of these steps using real Cybenetics-sourced data.</p>
           </div>
         </details>
 
@@ -187,7 +181,7 @@ const faqSchema = {
             <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
           </summary>
           <div class="faq-answer">
-            <p>850W is sufficient for systems with RTX 5080 (360W TBP → 540W transient) paired with a mid-to-high CPU. However, 850W is borderline for RTX 4090 + high-TDP Intel CPUs, and insufficient for RTX 5090 configurations. Use VoltForge to calculate your exact transient peak before buying a PSU.</p>
+            <p>850W is sufficient for systems with RTX 5080 (360W TBP → 540W transient) paired with a mid-to-high CPU. However, 850W is borderline for RTX 4090 + high-TDP Intel CPUs, and insufficient for RTX 5090 configurations. Use PSUCheck to calculate your exact transient peak before buying a PSU.</p>
           </div>
         </details>
 
@@ -257,7 +251,7 @@ const faqSchema = {
             <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
           </summary>
           <div class="faq-answer">
-            <p>A 500W gaming PC running 4 hours/day at $0.13/kWh (US average) costs roughly $95/year in electricity. A 750W system costs ~$143/year. High-end builds with RTX 5090 running 8 hours/day can approach $400–500/year. Use VoltForge's 5-Year TCO Calculator to compare electricity costs by PSU efficiency tier for your specific usage profile.</p>
+            <p>A 500W gaming PC running 4 hours/day at $0.13/kWh (US average) costs roughly $95/year in electricity. A 750W system costs ~$143/year. High-end builds with RTX 5090 running 8 hours/day can approach $400–500/year. Use PSUCheck's 5-Year TCO Calculator to compare electricity costs by PSU efficiency tier for your specific usage profile.</p>
           </div>
         </details>
       </div>

@@ -1,0 +1,238 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import type { PsuIndex } from '../../../types/components';
+import psuData from '../../../data/index/psus.index.json';
+
+// ── P2: PSU Comparison Pages ──
+// Pairing logic: same wattage (±150W), different brands — meaningful comparisons only
+// Verified: psu.wattage, psu.efficiencyTier, psu.atxVersion, psu.has12v2x6, psu.modular, psu.price, psu.cybeneticsRating all exist
+
+export async function getStaticPaths() {
+  const psus = psuData.items as PsuIndex[];
+
+  const pairs: { a: PsuIndex; b: PsuIndex }[] = [];
+
+  for (let i = 0; i < psus.length; i++) {
+    for (let j = i + 1; j < psus.length; j++) {
+      const a = psus[i];
+      const b = psus[j];
+      const wattageDiff = Math.abs(a.wattage - b.wattage);
+      const sameBrand = a.brand === b.brand;
+
+      // Pair: different brands, within ±150W, same ATX generation preferred
+      if (!sameBrand && wattageDiff <= 150) {
+        pairs.push({ a, b });
+      }
+    }
+  }
+
+  return pairs.map(({ a, b }) => ({
+    params: { slug: `${a.id}-vs-${b.id}` },
+    props: { psuA: a, psuB: b }
+  }));
+}
+
+const { psuA, psuB } = Astro.props as { psuA: PsuIndex; psuB: PsuIndex };
+
+// Efficiency tier ordering for comparison
+const efficiencyRank: Record<string, number> = { bronze: 1, silver: 2, gold: 3, platinum: 4, titanium: 5 };
+const efficiencyLabelMap: Record<string, string> = {
+  bronze: '80+ Bronze (~82% efficient)',
+  silver: '80+ Silver (~85% efficient)',
+  gold: '80+ Gold (~87% efficient)',
+  platinum: '80+ Platinum (~89% efficient)',
+  titanium: '80+ Titanium (~92% efficient)',
+};
+
+const betterEfficiency = (efficiencyRank[psuA.efficiencyTier] ?? 0) >= (efficiencyRank[psuB.efficiencyTier] ?? 0) ? psuA : psuB;
+const worseEfficiency = betterEfficiency === psuA ? psuB : psuA;
+
+// 5-year electricity cost estimate at 500W average draw, 8h/day gaming, $0.15/kWh
+const hoursPerYear = 8 * 365;
+const avgDrawW = 500;
+const kwhRate = 0.15;
+
+function annualCost(psu: PsuIndex): number {
+  const effMap: Record<string, number> = { bronze: 0.82, silver: 0.85, gold: 0.87, platinum: 0.89, titanium: 0.92 };
+  const eff = effMap[psu.efficiencyTier] ?? 0.85;
+  const wallWatts = avgDrawW / eff;
+  return Math.round((wallWatts / 1000) * hoursPerYear * kwhRate);
+}
+
+const annualA = annualCost(psuA);
+const annualB = annualCost(psuB);
+const fiveYearA = annualA * 5 + psuA.price;
+const fiveYearB = annualB * 5 + psuB.price;
+const cheaperTco = fiveYearA <= fiveYearB ? psuA : psuB;
+const savings5yr = Math.abs(fiveYearA - fiveYearB);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": `${psuA.name} vs ${psuB.name} — Power Supply Comparison`,
+  "description": `Compare ${psuA.name} vs ${psuB.name}: efficiency tier, ATX version, 12V-2x6 support, Cybenetics rating, and 5-year electricity cost.`,
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": psuA.name },
+    { "@type": "ListItem", "position": 2, "name": psuB.name }
+  ]
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Is ${psuA.name} or ${psuB.name} more efficient?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${betterEfficiency.name} is more efficient at ${efficiencyLabelMap[betterEfficiency.efficiencyTier]}. Over 5 years at standard gaming usage ($${kwhRate}/kWh, 8hr/day), ${cheaperTco.name} has the lower total cost of ownership.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Does ${psuA.name} support 12V-2x6 for RTX 5090?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${psuA.has12v2x6 ? `Yes, ${psuA.name} includes a native 12V-2x6 cable and is fully compatible with RTX 5090 and other high-TBP GPUs requiring ATX 3.1.` : `No, ${psuA.name} does not include a 12V-2x6 cable. If you need to run an RTX 5090 or similar, choose a PSU with native ATX 3.1 12V-2x6 support.`}`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Which has lower 5-year total cost — ${psuA.name} or ${psuB.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `At $${kwhRate}/kWh and 8 hours/day gaming, ${cheaperTco.name} costs approximately $${cheaperTco === psuA ? fiveYearA : fiveYearB} over 5 years (purchase + electricity), saving ~$${savings5yr} vs ${(cheaperTco === psuA ? psuB : psuA).name}.`
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title={`${psuA.name} vs ${psuB.name}: PSU Comparison — Efficiency, ATX 3.1, TCO | PSUCheck`}
+  description={`${psuA.name} vs ${psuB.name}: efficiency (${psuA.efficiencyTier} vs ${psuB.efficiencyTier}), ATX version (${psuA.atxVersion} vs ${psuB.atxVersion}), 5-year electricity cost, and 12V-2x6 support comparison.`}
+  schema={[schema, faqSchema]}
+>
+  <section style="padding:3rem 0 6rem;" aria-labelledby="psu-compare-heading">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <div class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/compare/psu">PSU Comparisons</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{psuA.name} vs {psuB.name}</span>
+      </div>
+
+      <!-- Header -->
+      <header style="margin-top:1.5rem;margin-bottom:2.5rem;">
+        <div class="section-eyebrow">Power Supply Comparison</div>
+        <h1 id="psu-compare-heading" style="font-size:clamp(1.6rem,4vw,2.5rem);font-weight:850;line-height:1.15;letter-spacing:-0.03em;margin-top:0.5rem;">
+          <span class="gradient-text">{psuA.name}</span>
+          {' vs '}
+          <span class="gradient-text">{psuB.name}</span>
+        </h1>
+        <p style="font-size:1rem;color:var(--color-text-secondary);margin-top:0.75rem;">
+          Efficiency, ATX compliance, 12V-2x6 support, Cybenetics rating, and 5-year total cost of ownership.
+        </p>
+      </header>
+
+      <!-- Spec Table -->
+      <div style="overflow-x:auto;margin-bottom:3rem;">
+        <table
+          style="width:100%;border-collapse:collapse;font-size:0.9rem;"
+          aria-label={`${psuA.name} vs ${psuB.name} specification table`}
+        >
+          <thead>
+            <tr style="border-bottom:2px solid var(--color-border);">
+              <th scope="col" style="text-align:left;padding:0.75rem 1rem;color:var(--color-text-tertiary);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">Spec</th>
+              <th scope="col" style="text-align:right;padding:0.75rem 1rem;color:var(--color-accent-cyan);font-weight:700;">{psuA.name}</th>
+              <th scope="col" style="text-align:right;padding:0.75rem 1rem;color:var(--color-accent-purple, #a78bfa);font-weight:700;">{psuB.name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { label: 'Wattage', a: `${psuA.wattage}W`, b: `${psuB.wattage}W` },
+              { label: 'Efficiency Tier', a: psuA.efficiencyTier, b: psuB.efficiencyTier },
+              { label: 'ATX Version', a: `ATX ${psuA.atxVersion}`, b: `ATX ${psuB.atxVersion}` },
+              { label: '12V-2x6 (RTX 5090 safe)', a: psuA.has12v2x6 ? '✓ Yes' : '✗ No', b: psuB.has12v2x6 ? '✓ Yes' : '✗ No' },
+              { label: 'Modular', a: psuA.modular, b: psuB.modular },
+              { label: 'Cybenetics Rating', a: psuA.cybeneticsRating ?? '—', b: psuB.cybeneticsRating ?? '—' },
+              { label: 'MSRP', a: `$${psuA.price}`, b: `$${psuB.price}` },
+              { label: 'Est. Annual Electricity Cost', a: `$${annualA}/yr`, b: `$${annualB}/yr` },
+              { label: '5-Year Total Cost (TCO)', a: `$${fiveYearA}`, b: `$${fiveYearB}` },
+            ].map((row) => (
+              <tr key={row.label} style="border-bottom:1px solid var(--color-border-subtle);">
+                <th scope="row" style="text-align:left;padding:0.65rem 1rem;font-weight:600;color:var(--color-text-secondary);">{row.label}</th>
+                <td style="text-align:right;padding:0.65rem 1rem;font-family:var(--font-mono);" class="tabular">{row.a}</td>
+                <td style="text-align:right;padding:0.65rem 1rem;font-family:var(--font-mono);" class="tabular">{row.b}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- TCO Verdict -->
+      <div class="card" style="padding:1.5rem;margin-bottom:3rem;border-left:3px solid var(--color-accent-cyan);">
+        <h2 style="font-size:1.125rem;font-weight:700;margin-bottom:0.75rem;">5-Year Total Cost of Ownership</h2>
+        <p style="color:var(--color-text-secondary);font-size:0.9375rem;line-height:1.65;">
+          Assuming <strong>500W average draw</strong>, <strong>8 hours/day gaming</strong>, and <strong>${kwhRate}/kWh electricity</strong>:
+        </p>
+        <p style="color:var(--color-text-secondary);font-size:0.9375rem;line-height:1.65;margin-top:0.75rem;">
+          <strong style="color:var(--color-accent-cyan);">{cheaperTco.name}</strong> costs ~$<strong>{cheaperTco === psuA ? fiveYearA : fiveYearB}</strong> over 5 years (purchase + electricity),
+          saving approximately <strong style="color:var(--color-safe);">${ savings5yr }</strong> compared to {(cheaperTco === psuA ? psuB : psuA).name}.
+        </p>
+        {betterEfficiency !== cheaperTco && (
+          <p style="font-size:0.8125rem;color:var(--color-text-tertiary);margin-top:0.75rem;">
+            Note: {betterEfficiency.name} has higher efficiency but higher upfront cost. The TCO crossover depends on your electricity rate and usage.
+          </p>
+        )}
+      </div>
+
+      <!-- FAQ -->
+      <section aria-labelledby="psu-faq-heading" style="margin-bottom:3rem;">
+        <h2 id="psu-faq-heading" style="font-size:1.25rem;font-weight:700;margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Which is more efficient — {psuA.name} or {psuB.name}?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>{betterEfficiency.name} is rated {efficiencyLabelMap[betterEfficiency.efficiencyTier]}, making it more efficient than {worseEfficiency.name} ({efficiencyLabelMap[worseEfficiency.efficiencyTier]}). Higher efficiency means less electricity waste as heat, lower operating costs, and better thermal performance.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Can {psuA.name} run an RTX 5090?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>{psuA.has12v2x6
+                ? `${psuA.name} includes a native 12V-2x6 cable and supports ATX 3.1 — it is compatible with the RTX 5090, provided the wattage (${psuA.wattage}W) is sufficient for your full build.`
+                : `${psuA.name} does not include a native 12V-2x6 connector. Running an RTX 5090 would require an adapter cable, which is not recommended at the 5090's 575W TBP. Upgrade to an ATX 3.1 PSU with a native 12V-2x6 port.`}
+              </p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Which has lower long-term cost?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>At ${kwhRate}/kWh and 8 hours/day, {cheaperTco.name} costs ~${cheaperTco === psuA ? fiveYearA : fiveYearB} total over 5 years (purchase + electricity) vs ~${(cheaperTco === psuA ? fiveYearB : fiveYearA)} for {(cheaperTco === psuA ? psuB : psuA).name} — a difference of ~${savings5yr}.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <div style="text-align:center;">
+        <a href="/psu-calculator" class="btn btn-primary">Run full PSU analysis for your build →</a>
+      </div>
+
+    </div>
+  </section>
+</Layout>

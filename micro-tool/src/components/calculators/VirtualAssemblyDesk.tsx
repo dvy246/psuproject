@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 // ============================================================
-// VoltForge — Virtual Assembly Desk
+// PSUCheck — Virtual Assembly Desk
 // Two-column workbench layout.
 // Left: 8-col Assembly Tray with modular bay cards.
 // Right: 4-col Sticky Diagnostics HUD.
@@ -33,16 +33,21 @@ import { calculateBuildCost } from '../../lib/calculate';
 import { ShareModal } from './ShareModal';
 
 // --- Signals Store (global, shared with DiagnosticsHUD) ---
-export const selectedCpu    = signal<CpuIndex | null>(null);
-export const selectedGpu    = signal<GpuIndex | null>(null);
-export const selectedMobo   = signal<MotherboardIndex | null>(null);
-export const selectedRam    = signal<RamConfig | null>(null);
+export const selectedCpu     = signal<CpuIndex | null>(null);
+export const selectedGpu     = signal<GpuIndex | null>(null);
+export const selectedMobo    = signal<MotherboardIndex | null>(null);
+export const selectedRam     = signal<RamConfig | null>(null);
 export const selectedStorage = signal<StorageConfig[]>([]);
 export const selectedCooling = signal<CoolingConfig | null>(null);
-export const selectedPsu    = signal<PsuIndex | null>(null);
-export const psuMode        = signal<'auto' | 'manual'>('auto');
-export const fans           = signal<number>(2);
-export const hudDrawerOpen  = signal<boolean>(false);
+export const selectedPsu     = signal<PsuIndex | null>(null);
+export const psuMode         = signal<'auto' | 'manual'>('auto');
+export const fans            = signal<number>(2);
+export const hudDrawerOpen   = signal<boolean>(false);
+export const psuAge          = signal<number>(0); // P1: PSU age in years (0 = new)
+export const overclockingEnabled = signal<boolean>(false);
+export const cpuOcPercent       = signal<number>(0);  // 0–30
+export const gpuOcPercent       = signal<number>(0);  // 0–30
+export const safetyBufferPercent = signal<number>(10); // 0–30, default 10%
 
 // Computed: total filled bays (for progress ring)
 export const filledBayCount = computed(() => {
@@ -85,6 +90,14 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
         selectedPsu.value = build.psu;
         psuMode.value = 'manual';
       }
+      if (build.cpuOcPercent !== undefined || build.gpuOcPercent !== undefined) {
+        overclockingEnabled.value = true;
+        if (build.cpuOcPercent !== undefined) cpuOcPercent.value = build.cpuOcPercent;
+        if (build.gpuOcPercent !== undefined) gpuOcPercent.value = build.gpuOcPercent;
+      }
+      if (build.safetyBufferPercent !== undefined) {
+        safetyBufferPercent.value = build.safetyBufferPercent;
+      }
     }
   }, []);
 
@@ -112,7 +125,10 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
       selectedRam.value,
       selectedStorage.value,
       selectedCooling.value,
-      selectedPsu.value
+      selectedPsu.value,
+      cpuOcPercent.value,
+      gpuOcPercent.value,
+      safetyBufferPercent.value
     );
     const shareUrl = `${window.location.origin}${window.location.pathname}?${query}`;
     setCurrentShareUrl(shareUrl);
@@ -148,8 +164,12 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
     ram: activeRam,
     storage: activeStorage,
     cooling: activeCooling,
-    fans: fans.value
-  }, activePsu?.wattage ?? 850, activePsu?.atxVersion ?? '3.1');
+    fans: fans.value,
+    ocConfig: overclockingEnabled.value ? {
+      cpuOcPercent: cpuOcPercent.value,
+      gpuOcPercent: gpuOcPercent.value,
+    } : undefined,
+  }, activePsu?.wattage ?? 850, activePsu?.atxVersion ?? '3.1', safetyBufferPercent.value / 100);
 
   // Build progress
   const filled = filledBayCount.value;
@@ -175,8 +195,8 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
                 </svg>
                 Assembly Tray
               </h2>
-              <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-                <p class="tray-subtitle" style="margin:0;">Select components to begin analysis</p>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;">
+                <p class="tray-subtitle" style="margin:0;margin-right:4px;">Select components to begin analysis</p>
                 <button
                   onClick={handleShare}
                   class="btn btn-secondary"
@@ -187,6 +207,14 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
                   {shareStatus === 'copied' ? 'Link Copied!' : 'Share Build'}
                 </button>
+                <a
+                  href="/builds"
+                  class="btn btn-secondary"
+                  style="font-size:0.7rem;padding:6px 10px;min-height:30px;display:inline-flex;align-items:center;gap:4px;text-decoration:none;"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                  Build Gallery
+                </a>
               </div>
             </div>
             {/* Build progress indicator */}
@@ -242,6 +270,176 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
               onSelect={(psu) => { selectedPsu.value = psu; }}
               onModeChange={(mode) => { psuMode.value = mode; }}
             />
+
+            {/* ── P1: PSU Age Slider ── */}
+            <div
+              class="bay-wrapper"
+              role="listitem"
+              style="padding: 0.75rem 1rem; background: var(--color-surface-raised); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);"
+            >
+              <label
+                for="psu-age-slider"
+                style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;font-size:0.8125rem;font-weight:600;color:var(--color-text-secondary);"
+              >
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  PSU Age
+                </span>
+                <span class="tabular" style="color:var(--color-accent-cyan);font-weight:700;">
+                  {psuAge.value === 0 ? 'New' : `${psuAge.value}yr`}
+                  {psuAge.value > 3 && (
+                    <span style="color:#f59e0b;font-size:0.7rem;margin-left:6px;">⚠ aging applied</span>
+                  )}
+                </span>
+              </label>
+              <input
+                id="psu-age-slider"
+                type="range"
+                min="0"
+                max="15"
+                step="1"
+                value={psuAge.value}
+                onInput={(e) => { psuAge.value = Number((e.target as HTMLInputElement).value); }}
+                aria-label={`PSU age: ${psuAge.value === 0 ? 'New' : `${psuAge.value} years`}. Capacitor aging drates effective wattage by 5% per year after 3 years.`}
+                aria-valuemin={0}
+                aria-valuemax={15}
+                aria-valuenow={psuAge.value}
+                style="width:100%;accent-color:var(--color-accent-cyan);cursor:pointer;"
+              />
+              <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--color-text-tertiary);margin-top:2px;">
+                <span>New</span><span>5yr</span><span>10yr</span><span>15yr</span>
+              </div>
+              {psuAge.value <= 3 && (
+                <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin-top:0.4rem;">
+                  No capacity derating below 3 years.
+                </p>
+              )}
+            </div>
+
+            {/* ── P2: Overclocking Mode Card ── */}
+            <div
+              class="bay-wrapper"
+              role="listitem"
+              style="padding: 0.75rem 1rem; background: var(--color-surface-raised); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);"
+            >
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                <span style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;font-weight:600;color:var(--color-text-secondary);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Overclocking Mode
+                </span>
+                <button
+                  class={`mode-tab ${overclockingEnabled.value ? 'mode-tab--active' : ''}`}
+                  onClick={() => { overclockingEnabled.value = !overclockingEnabled.value; }}
+                  aria-pressed={overclockingEnabled.value}
+                  type="button"
+                  style="min-height:30px;font-size:0.7rem;padding:2px 10px;"
+                >
+                  {overclockingEnabled.value ? 'Enabled' : 'Disabled'}
+                </button>
+              </div>
+
+              {overclockingEnabled.value && (
+                <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                  {selectedCpu.value && (
+                    <div>
+                      <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--color-text-secondary);margin-bottom:0.25rem;">
+                        <label for="cpu-oc-slider">CPU Overclock</label>
+                        <span class="tabular" style="color:var(--color-accent-cyan);font-weight:700;">+{cpuOcPercent.value}%</span>
+                      </div>
+                      <input
+                        id="cpu-oc-slider"
+                        name="cpuOc"
+                        type="range"
+                        min="0"
+                        max="30"
+                        step="1"
+                        value={cpuOcPercent.value}
+                        onInput={(e) => { cpuOcPercent.value = Number((e.target as HTMLInputElement).value); }}
+                        aria-label={`CPU overclock: ${cpuOcPercent.value}% above stock`}
+                        style="width:100%;accent-color:var(--color-accent-cyan);cursor:pointer;"
+                      />
+                      <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--color-text-tertiary);">
+                        <span>Stock</span><span>15%</span><span>30% max</span>
+                      </div>
+                      <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin-top:0.25rem;">
+                        +{Math.round(selectedCpu.value.tdpSustained * cpuOcPercent.value / 100)}W on CPU draw
+                      </p>
+                    </div>
+                  )}
+                  {selectedGpu.value && (
+                    <div>
+                      <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--color-text-secondary);margin-bottom:0.25rem;">
+                        <label for="gpu-oc-slider">GPU Overclock</label>
+                        <span class="tabular" style="color:var(--color-accent-cyan);font-weight:700;">+{gpuOcPercent.value}%</span>
+                      </div>
+                      <input
+                        id="gpu-oc-slider"
+                        name="gpuOc"
+                        type="range"
+                        min="0"
+                        max="30"
+                        step="1"
+                        value={gpuOcPercent.value}
+                        onInput={(e) => { gpuOcPercent.value = Number((e.target as HTMLInputElement).value); }}
+                        aria-label={`GPU overclock: ${gpuOcPercent.value}% above stock`}
+                        style="width:100%;accent-color:var(--color-accent-cyan);cursor:pointer;"
+                      />
+                      <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--color-text-tertiary);">
+                        <span>Stock</span><span>15%</span><span>30% max</span>
+                      </div>
+                      <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin-top:0.25rem;">
+                        +{Math.round(selectedGpu.value.tbp * gpuOcPercent.value / 100)}W on GPU draw
+                      </p>
+                    </div>
+                  )}
+                  {!selectedCpu.value && !selectedGpu.value && (
+                    <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin:0;">
+                      Select a CPU or GPU to configure overclocking.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* ── P3: Safety Buffer Card ── */}
+            <div
+              class="bay-wrapper"
+              role="listitem"
+              style="padding: 0.75rem 1rem; background: var(--color-surface-raised); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);"
+            >
+              <label
+                for="safety-buffer-slider"
+                style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;font-size:0.8125rem;font-weight:600;color:var(--color-text-secondary);"
+              >
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Safety Buffer
+                </span>
+                <span class="tabular" style="color:var(--color-accent-cyan);font-weight:700;">
+                  {safetyBufferPercent.value}%
+                </span>
+              </label>
+              <input
+                id="safety-buffer-slider"
+                name="safetyBuffer"
+                type="range"
+                min="0"
+                max="30"
+                step="5"
+                value={safetyBufferPercent.value}
+                onInput={(e) => { safetyBufferPercent.value = Number((e.target as HTMLInputElement).value); }}
+                aria-label={`Safety buffer: ${safetyBufferPercent.value}% additional wattage margin`}
+                style="width:100%;accent-color:var(--color-accent-cyan);cursor:pointer;"
+              />
+              <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--color-text-tertiary);margin-top:2px;">
+                <span>0%</span><span>10%</span><span>20%</span><span>30%</span>
+              </div>
+              {safetyBufferPercent.value > 0 && (
+                <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin-top:0.4rem;">
+                  Adds ~{Math.round(safetyBufferPercent.value * 0.5)}% to recommended wattage on top of ATX headroom.
+                </p>
+              )}
+            </div>
           </div>
         </section>
 
@@ -270,6 +468,10 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
                 cooling={selectedCooling.value}
                 psu={selectedPsu.value}
                 fans={fans.value}
+                psuAgeYears={psuAge.value}
+                cpuOcPercent={overclockingEnabled.value ? cpuOcPercent.value : 0}
+                gpuOcPercent={overclockingEnabled.value ? gpuOcPercent.value : 0}
+                safetyBufferPercent={safetyBufferPercent.value}
               />
             )}
           </div>
@@ -334,6 +536,10 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
               cooling={selectedCooling.value}
               psu={selectedPsu.value}
               fans={fans.value}
+              psuAgeYears={psuAge.value}
+              cpuOcPercent={overclockingEnabled.value ? cpuOcPercent.value : 0}
+              gpuOcPercent={overclockingEnabled.value ? gpuOcPercent.value : 0}
+              safetyBufferPercent={safetyBufferPercent.value}
             />
           )}
         </div>

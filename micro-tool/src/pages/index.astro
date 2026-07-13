@@ -1,11 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import AdSlot from '../components/AdSlot.astro';
 
 const websiteSchema = {
   "@type": "WebApplication",
-  "name": "VoltForge PC PSU Calculator",
-  "url": "https://voltforge.app",
+  "name": "PSUCheck PC PSU Calculator",
+  "url": "https://psucheck.com",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any",
   "description": "Free PC power supply calculator and build cost estimator. Calculates transient power spikes, ATX 3.1 compliance, per-rail analysis, and 5-year TCO.",
@@ -28,7 +27,7 @@ const faqSchema = {
       "name": "How much PSU wattage do I need for my PC build?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The PSU wattage you need depends on your CPU and GPU power draw plus a safety buffer. A modern RTX 5080 + Ryzen 7 9800X3D system needs at minimum 850W, accounting for the RTX 5080's 540W transient peak plus CPU and other components. VoltForge calculates this precisely using published Cybenetics transient multipliers — not just a simple TDP sum."
+        "text": "The PSU wattage you need depends on your CPU and GPU power draw plus a safety buffer. A modern RTX 5080 + Ryzen 7 9800X3D system needs at minimum 850W, accounting for the RTX 5080's 540W transient peak plus CPU and other components. PSUCheck calculates this precisely using published Cybenetics transient multipliers — not just a simple TDP sum."
       }
     },
     {
@@ -124,7 +123,7 @@ const faqSchema = {
 ---
 
 <Layout
-  title="VoltForge — PC PSU Calculator & Build Cost Estimator"
+  title="PSUCheck — PC PSU Calculator & Build Cost Estimator"
   description="Free PC power supply calculator with transient spike analysis, ATX 3.1 compliance checker, build cost estimator, and 5-year TCO. Unbiased recommendations based on real Cybenetics data."
   schema={[websiteSchema, faqSchema]}
 >
@@ -213,7 +212,7 @@ const faqSchema = {
                 <div class="cpu-ihs">
                   <div class="ihs-surface">
                     <div class="cpu-branding">
-                      <span class="brand-class">VOLTFORGE CORE</span>
+                      <span class="brand-class">PSUCHECK CORE</span>
                       <span class="brand-model">VF-9800X3D</span>
                       <span class="brand-spec">TRANS.MULTIPLIER: 2.1x</span>
                     </div>
@@ -332,11 +331,11 @@ const faqSchema = {
   <!-- ===== COMPETITOR GAP VISUAL ===== -->
   <section class="gap-section" aria-labelledby="gap-heading">
     <div class="container">
-      <div class="section-eyebrow">Why VoltForge?</div>
+      <div class="section-eyebrow">Why PSUCheck?</div>
       <h2 id="gap-heading">Every other tool misses at least two pillars</h2>
       <p style="max-width:58ch;margin-top:0.75rem;">
         PCPartPicker gives prices but no PSU depth. TechSearchers gives PSU depth but no build cost.
-        No manufacturer tool is unbiased. VoltForge is the only tool combining all three.
+        No manufacturer tool is unbiased. PSUCheck is the only tool combining all three.
       </p>
 
       <div class="comparison-table-wrap" role="region" aria-label="Competitor comparison table">
@@ -372,8 +371,8 @@ const faqSchema = {
               <td class="cell-no">None</td>
               <td class="cell-no">Brand-locked</td>
             </tr>
-            <tr class="row-voltforge">
-              <td><strong>⚡ VoltForge</strong></td>
+            <tr class="row-psucheck">
+              <td><strong>⚡ PSUCheck</strong></td>
               <td class="cell-yes">✓ Full + Chart</td>
               <td class="cell-yes">✓ Transients + ATX 3.1</td>
               <td class="cell-yes">✓ 6 Guides</td>
@@ -451,7 +450,7 @@ const faqSchema = {
   <!-- ===== UNIQUE FEATURES SHOWCASE ===== -->
   <section class="features-section" aria-labelledby="features-heading">
     <div class="container">
-      <div class="section-eyebrow">Unique to VoltForge</div>
+      <div class="section-eyebrow">Unique to PSUCheck</div>
       <h2 id="features-heading">Visuals no other tool shows you</h2>
 
       <div class="features-grid">
@@ -596,7 +595,7 @@ const faqSchema = {
           </div>
           <h3>Cable-Melt Prevention Audit</h3>
           <p>
-            When a high-end GPU is selected, VoltForge instantly audits your cabling requirements
+            When a high-end GPU is selected, PSUCheck instantly audits your cabling requirements
             and warns against dangerous configurations — like daisy-chaining 8-pin adapters on a
             575W RTX 5090. An engineering safety check no other tool provides.
           </p>
@@ -644,11 +643,6 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- Ad Placement -->
-  <div class="container" style="margin-top: 3rem; margin-bottom: 1rem;">
-    <AdSlot slot="9876543210" type="leaderboard" />
-  </div>
-
   <!-- ===== FAQ SECTION (FAQPage schema content) ===== -->
   <section class="faq-section" aria-labelledby="faq-heading">
     <div class="container">
@@ -662,7 +656,7 @@ const faqSchema = {
             <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
           </summary>
           <div class="faq-answer">
-            <p>The PSU wattage you need depends on your CPU and GPU power draw plus a safety buffer. A modern RTX&nbsp;5080 + Ryzen&nbsp;7&nbsp;9800X3D system needs at minimum 850W, accounting for the RTX&nbsp;5080's 540W transient peak plus CPU and other components. VoltForge calculates this precisely using published Cybenetics transient multipliers — not just a simple TDP sum.</p>
+            <p>The PSU wattage you need depends on your CPU and GPU power draw plus a safety buffer. A modern RTX&nbsp;5080 + Ryzen&nbsp;7&nbsp;9800X3D system needs at minimum 850W, accounting for the RTX&nbsp;5080's 540W transient peak plus CPU and other components. PSUCheck calculates this precisely using published Cybenetics transient multipliers — not just a simple TDP sum.</p>
           </div>
         </details>
 
@@ -1165,10 +1159,10 @@ const faqSchema = {
 .cell-yes { color: var(--status-safe) !important; font-weight: 600; }
 .cell-no { color: var(--status-danger) !important; }
 .cell-partial { color: var(--status-warning) !important; }
-.row-voltforge {
+.row-psucheck {
   background: linear-gradient(90deg, rgba(0,229,255,0.05) 0%, rgba(124,77,255,0.05) 100%);
 }
-.row-voltforge td { border-top: 1px solid var(--border-accent); }
+.row-psucheck td { border-top: 1px solid var(--border-accent); }
 
 /* ---- Pillars ---- */
 .pillars-section { padding: 5rem 0; }

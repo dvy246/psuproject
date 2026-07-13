@@ -1,4 +1,35 @@
+# PSUCheck — robots.txt
+# Google Search Console compliant
+# https://developers.google.com/search/docs/crawling-indexing/robots/intro
+
+# All web crawlers
 User-agent: *
 Allow: /
 
-Sitemap: https://voltforge.app/sitemap-index.xml
+# Disallow internal/utility paths that should not be indexed
+Disallow: /api/
+Disallow: /_astro/
+Disallow: /404
+Disallow: /500
+
+# Crawl-delay for polite crawling (non-Googlebot)
+Crawl-delay: 10
+
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /_astro/
+
+# Google Images
+User-agent: Googlebot-Image
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 5
+
+# Sitemaps
+Sitemap: https://psucheck.com/sitemap-index.xml
+Sitemap: https://psucheck.com/sitemap-0.xml

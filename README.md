@@ -19,19 +19,20 @@ VoltForge unifies three core product layers that competitors fail to combine:
 
 1.  **Precision PSU Sizing Engine:** Unlike simple TDP-summing calculators, VoltForge models sub-millisecond transient power spikes, ATX 3.1 compliance margins, per-rail current allocations (+12V, +5V, +3.3V), and cable safety risks (native 12V-2x6 connectors vs adapters) using published Cybenetics standards.
 2.  **Live Build Cost Optimizer:** A reactive layout canvas matching parts selection with sales tax sliders, assembly fees, custom peripheral checkboxes, and live value-downgrade advice (e.g. suggesting cheaper motherboards or cooling swaps without bottlenecking performance).
-3.  **Entity-Linked Planning Guides:** A comprehensive, search-optimized educational network (6+ guides) structured with JSON-LD graphs (`HowTo` and `FAQPage`) to secure rich Google search snippets.
+3.  **Entity-Linked Planning Guides:** A comprehensive, search-optimized educational library of **25+ guides** structured with JSON-LD graphs (`HowTo` and `FAQPage`) to secure rich Google search snippets and maximize crawl indexability.
 
 ---
 
 ## ⚡ Highlights & Exploit Moats
 
-Every features was developed to convert a specific competitor weakness into a VoltForge competitive advantage:
+Every feature was developed to convert a specific competitor weakness into a VoltForge competitive advantage:
 
 *   **Interactive 80 PLUS TCO Configurator:** In contrast to static tables, the `InteractiveTco` island parses active component draws and allows users to input local $/kWh electricity rates and daily usage hours, showing live multi-year Gold/Platinum ROI breakeven verdicts.
 *   **Tactile Hardware Assembly Desk:** A 12-column bento-style workspace featuring circular progress rings, visual warning states, and a real-time animated SVG transient waveform monitor.
 *   **Live Selector Search:** Live text input filtering in CPU, GPU, and PSU picker bays, allowing users to search thousands of models instantly by socket, architecture generation, or wattage rating.
 *   **Reddit & Forum Markdown Exporter:** Eliminates registration requirements. Users click "Share Build" to copy a base64-encoded URL (restoring exact client state) alongside a pre-formatted Markdown table ideal for `/r/buildapc` and PC support boards.
 *   **Double-Slug SEO Oracle:** Evaluates 320+ cross-product combinations (e.g., `is-850w-enough-for-rtx-5080`) supporting dual slug formats (both with and without `w` suffixes) to maximize Google index coverage.
+*   **Library Directory of 25+ Educational Guides:** A dedicated, searchable index directory (`/guides`) linking articles on hardware sizing, standards (ATX 3.1, Cybenetics), and building protocols (fanless PSUs, UPS sizing, AWG cable limits, fan positioning).
 
 ---
 

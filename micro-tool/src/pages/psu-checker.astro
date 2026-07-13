@@ -1,12 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
-import AdSlot from '../components/AdSlot.astro';
 
 const schema = {
   "@type": "WebApplication",
-  "name": "VoltForge PSU Upgrade Checker",
-  "url": "https://voltforge.app/psu-checker",
+  "name": "PSUCheck PSU Upgrade Checker",
+  "url": "https://psucheck.com/psu-checker",
   "applicationCategory": "UtilitiesApplication",
   "description": "Check if your current PC power supply (PSU) can support a GPU or CPU upgrade. Calculates transient spikes and safety headroom margins.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -31,7 +30,7 @@ const faqSchema = {
 ---
 
 <Layout
-  title="PSU Upgrade Checker — VoltForge: Will my current PSU support an upgrade?"
+  title="PSU Upgrade Checker — PSUCheck: Will my current PSU support an upgrade?"
   description="Check if your current power supply can handle a planned graphics card or processor upgrade. Enter your new GPU or CPU and test against your existing PSU."
   schema={[schema, faqSchema]}
 >
@@ -156,11 +155,6 @@ const faqSchema = {
       </div>
     </div>
   </section>
-
-  <!-- Ad Placement -->
-  <div class="container" style="margin-top: 3rem; margin-bottom: 1rem;">
-    <AdSlot slot="6501234567" type="leaderboard" />
-  </div>
 
   <!-- ===== FAQ SECTION ===== -->
   <section class="faq-section" aria-labelledby="faq-heading-checker">

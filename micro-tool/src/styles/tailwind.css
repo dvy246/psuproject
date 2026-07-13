@@ -1,5 +1,5 @@
 /* ============================================================
-   VoltForge — Tailwind v4 CSS Entry Point
+   PSUCheck — Tailwind v4 CSS Entry Point
    @import "tailwindcss" — v4 syntax, NO @tailwind directives
    ============================================================ */
 
@@ -416,6 +416,11 @@ body {
 }
 .hud-drawer.open {
   transform: translateY(0);
+}
+@media (min-width: 1024px) {
+  .hud-drawer {
+    display: none !important;
+  }
 }
 /* Drawer handle */
 .hud-drawer-handle {

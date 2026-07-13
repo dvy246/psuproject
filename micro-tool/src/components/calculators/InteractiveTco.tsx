@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 // ============================================================
-// VoltForge — Interactive TCO Calculator
+// PSUCheck — Interactive TCO Calculator
 // Reactive to: selected CPU, GPU, RAM, Storage, Cooling.
 // Custom inputs: electricity rate, daily hours, calculation period.
 // Compares: Bronze, Gold, Platinum, Titanium 80 PLUS Tiers.

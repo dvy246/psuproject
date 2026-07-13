@@ -15,14 +15,73 @@ try {
 }
 
 export default defineConfig({
-  site: 'https://voltforge.app',
+  site: 'https://psucheck.com',
   output: 'static',
   integrations: [
     preact({ compat: true }),
     sitemap({
-      filter: (page) => !page.includes('/api/'),
-      changefreq: 'weekly',
-      priority: 0.7,
+      // Exclude error pages and internal paths from sitemap
+      filter: (page) =>
+        !page.includes('/api/') &&
+        !page.endsWith('/404') &&
+        !page.endsWith('/500'),
+
+      // Serialize each URL with tiered priority based on path
+      serialize(item) {
+        const url = item.url;
+
+        // Home page — highest priority
+        if (url === 'https://psucheck.com/' || url === 'https://psucheck.com') {
+          return { ...item, priority: 1.0, changefreq: 'daily' };
+        }
+
+        // Core calculators — very high priority (primary monetization)
+        if (
+          url.includes('/psu-calculator') ||
+          url.includes('/pc-builder') ||
+          url.includes('/psu-checker')
+        ) {
+          return { ...item, priority: 0.9, changefreq: 'weekly' };
+        }
+
+        // Compare tool
+        if (url.includes('/compare')) {
+          return { ...item, priority: 0.8, changefreq: 'weekly' };
+        }
+
+        // Guides index
+        if (url === 'https://psucheck.com/guides' || url === 'https://psucheck.com/guides/') {
+          return { ...item, priority: 0.85, changefreq: 'weekly' };
+        }
+
+        // Learning guides — high value SEO content
+        if (url.includes('/guides/')) {
+          return { ...item, priority: 0.8, changefreq: 'monthly' };
+        }
+
+        // Oracle pages — long-tail SEO content
+        if (url.includes('/oracle/')) {
+          return { ...item, priority: 0.7, changefreq: 'monthly' };
+        }
+
+        // About / methodology — trust signals
+        if (url.includes('/about') || url.includes('/methodology')) {
+          return { ...item, priority: 0.6, changefreq: 'monthly' };
+        }
+
+        // Legal / contact — low priority
+        if (
+          url.includes('/privacy') ||
+          url.includes('/terms') ||
+          url.includes('/contact')
+        ) {
+          return { ...item, priority: 0.3, changefreq: 'yearly' };
+        }
+
+        // Default
+        return { ...item, priority: 0.7, changefreq: 'weekly' };
+      },
+
       lastmod: new Date(),
     }),
   ],

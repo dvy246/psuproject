@@ -4,6 +4,8 @@ import { BayCard } from './BayCard';
 import type { RamConfig } from '../../../types/components';
 import componentData from '../../../data/components.json';
 
+import { RamIcon } from './BayIcons';
+
 const ALL_RAM: RamConfig[] = componentData.ram as RamConfig[];
 
 interface Props { selected: RamConfig | null; onSelect: (r: RamConfig | null) => void; }
@@ -16,7 +18,7 @@ export function BayRAM({ selected, onSelect }: Props) {
   const key    = (r: RamConfig) => `${r.capacity}-${r.type}-${r.speed}-${r.sticks}`;
 
   return (
-    <BayCard icon="🔴" label="RAM" sublabel={selected ? `${selected.capacity}GB ${selected.type}-${selected.speed}` : undefined} state={state} isOpen={isOpen} onToggle={toggle} onClear={selected ? clear : undefined}>
+    <BayCard icon={<RamIcon />} label="RAM" sublabel={selected ? `${selected.capacity}GB ${selected.type}-${selected.speed}` : undefined} state={state} isOpen={isOpen} onToggle={toggle} onClear={selected ? clear : undefined}>
       <div class="selector-options-grid" role="listbox" aria-label="RAM options">
         {ALL_RAM.map(r => (
           <button key={key(r)} role="option" aria-selected={key(selected ?? {} as RamConfig) === key(r)} class={`hw-option ${key(selected ?? {} as RamConfig) === key(r) ? 'selected' : ''}`} onClick={() => select(r)} type="button">

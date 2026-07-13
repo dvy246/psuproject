@@ -1,0 +1,226 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import type { CpuIndex } from '../../../types/components';
+import cpuData from '../../../data/index/cpus.index.json';
+
+// ── P2: CPU Comparison Pages ──
+// Pairing logic: same socket generation or same price bracket, within $200 price diff
+// Verified: cpu.id, cpu.name, cpu.brand, cpu.socket, cpu.gen, cpu.cores, cpu.tdp, cpu.tdpSustained, cpu.price all exist in cpus.index.json
+
+export async function getStaticPaths() {
+  const cpus = cpuData.items as CpuIndex[];
+
+  const pairs: { a: CpuIndex; b: CpuIndex }[] = [];
+
+  for (let i = 0; i < cpus.length; i++) {
+    for (let j = i + 1; j < cpus.length; j++) {
+      const a = cpus[i];
+      const b = cpus[j];
+      const priceDiff = Math.abs(a.price - b.price);
+      const sameSocket = a.socket === b.socket;
+      const sameBrand = a.brand === b.brand;
+
+      // Only pair: same socket family + within $250 price + different models
+      if (sameSocket && priceDiff <= 250 && a.id !== b.id && !sameBrand) {
+        pairs.push({ a, b });
+      }
+    }
+  }
+
+  // Also pair same-brand competing tiers within same socket (e.g. i9 vs i7)
+  for (let i = 0; i < cpus.length; i++) {
+    for (let j = i + 1; j < cpus.length; j++) {
+      const a = cpus[i];
+      const b = cpus[j];
+      const priceDiff = Math.abs(a.price - b.price);
+      const sameSocket = a.socket === b.socket;
+      const sameBrand = a.brand === b.brand;
+      const diffCores = a.cores !== b.cores;
+
+      // Same brand, same socket, different tier (different core count), within $200
+      if (sameSocket && sameBrand && diffCores && priceDiff <= 200) {
+        pairs.push({ a, b });
+      }
+    }
+  }
+
+  return pairs.map(({ a, b }) => ({
+    params: { slug: `${a.id}-vs-${b.id}` },
+    props: { cpuA: a, cpuB: b }
+  }));
+}
+
+const { cpuA, cpuB } = Astro.props as { cpuA: CpuIndex; cpuB: CpuIndex };
+
+// PSU impact of the CPU — transient multiplier is 1.20 (verified in transient-constants.json)
+const cpuATransientPeak = Math.round(cpuA.tdpSustained * 1.20);
+const cpuBTransientPeak = Math.round(cpuB.tdpSustained * 1.20);
+
+// Overclockable check: Intel K-series have tdpSustained (PL2) significantly > tdp (PL1)
+const cpuAOverclockable = cpuA.tdpSustained > cpuA.tdp;
+const cpuBOverclockable = cpuB.tdpSustained > cpuB.tdp;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": `${cpuA.name} vs ${cpuB.name} — CPU Power & PSU Impact Comparison`,
+  "description": `Compare ${cpuA.name} vs ${cpuB.name}: TDP, sustained power draw, transient peaks, overclocking power limits, and PSU wattage impact.`,
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": cpuA.name },
+    { "@type": "ListItem", "position": 2, "name": cpuB.name }
+  ]
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `How much power does ${cpuA.name} use?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${cpuA.name} has a base TDP of ${cpuA.tdp}W and a sustained power draw (PL2 / all-core boost) of ${cpuA.tdpSustained}W. During transient load spikes, it can briefly reach ${cpuATransientPeak}W. Factor this into your PSU wattage calculation.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `How much power does ${cpuB.name} use?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${cpuB.name} has a base TDP of ${cpuB.tdp}W and sustained draw of ${cpuB.tdpSustained}W. Transient peaks reach ${cpuBTransientPeak}W.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Which CPU requires a bigger PSU — ${cpuA.name} or ${cpuB.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${cpuA.tdpSustained >= cpuB.tdpSustained ? cpuA.name : cpuB.name} has higher sustained power draw (${Math.max(cpuA.tdpSustained, cpuB.tdpSustained)}W vs ${Math.min(cpuA.tdpSustained, cpuB.tdpSustained)}W), requiring more PSU wattage. Use PSUCheck's full calculator to account for your GPU as well.`
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title={`${cpuA.name} vs ${cpuB.name}: Power Draw & PSU Impact — PSUCheck`}
+  description={`${cpuA.name} (${cpuA.tdpSustained}W sustained, ${cpuATransientPeak}W peak) vs ${cpuB.name} (${cpuB.tdpSustained}W sustained, ${cpuBTransientPeak}W peak). Which needs a bigger PSU?`}
+  schema={[schema, faqSchema]}
+>
+  <section style="padding:3rem 0 6rem;" aria-labelledby="cpu-compare-heading">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <div class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/compare/cpu">CPU Comparisons</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{cpuA.name} vs {cpuB.name}</span>
+      </div>
+
+      <!-- Header -->
+      <header style="margin-top:1.5rem;margin-bottom:2.5rem;">
+        <div class="section-eyebrow">CPU Power Comparison</div>
+        <h1 id="cpu-compare-heading" style="font-size:clamp(1.6rem,4vw,2.5rem);font-weight:850;line-height:1.15;letter-spacing:-0.03em;margin-top:0.5rem;">
+          <span class="gradient-text">{cpuA.name}</span>
+          {' vs '}
+          <span class="gradient-text">{cpuB.name}</span>
+        </h1>
+        <p style="font-size:1rem;color:var(--color-text-secondary);margin-top:0.75rem;">
+          TDP, sustained power draw, transient peaks, overclocking power limits, and PSU wattage impact.
+        </p>
+      </header>
+
+      <!-- Spec Table -->
+      <div style="overflow-x:auto;margin-bottom:3rem;">
+        <table
+          style="width:100%;border-collapse:collapse;font-size:0.9rem;"
+          aria-label={`${cpuA.name} vs ${cpuB.name} power specification table`}
+        >
+          <thead>
+            <tr style="border-bottom:2px solid var(--color-border);">
+              <th scope="col" style="text-align:left;padding:0.75rem 1rem;color:var(--color-text-tertiary);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">Specification</th>
+              <th scope="col" style="text-align:right;padding:0.75rem 1rem;color:var(--color-accent-cyan);font-weight:700;">{cpuA.name}</th>
+              <th scope="col" style="text-align:right;padding:0.75rem 1rem;color:var(--color-accent-purple, #a78bfa);font-weight:700;">{cpuB.name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { label: 'Brand', a: cpuA.brand, b: cpuB.brand },
+              { label: 'Socket', a: cpuA.socket, b: cpuB.socket },
+              { label: 'Generation', a: cpuA.gen, b: cpuB.gen },
+              { label: 'Core Count', a: String(cpuA.cores), b: String(cpuB.cores) },
+              { label: 'Base TDP (PL1)', a: `${cpuA.tdp}W`, b: `${cpuB.tdp}W` },
+              { label: 'Sustained Power (PL2 / All-Core)', a: `${cpuA.tdpSustained}W`, b: `${cpuB.tdpSustained}W` },
+              { label: 'Transient Peak (×1.20 model)', a: `${cpuATransientPeak}W`, b: `${cpuBTransientPeak}W` },
+              { label: 'Overclockable', a: cpuAOverclockable ? '✓ Yes (PL2 > TDP)' : 'Limited', b: cpuBOverclockable ? '✓ Yes (PL2 > TDP)' : 'Limited' },
+              { label: 'MSRP', a: `$${cpuA.price}`, b: `$${cpuB.price}` },
+            ].map((row) => (
+              <tr key={row.label} style="border-bottom:1px solid var(--color-border-subtle);">
+                <th scope="row" style="text-align:left;padding:0.65rem 1rem;font-weight:600;color:var(--color-text-secondary);">{row.label}</th>
+                <td style="text-align:right;padding:0.65rem 1rem;font-family:var(--font-mono);" class="tabular">{row.a}</td>
+                <td style="text-align:right;padding:0.65rem 1rem;font-family:var(--font-mono);" class="tabular">{row.b}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PSU Impact Note -->
+      <div class="card" style="padding:1.5rem;margin-bottom:3rem;border-left:3px solid var(--color-accent-cyan);">
+        <h2 style="font-size:1.125rem;font-weight:700;margin-bottom:0.75rem;">PSU Wattage Impact</h2>
+        <p style="color:var(--color-text-secondary);font-size:0.9375rem;line-height:1.65;">
+          {cpuA.name} adds <strong>{cpuATransientPeak}W</strong> to your system's transient peak ({cpuA.tdpSustained}W sustained × 1.20 transient factor).
+          {cpuB.name} adds <strong>{cpuBTransientPeak}W</strong> ({cpuB.tdpSustained}W × 1.20).
+        </p>
+        <p style="color:var(--color-text-secondary);font-size:0.9375rem;line-height:1.65;margin-top:0.75rem;">
+          When pairing with a high-end GPU (RTX 5090: 902W transient peak), the CPU transient adds {cpuATransientPeak}W or {cpuBTransientPeak}W respectively.
+          {cpuAOverclockable && ` Note: ${cpuA.name} can draw up to ${cpuA.tdpSustained}W sustained under all-core boost — ensure your motherboard VRM and PSU can support this.`}
+          {cpuBOverclockable && ` Note: ${cpuB.name} can draw up to ${cpuB.tdpSustained}W sustained — account for this in your PSU budget.`}
+        </p>
+      </div>
+
+      <!-- FAQ -->
+      <section aria-labelledby="cpu-faq-heading" style="margin-bottom:3rem;">
+        <h2 id="cpu-faq-heading" style="font-size:1.25rem;font-weight:700;margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>How much power does {cpuA.name} use at full load?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>{cpuA.name} draws {cpuA.tdpSustained}W sustained (PL2 / all-core boost) and can spike to {cpuATransientPeak}W during transient loads. Its base TDP is {cpuA.tdp}W. For PSU calculations, always use the sustained draw ({cpuA.tdpSustained}W), not the base TDP.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>How much power does {cpuB.name} use at full load?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>{cpuB.name} draws {cpuB.tdpSustained}W sustained and peaks at {cpuBTransientPeak}W. Base TDP is {cpuB.tdp}W. Use {cpuB.tdpSustained}W in your PSU sizing calculation.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Which CPU needs a bigger PSU?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>{cpuA.tdpSustained >= cpuB.tdpSustained ? cpuA.name : cpuB.name} requires more PSU wattage with {Math.max(cpuA.tdpSustained, cpuB.tdpSustained)}W sustained vs {Math.min(cpuA.tdpSustained, cpuB.tdpSustained)}W. The difference of {Math.abs(cpuA.tdpSustained - cpuB.tdpSustained)}W sustained matters most when combined with a high-end GPU. Use PSUCheck's full PSU calculator to get the total system recommendation.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <div style="text-align:center;">
+        <a href="/psu-calculator" class="btn btn-primary">Calculate PSU for your {cpuA.name} build →</a>
+      </div>
+
+    </div>
+  </section>
+</Layout>

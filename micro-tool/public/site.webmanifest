@@ -1,6 +1,6 @@
 {
-  "name": "VoltForge — PC PSU Calculator",
-  "short_name": "VoltForge",
+  "name": "PSUCheck — PC PSU Calculator",
+  "short_name": "PSUCheck",
   "description": "Free PC power supply calculator, build cost estimator, and ATX 3.1 compliance checker.",
   "start_url": "/",
   "display": "standalone",

@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 // ============================================================
-// VoltForge — PSU Comparer Component
+// PSUCheck — PSU Comparer Component
 // Side-by-side spec comparison of two user-selected PSUs.
 // Modern dark-theme comparison table.
 // ============================================================

@@ -16,6 +16,7 @@ import type {
   RamConfig,
   StorageConfig,
   CoolingConfig,
+  OcConfig,
 } from '../types/components';
 
 import transientData from '../data/derived/transient-constants.json';
@@ -32,19 +33,22 @@ export interface ComponentDraws {
   cooling: CoolingConfig | null;
   fans: number;
   miscSystemWatts?: number;
+  ocConfig?: OcConfig;
 }
 
 export function calculateBaseDraw(components: ComponentDraws): number {
   let total = 0;
 
-  // CPU — use sustained power (PL2 for Intel)
+  // CPU — use sustained power (PL2 for Intel), apply OC multiplier
   if (components.cpu) {
-    total += components.cpu.tdpSustained;
+    const ocMult = 1 + ((components.ocConfig?.cpuOcPercent ?? 0) / 100);
+    total += Math.round(components.cpu.tdpSustained * ocMult);
   }
 
-  // GPU — use TBP (Total Board Power)
+  // GPU — use TBP (Total Board Power), apply OC multiplier
   if (components.gpu) {
-    total += components.gpu.tbp;
+    const ocMult = 1 + ((components.ocConfig?.gpuOcPercent ?? 0) / 100);
+    total += Math.round(components.gpu.tbp * ocMult);
   }
 
   // RAM
@@ -75,23 +79,28 @@ export function calculateBaseDraw(components: ComponentDraws): number {
 
 export function calculateTransientPeak(
   cpu: CpuIndex | null,
-  gpu: GpuIndex | null,
-  baseDraw: number
+  gpu: CpuIndex | null,
+  baseDraw: number,
+  ocConfig?: OcConfig
 ): number {
   let cpuPeak = 0;
   let gpuPeak = 0;
 
   if (cpu) {
-    cpuPeak = cpu.tdpSustained * constants.cpuTransientMultiplier;
+    const ocMult = 1 + ((ocConfig?.cpuOcPercent ?? 0) / 100);
+    cpuPeak = cpu.tdpSustained * ocMult * constants.cpuTransientMultiplier;
   }
 
   if (gpu) {
+    const ocMult = 1 + ((ocConfig?.gpuOcPercent ?? 0) / 100);
     const tierMultiplier = constants.gpuTierMultipliers[gpu.tier as GpuTier];
-    gpuPeak = gpu.tbp * tierMultiplier;
+    gpuPeak = gpu.tbp * ocMult * tierMultiplier;
   }
 
   // Non-CPU/GPU components don't spike — add their draw as-is
-  const otherDraw = baseDraw - (cpu?.tdpSustained ?? 0) - (gpu?.tbp ?? 0);
+  const cpuBase = cpu ? cpu.tdpSustained * (1 + ((ocConfig?.cpuOcPercent ?? 0) / 100)) : 0;
+  const gpuBase = gpu ? gpu.tbp * (1 + ((ocConfig?.gpuOcPercent ?? 0) / 100)) : 0;
+  const otherDraw = baseDraw - Math.round(cpuBase) - Math.round(gpuBase);
 
   // Total peak: CPU peak + GPU peak + other components (no transient)
   return Math.round(cpuPeak + gpuPeak + otherDraw);
@@ -290,7 +299,7 @@ export function runFullPsuAnalysis(
   psuAgeYears: number = 0
 ): PsuAnalysis {
   const baseDraw = calculateBaseDraw(components);
-  const transientPeak = calculateTransientPeak(components.cpu, components.gpu, baseDraw);
+  const transientPeak = calculateTransientPeak(components.cpu, components.gpu, baseDraw, components.ocConfig);
   const recommendedWattage = calculateRecommendedWattage(transientPeak, atxVersion, safetyBuffer, psuAgeYears);
   const { verdict, confidenceScore } = generateVerdict(recommendedWattage, psuWattage, transientPeak);
   const headroom = psuWattage - transientPeak;

@@ -1,0 +1,276 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { runFullPsuAnalysis } from '../../../lib/psu';
+import type { GpuIndex } from '../../../types/components';
+import gpuData from '../../../data/index/gpus.index.json';
+
+// ── P2: GPU Comparison Pages ──
+// Pairing logic: only same-generation or adjacent-tier cards within $200 price bracket
+// Verified: gpu.tier, gpu.tbp, gpu.price, gpu.connectorType, gpu.connectorCount all exist in gpus.index.json
+
+export async function getStaticPaths() {
+  const gpus = gpuData.items as GpuIndex[];
+
+  // Define meaningful pairs only — same tier or adjacent tier, within $200 price difference
+  const tierRank: Record<string, number> = { budget: 0, mid: 1, high: 2, ultra: 3, halo: 4 };
+
+  const pairs: { a: GpuIndex; b: GpuIndex }[] = [];
+
+  for (let i = 0; i < gpus.length; i++) {
+    for (let j = i + 1; j < gpus.length; j++) {
+      const a = gpus[i];
+      const b = gpus[j];
+      const tierDiff = Math.abs(tierRank[a.tier] - tierRank[b.tier]);
+      const priceDiff = Math.abs(a.price - b.price);
+
+      // Only pair: same or adjacent tier + within $300 price bracket
+      if (tierDiff <= 1 && priceDiff <= 300) {
+        pairs.push({ a, b });
+      }
+    }
+  }
+
+  return pairs.map(({ a, b }) => ({
+    params: { slug: `${a.id}-vs-${b.id}` },
+    props: { gpuA: a, gpuB: b }
+  }));
+}
+
+const { gpuA, gpuB } = Astro.props as { gpuA: GpuIndex; gpuB: GpuIndex };
+
+// Run PSU analysis for a baseline system (mid-range CPU, 32GB DDR5) for both GPUs
+const baseComponents = {
+  cpu: null,
+  gpu: null as GpuIndex | null,
+  ram: { capacity: 32, speed: 6000, type: 'DDR5' as const, sticks: 2, price: 99, typicalWatts: 10 },
+  storage: [{ type: 'NVMe' as const, capacity: 1000, price: 69, typicalWatts: 7 }],
+  cooling: { type: 'aio-240' as const, price: 89, typicalWatts: 10 },
+  fans: 3
+};
+
+const analysisA = runFullPsuAnalysis({ ...baseComponents, gpu: gpuA }, gpuA.minPsuWattage, '3.1');
+const analysisB = runFullPsuAnalysis({ ...baseComponents, gpu: gpuB }, gpuB.minPsuWattage, '3.1');
+
+const tierLabel: Record<string, string> = {
+  budget: 'Budget', mid: 'Mid-Range', high: 'High-End', ultra: 'Ultra', halo: 'Halo / Flagship'
+};
+
+// Determine which GPU is the better PSU-value pick (lower required wattage relative to performance tier)
+const psuEfficiencyA = analysisA.recommendedWattage / gpuA.price;
+const psuEfficiencyB = analysisB.recommendedWattage / gpuB.price;
+const betterPsuValue = psuEfficiencyA <= psuEfficiencyB ? gpuA : gpuB;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": `${gpuA.name} vs ${gpuB.name} — PSU & Power Comparison`,
+  "description": `Side-by-side power supply requirements for ${gpuA.name} vs ${gpuB.name}: transient peaks, PSU wattage, ATX compliance, and cable requirements.`,
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": gpuA.name, "item": { "@type": "Product", "name": gpuA.name, "description": `${gpuA.tbp}W TBP, ${gpuA.tier} tier, ${gpuA.connectorType} connector, min ${gpuA.minPsuWattage}W PSU required` }},
+    { "@type": "ListItem", "position": 2, "name": gpuB.name, "item": { "@type": "Product", "name": gpuB.name, "description": `${gpuB.tbp}W TBP, ${gpuB.tier} tier, ${gpuB.connectorType} connector, min ${gpuB.minPsuWattage}W PSU required` }}
+  ]
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Which PSU do I need for ${gpuA.name} vs ${gpuB.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${gpuA.name} requires a minimum ${analysisA.recommendedWattage}W PSU (transient peak: ${analysisA.transientPeak}W). ${gpuB.name} requires a minimum ${analysisB.recommendedWattage}W PSU (transient peak: ${analysisB.transientPeak}W).`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Does ${gpuA.name} or ${gpuB.name} need ATX 3.1?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${gpuA.connectorType === '12v-2x6' ? `${gpuA.name} requires an ATX 3.1 PSU with a native 12V-2x6 connector.` : `${gpuA.name} does not require ATX 3.1 — standard PCIe connectors are supported.`} ${gpuB.connectorType === '12v-2x6' ? `${gpuB.name} also requires ATX 3.1 with a 12V-2x6 connector.` : `${gpuB.name} does not require ATX 3.1.`}`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Is ${gpuA.name} or ${gpuB.name} more power efficient for the price?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${betterPsuValue.name} offers better PSU-wattage efficiency per dollar — it requires ${betterPsuValue === gpuA ? analysisA.recommendedWattage : analysisB.recommendedWattage}W recommended at $${betterPsuValue.price}.`
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title={`${gpuA.name} vs ${gpuB.name}: PSU Requirements & Power Comparison — PSUCheck`}
+  description={`Side-by-side power comparison: ${gpuA.name} (${gpuA.tbp}W TBP, ${analysisA.transientPeak}W peak) vs ${gpuB.name} (${gpuB.tbp}W TBP, ${analysisB.transientPeak}W peak). Which needs a bigger PSU?`}
+  schema={[schema, faqSchema]}
+>
+  <section style="padding:3rem 0 6rem;" aria-labelledby="compare-heading">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <div class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/compare/gpu">GPU Comparisons</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{gpuA.name} vs {gpuB.name}</span>
+      </div>
+
+      <!-- Header -->
+      <header style="margin-top:1.5rem;margin-bottom:2.5rem;">
+        <div class="section-eyebrow">Power Supply Comparison</div>
+        <h1 id="compare-heading" style="font-size:clamp(1.75rem,4.5vw,2.75rem);font-weight:850;line-height:1.15;letter-spacing:-0.03em;margin-top:0.5rem;">
+          <span class="gradient-text">{gpuA.name}</span>
+          {' vs '}
+          <span class="gradient-text">{gpuB.name}</span>
+        </h1>
+        <p style="font-size:1rem;color:var(--color-text-secondary);margin-top:0.75rem;">
+          Transient-aware PSU requirements, ATX compliance, cable safety audit, and power efficiency comparison.
+        </p>
+      </header>
+
+      <!-- Side-by-Side Spec Table -->
+      <div style="overflow-x:auto;margin-bottom:3rem;">
+        <table
+          style="width:100%;border-collapse:collapse;font-size:0.9rem;"
+          aria-label={`${gpuA.name} vs ${gpuB.name} specification comparison`}
+        >
+          <thead>
+            <tr style="border-bottom:2px solid var(--color-border);">
+              <th scope="col" style="text-align:left;padding:0.75rem 1rem;color:var(--color-text-tertiary);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">Specification</th>
+              <th scope="col" style="text-align:right;padding:0.75rem 1rem;color:var(--color-accent-cyan);font-weight:700;">{gpuA.name}</th>
+              <th scope="col" style="text-align:right;padding:0.75rem 1rem;color:var(--color-accent-purple, #a78bfa);font-weight:700;">{gpuB.name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { label: 'Performance Tier', a: tierLabel[gpuA.tier] ?? gpuA.tier, b: tierLabel[gpuB.tier] ?? gpuB.tier },
+              { label: 'Total Board Power (TBP)', a: `${gpuA.tbp}W`, b: `${gpuB.tbp}W` },
+              { label: 'Transient Peak (modeled)', a: `${analysisA.transientPeak}W`, b: `${analysisB.transientPeak}W` },
+              { label: 'Minimum Recommended PSU', a: `${analysisA.recommendedWattage}W`, b: `${analysisB.recommendedWattage}W` },
+              { label: 'PCIe Connector Required', a: gpuA.connectorType, b: gpuB.connectorType },
+              { label: 'Number of Connectors', a: String(gpuA.connectorCount), b: String(gpuB.connectorCount) },
+              { label: 'ATX 3.1 Required', a: gpuA.connectorType === '12v-2x6' ? '✓ Yes' : '✗ No', b: gpuB.connectorType === '12v-2x6' ? '✓ Yes' : '✗ No' },
+              { label: 'Daisy-Chain Safe', a: analysisA.cableAudit.daisyChainSafe ? '✓ Yes' : '✗ No', b: analysisB.cableAudit.daisyChainSafe ? '✓ Yes' : '✗ No' },
+              { label: 'MSRP', a: `$${gpuA.price}`, b: `$${gpuB.price}` },
+              { label: 'Generation', a: gpuA.generation, b: gpuB.generation },
+            ].map((row) => (
+              <tr key={row.label} style="border-bottom:1px solid var(--color-border-subtle);">
+                <th scope="row" style="text-align:left;padding:0.65rem 1rem;font-weight:600;color:var(--color-text-secondary);">{row.label}</th>
+                <td style="text-align:right;padding:0.65rem 1rem;font-family:var(--font-mono);color:var(--color-text-primary);" class="tabular">{row.a}</td>
+                <td style="text-align:right;padding:0.65rem 1rem;font-family:var(--font-mono);color:var(--color-text-primary);" class="tabular">{row.b}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PSU Verdict Cards -->
+      <h2 style="font-size:1.375rem;font-weight:750;margin-bottom:1.25rem;">PSU Requirement Breakdown</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:3rem;">
+        {[
+          { gpu: gpuA, analysis: analysisA },
+          { gpu: gpuB, analysis: analysisB }
+        ].map(({ gpu, analysis: an }) => (
+          <div key={gpu.id} class="card card-dark" style="padding:1.5rem;">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.06em;">{gpu.brand}</div>
+            <h3 style="font-size:1.1rem;font-weight:700;margin-top:0.25rem;margin-bottom:1rem;">{gpu.name}</h3>
+            <div style="display:flex;flex-direction:column;gap:0.65rem;">
+              <div class="stat-row">
+                <span class="stat-label">Sustained Draw</span>
+                <span class="stat-val tabular">{an.baseDraw}W</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Transient Peak</span>
+                <span class="stat-val tabular" style="color:var(--color-warning);">{an.transientPeak}W</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Min PSU Required</span>
+                <span class="stat-val tabular" style="color:var(--color-accent-cyan);font-weight:800;">{an.recommendedWattage}W</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Cable Safety</span>
+                <span class={`stat-val badge-${an.cableAudit.severity === 'safe' ? 'safe' : 'warning'}`} style="font-size:0.7rem;padding:2px 6px;border-radius:4px;">
+                  {an.cableAudit.severity === 'safe' ? '✓ Safe' : '⚠ Warning'}
+                </span>
+              </div>
+            </div>
+            {an.cableAudit.severity !== 'safe' && (
+              <p style="font-size:0.75rem;color:var(--color-warning);margin-top:0.75rem;line-height:1.5;">{an.cableAudit.message}</p>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <!-- Verdict / Recommendation -->
+      <div class="card" style="padding:1.5rem;margin-bottom:3rem;border-left:3px solid var(--color-accent-cyan);">
+        <h2 style="font-size:1.125rem;font-weight:700;margin-bottom:0.75rem;">Power Efficiency Verdict</h2>
+        <p style="color:var(--color-text-secondary);font-size:0.9375rem;line-height:1.65;">
+          <strong style="color:var(--color-text-primary);">{betterPsuValue.name}</strong> requires less PSU headroom per dollar spent.
+          It needs {betterPsuValue === gpuA ? analysisA.recommendedWattage : analysisB.recommendedWattage}W recommended at ${betterPsuValue.price},
+          versus {betterPsuValue === gpuA ? analysisB.recommendedWattage : analysisA.recommendedWattage}W at ${(betterPsuValue === gpuA ? gpuB : gpuA).price} for the {(betterPsuValue === gpuA ? gpuB : gpuA).name}.
+        </p>
+        <p style="color:var(--color-text-secondary);font-size:0.9375rem;line-height:1.65;margin-top:0.75rem;">
+          {gpuA.connectorType === '12v-2x6' && gpuB.connectorType !== '12v-2x6' &&
+            `Note: ${gpuA.name} requires an ATX 3.1 PSU with a native 12V-2x6 cable — factor in a possible PSU upgrade cost if you currently own an ATX 2.x unit.`}
+          {gpuB.connectorType === '12v-2x6' && gpuA.connectorType !== '12v-2x6' &&
+            `Note: ${gpuB.name} requires an ATX 3.1 PSU with a native 12V-2x6 cable — factor in a possible PSU upgrade cost if you currently own an ATX 2.x unit.`}
+          {gpuA.connectorType === '12v-2x6' && gpuB.connectorType === '12v-2x6' &&
+            `Both GPUs require ATX 3.1 PSUs with native 12V-2x6 cables. Do not use adapter cables from older 8-pin connectors.`}
+        </p>
+      </div>
+
+      <!-- FAQ -->
+      <section aria-labelledby="faq-compare-heading" style="margin-bottom:3rem;">
+        <h2 id="faq-compare-heading" style="font-size:1.25rem;font-weight:700;margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Which PSU do I need for {gpuA.name}?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>{gpuA.name} has a {gpuA.tbp}W TBP but can spike to {analysisA.transientPeak}W during transient loads. We recommend a minimum <strong>{analysisA.recommendedWattage}W ATX 3.1 PSU</strong>{gpuA.connectorType === '12v-2x6' ? ' with a native 12V-2x6 connector' : ''} for safe operation with headroom.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Which PSU do I need for {gpuB.name}?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>{gpuB.name} has a {gpuB.tbp}W TBP and transient peak up to {analysisB.transientPeak}W. We recommend a minimum <strong>{analysisB.recommendedWattage}W ATX 3.1 PSU</strong>{gpuB.connectorType === '12v-2x6' ? ' with a native 12V-2x6 connector' : ''} for stable operation.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Does {gpuA.name} or {gpuB.name} need ATX 3.1?</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                {gpuA.connectorType === '12v-2x6'
+                  ? `${gpuA.name} requires an ATX 3.1 PSU with a native 12V-2x6 connector. Do not use adapter cables.`
+                  : `${gpuA.name} uses a standard ${gpuA.connectorType} connector and does not strictly require ATX 3.1, though an ATX 3.x PSU is still recommended for transient headroom.`}
+                {' '}
+                {gpuB.connectorType === '12v-2x6'
+                  ? `${gpuB.name} also requires ATX 3.1 with a 12V-2x6 connector.`
+                  : `${gpuB.name} uses ${gpuB.connectorType} and does not require ATX 3.1.`}
+              </p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <div style="text-align:center;margin-top:2rem;">
+        <a href="/psu-calculator" class="btn btn-primary">Run custom PSU analysis for your full build →</a>
+      </div>
+
+    </div>
+  </section>
+</Layout>

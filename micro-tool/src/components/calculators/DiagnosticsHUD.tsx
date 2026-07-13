@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 // ============================================================
-// VoltForge — Diagnostics HUD
+// PSUCheck — Diagnostics HUD
 // Real-time analysis panel. Used in:
 //   - Desktop: sticky right-column sidebar
 //   - Mobile: bottom-sheet drawer
@@ -9,33 +9,47 @@
 //           Per-Rail Table, Cable Audit, TCO summary CTA
 // ============================================================
 
-import type { CpuIndex, GpuIndex, RamConfig, StorageConfig, CoolingConfig, PsuIndex, PsuAnalysis } from '../../types/components';
+import type { CpuIndex, GpuIndex, RamConfig, StorageConfig, CoolingConfig, PsuIndex, PsuAnalysis, OcConfig } from '../../types/components';
 import { runFullPsuAnalysis } from '../../lib/psu';
 import { WaveformVisualizer } from '../charts/WaveformVisualizer';
 import { PowerGaugeArc } from '../charts/PowerGaugeArc';
 
 interface Props {
-  cpu:     CpuIndex | null;
-  gpu:     GpuIndex | null;
-  ram:     RamConfig | null;
-  storage: StorageConfig[];
-  cooling: CoolingConfig | null;
-  psu:     PsuIndex | null;
-  fans:    number;
+  cpu:               CpuIndex | null;
+  gpu:               GpuIndex | null;
+  ram:               RamConfig | null;
+  storage:           StorageConfig[];
+  cooling:           CoolingConfig | null;
+  psu:               PsuIndex | null;
+  fans:              number;
+  psuAgeYears?:      number; // P1: capacitor aging — 0 = new PSU
+  cpuOcPercent?:     number; // 0–30
+  gpuOcPercent?:     number; // 0–30
+  safetyBufferPercent?: number; // 0–30
 }
 
-export function DiagnosticsHUD({ cpu, gpu, ram, storage, cooling, psu, fans }: Props) {
+export function DiagnosticsHUD({ cpu, gpu, ram, storage, cooling, psu, fans, psuAgeYears = 0, cpuOcPercent = 0, gpuOcPercent = 0, safetyBufferPercent = 10 }: Props) {
   // Run analysis only when we have at least a GPU
   const hasBuild = !!(cpu || gpu);
   const psuWattage = psu?.wattage ?? 850;
   const atxVersion = psu?.atxVersion ?? '3.1';
+  const ocActive = cpuOcPercent > 0 || gpuOcPercent > 0;
+  const ocConfig: OcConfig | undefined = ocActive ? { cpuOcPercent, gpuOcPercent } : undefined;
 
   const analysis: PsuAnalysis | null = hasBuild
     ? runFullPsuAnalysis(
-        { cpu, gpu, ram: ram ?? null, storage, cooling: cooling ?? null, fans },
+        { cpu, gpu, ram: ram ?? null, storage, cooling: cooling ?? null, fans, ocConfig },
         psuWattage,
-        atxVersion
+        atxVersion,
+        safetyBufferPercent / 100,
+        psuAgeYears
       )
+    : null;
+
+  // When PSU age > 3 years, compute effective derated wattage for display
+  // Formula mirrors psu.ts: agingFactor = 1 + (years - 3) * 0.05
+  const effectiveWattage = psuAgeYears > 3
+    ? Math.round(psuWattage / (1 + (psuAgeYears - 3) * 0.05))
     : null;
 
   const verdict = analysis?.verdict ?? null;
@@ -58,6 +72,11 @@ export function DiagnosticsHUD({ cpu, gpu, ram, storage, cooling, psu, fans }: P
           <span class={`verdict-badge badge-${verdictColor}`}>
             {verdictLabel}
           </span>
+          {ocActive && (
+            <span class="badge-warning" style="font-size:9px;margin-left:4px;padding:1px 5px;">
+              ⚡ OC: {cpuOcPercent > 0 ? `CPU+${cpuOcPercent}%` : ''}{cpuOcPercent > 0 && gpuOcPercent > 0 ? ' ' : ''}{gpuOcPercent > 0 ? `GPU+${gpuOcPercent}%` : ''}
+            </span>
+          )}
           {analysis && (
             <span class="verdict-confidence tabular" aria-label={`Confidence: ${analysis.confidenceScore}%`}>
               {analysis.confidenceScore}% confidence
@@ -72,12 +91,31 @@ export function DiagnosticsHUD({ cpu, gpu, ram, storage, cooling, psu, fans }: P
       {/* ── Section: Power Gauge Arc ── */}
       <div class="hud-section" aria-label="Recommended PSU wattage gauge">
         <div class="hud-label">Recommended PSU</div>
+        {safetyBufferPercent > 0 && (
+          <div style="font-size:0.7rem;color:var(--color-text-tertiary);margin-bottom:0.4rem;">
+            Safety buffer: +{safetyBufferPercent}%
+          </div>
+        )}
+        {/* P1: Show degraded effective wattage when age > 3 */}
+        {effectiveWattage !== null && (
+          <div
+            class="hud-note"
+            style="margin-bottom:0.5rem;padding:6px 10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:6px;"
+            aria-live="polite"
+          >
+            <strong style="color:#f59e0b;">⚠ Age derated:</strong>{' '}
+            <span class="tabular" style="color:#f59e0b;">{psuWattage}W rated → ~{effectiveWattage}W effective</span>
+            <span style="font-size:0.7rem;color:var(--color-text-tertiary);display:block;margin-top:2px;">
+              Capacitor aging: {psuAgeYears}yr PSU loses ~{Math.round((1 - effectiveWattage/psuWattage)*100)}% capacity
+            </span>
+          </div>
+        )}
         <div class="gauge-wrap">
           <PowerGaugeArc
             recommendedWattage={analysis?.recommendedWattage ?? 0}
             psuRated={psuWattage}
             verdict={verdictColor as 'safe' | 'warning' | 'danger'}
-            aria-label={analysis ? `Recommended ${analysis.recommendedWattage}W, rated ${psuWattage}W` : 'No data'}
+            aria-label={analysis ? `Recommended ${analysis.recommendedWattage}W, rated ${psuWattage}W${effectiveWattage ? `, effective ${effectiveWattage}W after aging` : ''}` : 'No data'}
           />
         </div>
       </div>

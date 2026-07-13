@@ -4,6 +4,8 @@ import { BayCard } from './BayCard';
 import type { CoolingConfig } from '../../../types/components';
 import componentData from '../../../data/components.json';
 
+import { CoolingIcon } from './BayIcons';
+
 const ALL_COOLING: CoolingConfig[] = componentData.cooling as CoolingConfig[];
 const LABELS: Record<string, string> = {
   'stock': 'Stock Cooler (included)', 'air-tower': 'Air Tower Cooler',
@@ -18,7 +20,7 @@ export function BayCooling({ selected, onSelect }: Props) {
   const select = useCallback((c: CoolingConfig) => { onSelect(c); setIsOpen(false); }, [onSelect]);
 
   return (
-    <BayCard icon="🔵" label="Cooling" sublabel={selected ? LABELS[selected.type] : undefined} state={selected ? 'filled' : 'empty'} isOpen={isOpen} onToggle={toggle} onClear={selected ? clear : undefined}>
+    <BayCard icon={<CoolingIcon />} label="Cooling" sublabel={selected ? LABELS[selected.type] : undefined} state={selected ? 'filled' : 'empty'} isOpen={isOpen} onToggle={toggle} onClear={selected ? clear : undefined}>
       <div class="selector-options-grid" role="listbox" aria-label="Cooling options">
         {ALL_COOLING.map(c => (
           <button key={c.type} role="option" aria-selected={selected?.type === c.type} class={`hw-option ${selected?.type === c.type ? 'selected' : ''}`} onClick={() => select(c)} type="button">

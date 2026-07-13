@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 // ============================================================
-// VoltForge — Cost HUD Component
+// PSUCheck — Cost HUD Component
 // Real-time PC build cost calculator & optimizer.
 // Shows: Cost Breakdown, Stacked Distribution Bar,
 //        Budget Advice, Cost Optimization Tips.

@@ -3,20 +3,20 @@ import Layout from '../layouts/Layout.astro';
 
 const schema = {
   "@type": "AboutPage",
-  "name": "About VoltForge",
-  "url": "https://voltforge.app/about",
-  "description": "VoltForge is an independent, unbiased PC power supply calculator and build cost estimator built by PC enthusiasts.",
+  "name": "About PSUCheck",
+  "url": "https://psucheck.com/about",
+  "description": "PSUCheck is an independent, unbiased PC power supply calculator and build cost estimator built by PC enthusiasts.",
   "publisher": {
     "@type": "Organization",
-    "name": "VoltForge",
-    "url": "https://voltforge.app"
+    "name": "PSUCheck",
+    "url": "https://psucheck.com"
   }
 };
 ---
 
 <Layout
-  title="About VoltForge — Independent PC PSU & Build Cost Calculator"
-  description="Learn about VoltForge: an independent, unbiased PC power supply calculator and build cost estimator. No manufacturer bias. Methodology sourced from Cybenetics, TechPowerUp, and official hardware specs."
+  title="About PSUCheck — Independent PC PSU & Build Cost Calculator"
+  description="Learn about PSUCheck: an independent, unbiased PC power supply calculator and build cost estimator. No manufacturer bias. Methodology sourced from Cybenetics, TechPowerUp, and official hardware specs."
   schema={schema}
 >
   <div class="about-page">
@@ -27,9 +27,9 @@ const schema = {
           <div class="about-badge">
             <span class="badge badge-safe">✓ Independent & Unbiased</span>
           </div>
-          <h1>About VoltForge</h1>
+          <h1>About PSUCheck</h1>
           <p class="about-lead">
-            VoltForge exists because PC builders deserve better tools. Every PSU calculator we found was either
+            PSUCheck exists because PC builders deserve better tools. Every PSU calculator we found was either
             built by a manufacturer recommending only their own products, or was a shallow wattage sum with no
             real engineering depth. We built the tool we wished existed.
           </p>
@@ -42,28 +42,28 @@ const schema = {
       <div class="container">
         <div class="two-column" style="align-items:start;gap:3rem;">
           <div>
-            <h2>What VoltForge Is</h2>
+            <h2>What PSUCheck Is</h2>
             <p>
-              VoltForge is a free, independent web application that helps PC builders accurately calculate
+              PSUCheck is a free, independent web application that helps PC builders accurately calculate
               power supply requirements, estimate total build cost, and understand the real engineering
               behind modern PC power delivery.
             </p>
             <p style="margin-top:1rem;">
               Unlike manufacturer tools (Seasonic, Corsair, be quiet!, ASUS, Cooler Master) that are
-              structurally limited to recommending only their own products, VoltForge is brand-agnostic.
+              structurally limited to recommending only their own products, PSUCheck is brand-agnostic.
               We recommend whatever PSU best fits your build — regardless of who makes it.
             </p>
           </div>
           <div>
-            <h2>What VoltForge Is Not</h2>
+            <h2>What PSUCheck Is Not</h2>
             <p>
-              VoltForge is not a retailer, manufacturer, or affiliated with any hardware company.
+              PSUCheck is not a retailer, manufacturer, or affiliated with any hardware company.
               We do not receive payment from hardware brands for recommendations. Affiliate commissions
               (from Amazon and Newegg links) are based solely on user purchases — not on which brands
               we feature or how prominently.
             </p>
             <p style="margin-top:1rem;">
-              VoltForge does not collect personally identifiable information. Calculator results are
+              PSUCheck does not collect personally identifiable information. Calculator results are
               computed client-side in your browser. We do not store your build configurations.
             </p>
           </div>
@@ -76,7 +76,7 @@ const schema = {
       <div class="container">
         <h2 style="margin-bottom:1.5rem;">Our Methodology</h2>
         <p style="max-width:70ch;margin-bottom:2rem;">
-          Every calculation in VoltForge is based on published, verifiable data sources. We do not
+          Every calculation in PSUCheck is based on published, verifiable data sources. We do not
           fabricate wattage figures, invent transient multipliers, or guess at hardware specs.
           If a data point is uncertain, we flag it explicitly.
         </p>
@@ -107,7 +107,7 @@ const schema = {
           </div>
         </div>
         <p style="margin-top:1.5rem;font-size:0.875rem;">
-          Full methodology documentation: <a href="/methodology">voltforge.app/methodology</a>
+          Full methodology documentation: <a href="/methodology">psucheck.com/methodology</a>
         </p>
       </div>
     </section>

@@ -4,6 +4,8 @@ import { BayCard } from './BayCard';
 import type { GpuIndex, GpuTier } from '../../../types/components';
 import gpuData from '../../../data/index/gpus.index.json';
 
+import { GpuIcon } from './BayIcons';
+
 const ALL_GPUS = gpuData.items as GpuIndex[];
 const BRANDS  = ['All', 'NVIDIA', 'AMD', 'Intel'] as const;
 const TIERS: GpuTier[] = ['budget', 'mid', 'high', 'ultra', 'halo'];
@@ -47,7 +49,7 @@ export function BayGPU({ selected, onSelect }: Props) {
 
   return (
     <BayCard
-      icon="🟢"
+      icon={<GpuIcon />}
       label="GPU"
       sublabel={selected ? `${selected.name}${!selected.confirmed ? ' ⚠ Estimated' : ''}` : undefined}
       state={state}

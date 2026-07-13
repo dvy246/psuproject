@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 // ============================================================
-// VoltForge — Animated Power Gauge Arc (SVG-based)
+// PSUCheck — Animated Power Gauge Arc (SVG-based)
 // A radial arc gauge showing recommended PSU vs rated capacity.
 // No canvas, no Chart.js — pure SVG + CSS transitions.
 // Accessible: aria-label, role="img", hidden data table.
@@ -122,22 +122,22 @@ export function PowerGaugeArc({ recommendedWattage, psuRated, verdict, 'aria-lab
         </text>
 
         <text
-          x={CX} y={CY + 10}
+          x={CX} y={CY + 3}
           text-anchor="middle"
           style={{
             fill: 'var(--color-text-tertiary)',
-            'font-size': '10px',
+            'font-size': '8.5px',
             'font-family': 'var(--font-body)',
             'text-transform': 'uppercase',
-            'letter-spacing': '0.08em',
+            'letter-spacing': '0.06em',
           }}
         >
           {hasData ? 'RECOMMENDED' : 'SELECT COMPONENTS'}
         </text>
 
         {/* Range labels */}
-        <text x="12" y="98" style="fill:var(--color-text-tertiary);font-size:9px;font-family:var(--font-mono);">{MIN_W}W</text>
-        <text x="140" y="98" style="fill:var(--color-text-tertiary);font-size:9px;font-family:var(--font-mono);">{MAX_W}W</text>
+        <text x="12" y="94" text-anchor="start" style="fill:var(--color-text-tertiary);font-size:9px;font-family:var(--font-mono);">{MIN_W}W</text>
+        <text x="168" y="94" text-anchor="end" style="fill:var(--color-text-tertiary);font-size:9px;font-family:var(--font-mono);">{MAX_W}W</text>
       </svg>
 
       {/* Screen-reader accessible data table (visually hidden) */}

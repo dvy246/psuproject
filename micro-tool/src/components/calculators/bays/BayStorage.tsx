@@ -4,6 +4,8 @@ import { BayCard } from './BayCard';
 import type { StorageConfig } from '../../../types/components';
 import componentData from '../../../data/components.json';
 
+import { StorageIcon } from './BayIcons';
+
 const ALL_STORAGE: StorageConfig[] = componentData.storage as StorageConfig[];
 
 interface Props { selected: StorageConfig[]; onSelect: (s: StorageConfig[]) => void; }
@@ -29,7 +31,7 @@ export function BayStorage({ selected, onSelect }: Props) {
     : undefined;
 
   return (
-    <BayCard icon="⚪" label="Storage" sublabel={sublabel} state={selected.length ? 'filled' : 'empty'} isOpen={isOpen} onToggle={toggle} onClear={selected.length ? clear : undefined}>
+    <BayCard icon={<StorageIcon />} label="Storage" sublabel={sublabel} state={selected.length ? 'filled' : 'empty'} isOpen={isOpen} onToggle={toggle} onClear={selected.length ? clear : undefined}>
       <p class="selector-hint">Select multiple drives. Click again to deselect.</p>
       <div class="selector-options-grid" role="listbox" aria-label="Storage options" aria-multiselectable="true">
         {ALL_STORAGE.map(s => {
