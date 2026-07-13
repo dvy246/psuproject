@@ -1,0 +1,154 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const schema = {
+  "@type": "AboutPage",
+  "name": "VoltForge Calculation Methodology",
+  "url": "https://voltforge.app/methodology",
+  "description": "Calculation methodology, formulae, and verified data standards used in the VoltForge PSU and PC Build calculator."
+};
+---
+
+<Layout
+  title="Calculation Methodology & Data Standards — VoltForge"
+  description="Learn about the formulas, constants, and data sources used to calculate PC power draw, GPU transient spikes, ATX 3.1 compliance, and 5-year TCO."
+  schema={schema}
+>
+  <div class="legal-page">
+    <div class="legal-hero">
+      <div class="container">
+        <div class="badge badge-safe" style="margin-bottom:1rem;">Documentation</div>
+        <h1>Calculation Methodology</h1>
+        <p class="legal-meta">Last updated: July 13, 2026</p>
+      </div>
+    </div>
+
+    <div class="legal-body">
+      <div class="container">
+        <div class="legal-content">
+          <p class="about-lead" style="font-size:1.1rem;color:var(--text-secondary);line-height:1.7;">
+            This page provides transparent, technical documentation of every formula, multiplier, and assumption
+            built into the VoltForge calculation engine. No black box estimations.
+          </p>
+
+          <h2>1. Sustained System Draw (Base Draw)</h2>
+          <p>
+            The base system power draw is calculated by summing the sustained power ratings (TDP/PL2) of all components:
+          </p>
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:0.8rem;margin:1rem 0;border:1px solid var(--border-subtle);">
+            Base Draw (W) = CPU PL2 + GPU TBP + RAM Typical + Storage Typical + Cooling Typical + Fans + System Overhead
+          </div>
+          <p>Where:</p>
+          <ul>
+            <li><strong>CPU PL2:</strong> For Intel CPUs, we use PL2 (Maximum Turbo Power) from Intel ARK. For AMD CPUs, we use official TDP.</li>
+            <li><strong>GPU TBP:</strong> Total Board Power (typical average draw under gaming load) from manufacturer specification and TechPowerUp databases.</li>
+            <li><strong>RAM Typical:</strong> 5W to 16W depending on DDR4/DDR5 speed and stick count.</li>
+            <li><strong>Storage:</strong> 3W to 10W per drive depending on SSD/HDD configuration.</li>
+            <li><strong>Cooling:</strong> 5W for air coolers, up to 20W for custom loops with pumps.</li>
+            <li><strong>Fans:</strong> 3W per case fan.</li>
+            <li><strong>System Overhead:</strong> 15W default for motherboard chipset and motherboard LED overheads.</li>
+          </ul>
+
+          <h2>2. Transient Power Spike Modeling</h2>
+          <p>
+            Modern graphics cards and processors draw power in extremely brief, microsecond-duration spikes
+            that exceed average limits. We model these peaks using multipliers sourced from Cybenetics PSU lab:
+          </p>
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:0.8rem;margin:1rem 0;border:1px solid var(--border-subtle);">
+            Transient Peak (W) = (CPU PL2 × 1.20) + (GPU TBP × Tier Multiplier) + Other Components
+          </div>
+          <p>GPU Tier Multipliers used:</p>
+          <ul>
+            <li><strong>Budget Tier:</strong> 1.20× (e.g., RX 6600)</li>
+            <li><strong>Mid-Range Tier:</strong> 1.35× (e.g., RTX 4070)</li>
+            <li><strong>High-End Tier:</strong> 1.50× (e.g., RTX 4080 / RTX 5070)</li>
+            <li><strong>Ultra / Halo Tier:</strong> 1.57× (e.g., RTX 5090)</li>
+          </ul>
+          <p>
+            The CPU transient multiplier is set to a constant <strong>1.20×</strong> of its PL2 limit.
+          </p>
+
+          <h2>3. ATX 3.1 & 3.0 Compliance check</h2>
+          <p>
+            Under Intel's ATX 3.1 design guide, compliant power supplies are built to tolerate <strong>200% of their rated output for up to 100 microseconds</strong>.
+            Older ATX 2.x units do not guarantee this.
+          </p>
+          <p>
+            When checking compliance, we compare the calculated <code>Transient Peak</code> with the PSU's peak output tolerance:
+          </p>
+          <ul>
+            <li><strong>ATX 3.1 / 3.0:</strong> Peak Tolerance = PSU Wattage × 2.0</li>
+            <li><strong>ATX 2.x:</strong> Peak Tolerance = PSU Wattage × 1.3</li>
+          </ul>
+          <p>
+            If the system's <code>Transient Peak</code> exceeds the PSU's <code>Peak Tolerance</code>, the build is flagged as **Dangerous**.
+          </p>
+
+          <h2>4. 5-Year TCO & Efficiency Modeling</h2>
+          <p>
+            Annual electricity cost is calculated using local electricity rates, daily usage hours, and efficiency curves:
+          </p>
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:0.8rem;margin:1rem 0;border:1px solid var(--border-subtle);">
+            Annual cost = (Base Draw / Efficiency) × Hours × 365 × Rate
+          </div>
+          <p>
+            We pull CLEAResult 80 PLUS efficiency curves at 20%, 50%, and 100% load points for each certification
+            tier (Bronze, Gold, Platinum, Titanium) to compute accurate wall-power draws depending on system load.
+          </p>
+
+          <h2>Data Sources & Citations</h2>
+          <p>
+            Every specification in our database is compiled and cross-referenced from:
+          </p>
+          <ol>
+            <li><strong>Intel Corporation:</strong> ATX 3.1 Design Guide Specification (Revision 2024).</li>
+            <li><strong>Cybenetics:</strong> PSU Efficiency & Noise Level Database, and Cybenetics Power Excursion Testing Standards.</li>
+            <li><strong>TechPowerUp:</strong> GPU Database specs and real-world oscilloscope testing summaries.</li>
+            <li><strong>NVIDIA & AMD:</strong> Official whitepapers and spec sheets for RTX and RX graphics cards.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+.legal-hero {
+  padding: 4rem 0 2rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.legal-meta {
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+.legal-body {
+  padding: 3rem 0 5rem;
+}
+.legal-content {
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.legal-content h2 {
+  font-size: 1.375rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-top: 1.5rem;
+}
+.legal-content p {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  max-width: 70ch;
+}
+.legal-content ul, .legal-content ol {
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+</style>

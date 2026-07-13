@@ -1,0 +1,208 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Build a PC: Step-by-Step Walkthrough",
+  "description": "A comprehensive, step-by-step guide for beginners on how to select components and assemble a custom desktop PC.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Prepare your workspace & tools",
+      "text": "Find a clean, flat, non-conductive surface (like a wooden table). Gather a magnetic Phillips #2 screwdriver, thermal paste, and cable ties."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Install CPU onto Motherboard",
+      "text": "Open the motherboard socket lever. Align the CPU triangles/notches with the socket, place it gently, and secure the retention lever."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Install RAM modules",
+      "text": "Consult the motherboard manual for optimal slots (usually slots 2 and 4). Open the clips, align the RAM notch, and press firmly until you hear a click."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Install M.2 NVMe SSD",
+      "text": "Remove the M.2 heatsink, insert the SSD into the slot at a 30-degree angle, press down, secure with a screw or latch, and reinstall the heatsink."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Install CPU Cooler",
+      "text": "Apply a pea-sized amount of thermal paste to the CPU center (if not pre-applied). Mount the cooler heatsink and secure it, then plug the fan into the CPU_FAN header."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Prepare Case & Install Motherboard",
+      "text": "Install case standoffs matching motherboard size. Push motherboard I/O shield into place, align the motherboard with standoffs, and secure with screws."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Mount Power Supply (PSU)",
+      "text": "Connect required modular cables first. Insert PSU into case bay, align screw holes with back of case, and tighten the four mounting screws."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Route Cables & Connect Power",
+      "text": "Route the 24-pin motherboard, 8-pin CPU, and case front panel connectors through routing grommets and plug them into their respective headers."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Install Graphics Card (GPU)",
+      "text": "Remove PCIe slot covers from case. Open motherboard PCIe slot latch. Align GPU with slot, press until clicked, secure with screws, and plug in dedicated power cables."
+    }
+  ]
+};
+---
+
+<Layout
+  title="How to Build a PC: Step-by-Step Beginner's Guide — VoltForge"
+  description="Learn how to build your own custom desktop PC with this detailed 9-step beginner's guide. Step-by-step assembly, CPU installation, thermal paste, and cable management."
+  schema={howToSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>How to Build a PC: Step-by-Step Beginner's Guide</h1>
+        <p class="guide-lead">
+          Building a PC might seem intimidating, but it is actually highly modular.
+          Think of it as LEGOs for adults with wiring. This guide walks you through
+          assembling your system safely from start to first boot.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <!-- Main Content -->
+        <main class="guide-content" id="main-content">
+          <h2>Essential Tools Checklist</h2>
+          <p>Before you begin, ensure you have the following tools nearby:</p>
+          <ul>
+            <li><strong>Phillips #2 Screwdriver:</strong> The most crucial tool. A magnetic tip is strongly recommended to avoid dropping small screws inside the case.</li>
+            <li><strong>Anti-Static Wrist Strap:</strong> Optional but useful. Alternatively, ground yourself frequently by touching the bare metal of your PC case.</li>
+            <li><strong>Thermal Paste:</strong> Often pre-applied to CPU coolers, but always good to have a backup tube (e.g., Arctic MX-6).</li>
+            <li><strong>Zip Ties / Velcro Straps:</strong> For clean cable management.</li>
+          </ul>
+
+          <h2>The 9 Assembly Steps</h2>
+          <ol class="step-list">
+            <li>
+              <h3>1. Prepare your workspace</h3>
+              <p>
+                Clean a spacious, flat surface, preferably wooden or non-conductive. Avoid carpets to prevent ESD (Electrostatic Discharge). Unbox your motherboard and place it flat on top of its cardboard box.
+              </p>
+            </li>
+            <li>
+              <h3>2. Install the CPU</h3>
+              <p>
+                Locate the CPU socket on the motherboard. Open the retention lever. Align the small gold triangle in the corner of the CPU with the triangle on the socket. Drop the CPU gently into the socket (never force it). Lower the lever to secure it.
+              </p>
+            </li>
+            <li>
+              <h3>3. Install the RAM</h3>
+              <p>
+                Open the clips on the motherboard RAM slots. Align the notch on the memory stick with the slot key. Push down firmly on both sides until the clips snap shut with a click. For dual-channel setups, install in slots 2 and 4.
+              </p>
+            </li>
+            <li>
+              <h3>4. Install the M.2 SSD</h3>
+              <p>
+                Locate the M.2 slot under the CPU. Remove the heat sink (if equipped). Insert your M.2 NVMe SSD at a 30-degree angle, press down, and secure it with the motherboards latch or screw. Reattach the heatsink.
+              </p>
+            </li>
+            <li>
+              <h3>5. Mount the CPU Cooler</h3>
+              <p>
+                If your cooler has pre-applied thermal paste, you can mount it directly. Otherwise, apply a pea-sized dot of paste in the center of the CPU lid. Secure the cooler bracket according to manufacturer instructions and plug the fan connector into the <code>CPU_FAN</code> header.
+              </p>
+            </li>
+            <li>
+              <h3>6. Place the Motherboard in the Case</h3>
+              <p>
+                Install standoffs inside the case corresponding to motherboard form factor (ATX, Micro-ATX, etc.). Install the I/O shield in the rear opening (if not pre-integrated). Lay the case flat, align the motherboard ports with the I/O shield, place it onto the standoffs, and secure it with screws.
+              </p>
+            </li>
+            <li>
+              <h3>7. Mount the PSU (Power Supply)</h3>
+              <p>
+                Insert the power supply into the designated basement area of the case, usually with the intake fan facing downward to pull fresh air. Secure it with the four coarse screws through the rear of the case. Connect required modular cables before sliding the PSU inside.
+              </p>
+            </li>
+            <li>
+              <h3>8. Connect System Cables</h3>
+              <p>
+                Route and connect all power cables:
+              </p>
+              <ul>
+                <li>24-pin Motherboard Power</li>
+                <li>8-pin CPU/EPS Power</li>
+                <li>Front Panel IO Header (Power switch, reset, LEDs)</li>
+                <li>Case fans (plug into <code>SYS_FAN</code> headers)</li>
+              </ul>
+            </li>
+            <li>
+              <h3>9. Install the GPU & Power It</h3>
+              <p>
+                Locate the top PCIe slot. Remove matching expansion covers on the case. Push open the slot latch, insert the GPU firmly until it clicks, and secure the bracket with screws.
+              </p>
+              <div class="important-warning">
+                <strong>⚠ Cable Safety Alert:</strong> Connect dedicated power cables from the PSU. For high-draw GPUs (like the RTX 5080 or 5090), do not daisy-chain. Use separate, dedicated PCIe lines or a native 12V-2x6 cable.
+              </div>
+            </li>
+          </ol>
+
+          <h2>First Boot & OS Setup</h2>
+          <p>
+            Plug the power cord into the wall, switch on the PSU, and press the case power button. If the fans spin up and you POST (Power On Self Test) to BIOS, congratulations! Connect a USB drive containing Windows installation media to install your OS.
+          </p>
+
+          <div style="margin-top:3rem;">
+            <a href="/pc-builder" class="btn btn-primary">Plan your Build Cost now</a>
+          </div>
+        </main>
+
+        <!-- Sidebar / Cross-links -->
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide</a></li>
+              <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
+              <li><a href="/guides/psu-efficiency-guide">80+ Efficiency Guide</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.step-list { list-style:none; padding: 0; display:flex; flex-direction:column; gap: 2rem; }
+.step-list li h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+.important-warning { background: var(--status-danger-bg); border-left: 4px solid var(--status-danger); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

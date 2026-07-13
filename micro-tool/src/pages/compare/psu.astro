@@ -1,0 +1,123 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { PsuComparer } from '../../components/calculators/PsuComparer';
+
+const schema = {
+  "@type": "WebApplication",
+  "name": "VoltForge PSU Comparer",
+  "url": "https://voltforge.app/compare/psu",
+  "applicationCategory": "UtilitiesApplication",
+  "description": "Compare two PC power supplies side-by-side. Analyze modularity, efficiency, ATX 3.1 compliance, 12V-2x6 cable support, and price differences.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+---
+
+<Layout
+  title="Compare PC Power Supplies: Side-by-Side PSU Spec Comparison — VoltForge"
+  description="Select and compare two power supplies side-by-side. Analyze ATX standard differences (2.x vs 3.1), modularity configurations, native cables, and estimated pricing."
+  schema={schema}
+>
+  <section class="calc-hero" aria-labelledby="compare-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">›</span>
+            <span>Compare</span>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">PSUs</span>
+          </div>
+          <h1 id="compare-hero-heading" class="calc-h1">
+            Compare Power Supplies
+          </h1>
+          <p class="calc-subtitle">
+            Select two power supplies from our database to compare specifications, standards,
+            efficiency ratings, noise levels, and estimated retail prices side-by-side.
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Comparer features">
+          <span class="badge badge-safe">⚖ Side-by-Side Specs</span>
+          <span class="badge badge-safe">⚡ ATX 3.1 Check</span>
+          <span class="badge badge-safe">🔌 12V-2x6 Audit</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparer Section -->
+  <section class="compare-section">
+    <div class="container">
+      <!-- Preact Island -->
+      <PsuComparer client:load />
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+.compare-section {
+  padding: 4rem 0 6rem;
+  background: var(--bg-primary);
+}
+.compare-selectors-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .compare-selectors-grid {
+    grid-template-columns: 1fr auto 1fr;
+  }
+}
+.compare-selector-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.compare-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.compare-dropdown {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-md);
+  min-height: 44px;
+}
+.compare-vs-badge {
+  text-align: center;
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: var(--text-tertiary);
+  padding-top: 1rem;
+}
+.compare-header-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.compare-value {
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+.compare-price {
+  font-weight: 800;
+  color: var(--accent-primary);
+}
+.compare-highlight-green {
+  color: var(--status-safe) !important;
+  font-weight: 600;
+}
+.compare-highlight-red {
+  color: var(--status-danger) !important;
+}
+.text-capitalize {
+  text-transform: capitalize;
+}
+</style>

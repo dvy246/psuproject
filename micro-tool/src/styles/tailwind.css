@@ -1,0 +1,462 @@
+/* ============================================================
+   VoltForge — Tailwind v4 CSS Entry Point
+   @import "tailwindcss" — v4 syntax, NO @tailwind directives
+   ============================================================ */
+
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN TOKENS — @theme generates Tailwind utilities
+   Engineering Playbook: use @theme for tokens, :root for
+   plain CSS vars that should NOT generate utility classes.
+   ============================================================ */
+
+@theme {
+  /* --- Font families --- */
+  --font-display: "Fira Code", "JetBrains Mono", ui-monospace, monospace;
+  --font-body:    "Fira Sans", "Inter", system-ui, sans-serif;
+  --font-mono:    "Fira Code", "JetBrains Mono", ui-monospace, monospace;
+
+  /* --- Color palette: Dark-first, Linear/Vercel design language --- */
+
+  /* Canvas */
+  --color-canvas:          oklch(9% 0.006 264);    /* slate-950 equivalent */
+  --color-surface:         oklch(12% 0.009 264);   /* slate-900 */
+  --color-surface-raised:  oklch(15% 0.010 264);   /* slate-800/60 */
+  --color-surface-overlay: oklch(18% 0.012 264);   /* slate-700/50 */
+
+  /* Borders */
+  --color-border:          oklch(25% 0.012 264);   /* slate-700/80 */
+  --color-border-subtle:   oklch(20% 0.009 264);   /* slate-800/60 */
+  --color-border-accent:   oklch(70% 0.18 195 / 0.35);
+
+  /* Text */
+  --color-text-primary:    oklch(95% 0.004 264);   /* near-white */
+  --color-text-secondary:  oklch(65% 0.010 264);   /* slate-400 */
+  --color-text-tertiary:   oklch(42% 0.009 264);   /* slate-500/600 */
+  --color-text-inverse:    oklch(9%  0.006 264);
+
+  /* Accent: Electric cyan → violet (power identity) */
+  --color-accent-cyan:     oklch(85% 0.18 195);    /* #00e5ff equivalent */
+  --color-accent-violet:   oklch(68% 0.20 295);    /* #7c4dff equivalent */
+
+  /* Status — WCAG AA compliant on dark canvas */
+  --color-safe:            oklch(75% 0.18 152);    /* emerald-400 */
+  --color-safe-bg:         oklch(75% 0.18 152 / 0.1);
+  --color-safe-border:     oklch(75% 0.18 152 / 0.25);
+
+  --color-warning:         oklch(80% 0.16 65);     /* amber-400 */
+  --color-warning-bg:      oklch(80% 0.16 65 / 0.1);
+  --color-warning-border:  oklch(80% 0.16 65 / 0.25);
+
+  --color-danger:          oklch(68% 0.22 15);     /* rose-500 */
+  --color-danger-bg:       oklch(68% 0.22 15 / 0.1);
+  --color-danger-border:   oklch(68% 0.22 15 / 0.25);
+
+  /* --- Spacing: 8dp rhythm, dashboard density --- */
+  --spacing-0:   0px;
+  --spacing-1:   4px;
+  --spacing-2:   8px;
+  --spacing-3:   12px;
+  --spacing-4:   16px;
+  --spacing-5:   20px;
+  --spacing-6:   24px;
+  --spacing-8:   32px;
+  --spacing-10:  40px;
+  --spacing-12:  48px;
+  --spacing-16:  64px;
+  --spacing-20:  80px;
+
+  /* --- Radii --- */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm:   0 1px 2px oklch(0% 0 0 / 0.5);
+  --shadow-md:   0 4px 12px oklch(0% 0 0 / 0.6);
+  --shadow-lg:   0 8px 32px oklch(0% 0 0 / 0.7);
+  --shadow-glow: 0 0 20px oklch(85% 0.18 195 / 0.15);
+  --shadow-glow-danger: 0 0 20px oklch(68% 0.22 15 / 0.3);
+
+  /* --- Animation durations --- */
+  --duration-fast:   150ms;
+  --duration-normal: 250ms;
+  --duration-slow:   400ms;
+
+  /* --- Z-index scale --- */
+  --z-base:     0;
+  --z-elevated: 10;
+  --z-sticky:   100;
+  --z-drawer:   200;
+  --z-modal:    1000;
+  --z-toast:    2000;
+}
+
+/* ============================================================
+   PLAIN CSS VARIABLES — :root (not @theme)
+   These are used by JS/Preact signals but do NOT need
+   Tailwind utilities generated from them.
+   ============================================================ */
+:root {
+  /* Gradients — can't express in @theme */
+  --gradient-accent: linear-gradient(135deg,
+    oklch(85% 0.18 195) 0%,
+    oklch(68% 0.20 295) 100%);
+  --gradient-accent-text: linear-gradient(135deg,
+    oklch(85% 0.18 195) 0%,
+    oklch(80% 0.16 270) 50%,
+    oklch(68% 0.20 295) 100%);
+  --gradient-canvas: linear-gradient(180deg,
+    oklch(9% 0.006 264) 0%,
+    oklch(12% 0.009 264) 100%);
+  --gradient-surface-shine: linear-gradient(135deg,
+    oklch(15% 0.010 264) 0%,
+    oklch(18% 0.012 264) 100%);
+
+  color-scheme: dark;
+}
+
+/* Light mode overrides */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* 
+    Anti-pattern guard: NEVER use `transition: all`
+    Always specify explicit properties for compositor hygiene.
+    See: INP Protection in user spec.
+  */
+}
+
+html {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-text-primary);
+  min-height: 100dvh;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: var(--z-toast);
+  background: var(--color-accent-cyan);
+  color: var(--color-text-inverse);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  transition-property: top;
+  transition-duration: var(--duration-fast);
+}
+.skip-link:focus { top: 1rem; }
+
+/* Focus ring — never stripped */
+:focus-visible {
+  outline: 2px solid var(--color-accent-cyan);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Tabular nums for all data values */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   CUSTOM UTILITIES — @utility (v4 pattern, not @layer utilities)
+   ============================================================ */
+
+@utility gradient-text {
+  background: var(--gradient-accent-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility gradient-border-wrap {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: var(--gradient-accent);
+    z-index: -1;
+    opacity: 0.4;
+    transition-property: opacity;
+    transition-duration: var(--duration-normal);
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+
+@utility glow-cyan {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility glow-danger {
+  box-shadow: var(--shadow-glow-danger);
+}
+
+/* Compositor-safe transitions — explicit properties only */
+@utility transition-card {
+  transition-property: transform, box-shadow, border-color;
+  transition-duration: var(--duration-normal);
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@utility transition-color {
+  transition-property: color, background-color, border-color, opacity;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: ease-out;
+}
+
+/* ============================================================
+   COMPONENT CLASSES — small, stable, override-friendly
+   ============================================================ */
+
+@layer components {
+  /* --- Status badges (color + text, never color-only) --- */
+  .badge-safe {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide;
+    background: var(--color-safe-bg);
+    color: var(--color-safe);
+    border: 1px solid var(--color-safe-border);
+  }
+  .badge-warning {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide;
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning-border);
+  }
+  .badge-danger {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide;
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger-border);
+  }
+
+  /* --- Component bay card --- */
+  .bay-card {
+    @apply relative rounded-lg border p-4 cursor-pointer select-none;
+    background: var(--color-surface);
+    border-color: var(--color-border-subtle);
+    transition-property: transform, box-shadow, border-color, background-color;
+    transition-duration: var(--duration-normal);
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .bay-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-md);
+  }
+  .bay-card:active { transform: translateY(0); }
+  .bay-card:focus-visible {
+    outline: 2px solid var(--color-accent-cyan);
+    outline-offset: 2px;
+  }
+
+  /* Bay states via left accent border */
+  .bay-card--empty  { border-left: 3px solid var(--color-border); }
+  .bay-card--filled { border-left: 3px solid var(--color-safe); }
+  .bay-card--warning { border-left: 3px solid var(--color-warning); }
+  .bay-card--danger  { border-left: 3px solid var(--color-danger); }
+
+  /* Active/selected hardware option card */
+  .hw-option {
+    @apply relative rounded-lg border p-3 cursor-pointer text-left;
+    background: var(--color-surface);
+    border-color: var(--color-border-subtle);
+    transition-property: transform, border-color, box-shadow, background-color;
+    transition-duration: var(--duration-fast);
+  }
+  .hw-option:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-accent-cyan);
+    box-shadow: 0 0 12px oklch(85% 0.18 195 / 0.12);
+  }
+  .hw-option.selected {
+    border-color: var(--color-accent-cyan);
+    background: oklch(85% 0.18 195 / 0.05);
+    box-shadow: 0 0 16px oklch(85% 0.18 195 / 0.15);
+  }
+  .hw-option:focus-visible {
+    outline: 2px solid var(--color-accent-cyan);
+    outline-offset: 2px;
+  }
+
+  /* HUD metric cards */
+  .hud-metric {
+    @apply rounded-lg p-3 flex flex-col gap-1;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+  }
+
+  /* Warning/alert container — fixed min-height prevents layout shift */
+  .cable-alert {
+    @apply rounded-lg p-4;
+    min-height: 80px; /* INP protection: fixed height prevents CLS on appear */
+    border: 2px solid var(--color-danger);
+    background: var(--color-danger-bg);
+    transition-property: opacity, transform;
+    transition-duration: var(--duration-normal);
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cable-alert:not(.visible) {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+  }
+  .cable-alert.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* Progress bar */
+  .progress-track {
+    @apply w-full rounded-full overflow-hidden;
+    height: 6px;
+    background: var(--color-surface-overlay);
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: var(--gradient-accent);
+    transition-property: width;
+    transition-duration: var(--duration-slow);
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+/* ============================================================
+   WAVEFORM VISUALIZER
+   ============================================================ */
+.waveform-spike-line {
+  animation: spike-throb 2.5s ease-in-out infinite;
+}
+@keyframes spike-throb {
+  0%, 100% { filter: drop-shadow(0 0 3px oklch(68% 0.22 15 / 0.6)); }
+  50%       { filter: drop-shadow(0 0 10px oklch(68% 0.22 15 / 1)); }
+}
+
+/* Pulsing ring on cable danger card */
+.cable-pulse-ring {
+  animation: cable-ring 2s ease-in-out infinite;
+}
+@keyframes cable-ring {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50%       { opacity: 0.35; transform: scale(1.015); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waveform-spike-line,
+  .cable-pulse-ring {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   SITE HEADER
+   ============================================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  border-bottom: 1px solid var(--color-border-subtle);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: oklch(9% 0.006 264 / 0.85);
+}
+
+/* ============================================================
+   MOBILE BOTTOM DRAWER
+   ============================================================ */
+.hud-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-drawer);
+  border-top: 1px solid var(--color-border);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  background: var(--color-surface);
+  /* Transition only transform — compositor hygiene */
+  transition-property: transform;
+  transition-duration: var(--duration-slow);
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Default: partially peeking at bottom */
+  transform: translateY(calc(100% - 72px));
+}
+.hud-drawer.open {
+  transform: translateY(0);
+}
+/* Drawer handle */
+.hud-drawer-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px; /* Min 44px touch target */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.hud-drawer-handle::before {
+  content: '';
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-border);
+}
+
+/* ============================================================
+   GRADIENT ARC GAUGE (SVG-based)
+   ============================================================ */
+.gauge-value-text {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+}
+
+/* ============================================================
+   SELECTOR DRAWER EXPANSION
+   ============================================================ */
+.selector-tray {
+  overflow: hidden;
+  /* Only animate max-height for expansion — no height animation (CLS risk) */
+  transition-property: max-height, opacity;
+  transition-duration: var(--duration-slow);
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 0;
+  opacity: 0;
+}
+.selector-tray.open {
+  max-height: 480px;
+  opacity: 1;
+}

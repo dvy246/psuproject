@@ -1,0 +1,29 @@
+{
+  "version": "2026-07-13",
+  "items": [
+    { "id": "asus-rog-x870e-hero", "name": "ASUS ROG Crosshair X870E Hero", "brand": "ASUS", "socket": "AM5", "formFactor": "ATX", "chipset": "X870E", "price": 699 },
+    { "id": "msi-meg-x870e-ace", "name": "MSI MEG X870E Ace", "brand": "MSI", "socket": "AM5", "formFactor": "ATX", "chipset": "X870E", "price": 599 },
+    { "id": "gigabyte-x870e-aorus-master", "name": "Gigabyte X870E AORUS Master", "brand": "Gigabyte", "socket": "AM5", "formFactor": "ATX", "chipset": "X870E", "price": 549 },
+    { "id": "asus-rog-x870-hero", "name": "ASUS ROG Strix X870-F Gaming WiFi", "brand": "ASUS", "socket": "AM5", "formFactor": "ATX", "chipset": "X870", "price": 399 },
+    { "id": "msi-mpg-x870e-carbon", "name": "MSI MPG X870E Carbon WiFi", "brand": "MSI", "socket": "AM5", "formFactor": "ATX", "chipset": "X870E", "price": 479 },
+    { "id": "asrock-x870e-taichi", "name": "ASRock X870E Taichi", "brand": "ASRock", "socket": "AM5", "formFactor": "ATX", "chipset": "X870E", "price": 549 },
+    { "id": "gigabyte-b850-aorus-elite", "name": "Gigabyte B850 AORUS Elite WiFi", "brand": "Gigabyte", "socket": "AM5", "formFactor": "ATX", "chipset": "B850", "price": 229 },
+    { "id": "msi-mag-b850-tomahawk", "name": "MSI MAG B850 Tomahawk WiFi", "brand": "MSI", "socket": "AM5", "formFactor": "ATX", "chipset": "B850", "price": 219 },
+    { "id": "asus-tuf-b850-plus", "name": "ASUS TUF Gaming B850-PLUS WiFi", "brand": "ASUS", "socket": "AM5", "formFactor": "ATX", "chipset": "B850", "price": 229 },
+    { "id": "asrock-b850m-pro", "name": "ASRock B850M Pro RS WiFi", "brand": "ASRock", "socket": "AM5", "formFactor": "Micro-ATX", "chipset": "B850", "price": 159 },
+    { "id": "asus-rog-z890-hero", "name": "ASUS ROG Maximus Z890 Hero", "brand": "ASUS", "socket": "LGA1851", "formFactor": "ATX", "chipset": "Z890", "price": 699 },
+    { "id": "msi-meg-z890-ace", "name": "MSI MEG Z890 ACE", "brand": "MSI", "socket": "LGA1851", "formFactor": "ATX", "chipset": "Z890", "price": 599 },
+    { "id": "gigabyte-z890-aorus-master", "name": "Gigabyte Z890 AORUS Master", "brand": "Gigabyte", "socket": "LGA1851", "formFactor": "ATX", "chipset": "Z890", "price": 549 },
+    { "id": "asus-rog-z890-a", "name": "ASUS ROG Strix Z890-A Gaming WiFi", "brand": "ASUS", "socket": "LGA1851", "formFactor": "ATX", "chipset": "Z890", "price": 399 },
+    { "id": "msi-mpg-z890-carbon", "name": "MSI MPG Z890 Carbon WiFi", "brand": "MSI", "socket": "LGA1851", "formFactor": "ATX", "chipset": "Z890", "price": 449 },
+    { "id": "gigabyte-b860-aorus-elite", "name": "Gigabyte B860 AORUS Elite WiFi", "brand": "Gigabyte", "socket": "LGA1851", "formFactor": "ATX", "chipset": "B860", "price": 219 },
+    { "id": "msi-mag-b860-tomahawk", "name": "MSI MAG B860 Tomahawk WiFi", "brand": "MSI", "socket": "LGA1851", "formFactor": "ATX", "chipset": "B860", "price": 209 },
+    { "id": "asus-tuf-b860-plus", "name": "ASUS TUF Gaming B860-PLUS WiFi", "brand": "ASUS", "socket": "LGA1851", "formFactor": "ATX", "chipset": "B860", "price": 219 },
+    { "id": "asus-rog-z790-hero", "name": "ASUS ROG Maximus Z790 Hero", "brand": "ASUS", "socket": "LGA1700", "formFactor": "ATX", "chipset": "Z790", "price": 549 },
+    { "id": "msi-mpg-z790-edge", "name": "MSI MPG Z790 Edge WiFi", "brand": "MSI", "socket": "LGA1700", "formFactor": "ATX", "chipset": "Z790", "price": 329 },
+    { "id": "gigabyte-z790-aorus-elite", "name": "Gigabyte Z790 AORUS Elite AX", "brand": "Gigabyte", "socket": "LGA1700", "formFactor": "ATX", "chipset": "Z790", "price": 279 },
+    { "id": "msi-pro-b760m-a", "name": "MSI PRO B760M-A WiFi", "brand": "MSI", "socket": "LGA1700", "formFactor": "Micro-ATX", "chipset": "B760", "price": 139 },
+    { "id": "gigabyte-b760m-aorus-elite", "name": "Gigabyte B760M AORUS Elite AX", "brand": "Gigabyte", "socket": "LGA1700", "formFactor": "Micro-ATX", "chipset": "B760", "price": 159 },
+    { "id": "asrock-b650m-pro", "name": "ASRock B650M Pro RS WiFi", "brand": "ASRock", "socket": "AM5", "formFactor": "Micro-ATX", "chipset": "B650", "price": 139 }
+  ]
+}

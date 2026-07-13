@@ -1,0 +1,32 @@
+{
+  "version": "2026-07-13",
+  "sources": {
+    "amd": "AMD official product pages (amd.com/en/products/processors)",
+    "intel": "Intel ARK (ark.intel.com)"
+  },
+  "items": [
+    { "id": "ryzen-9-9950x", "name": "AMD Ryzen 9 9950X", "brand": "AMD", "socket": "AM5", "gen": "Zen 5", "cores": 16, "tdp": 170, "tdpSustained": 170, "price": 549, "confirmed": true },
+    { "id": "ryzen-9-9900x", "name": "AMD Ryzen 9 9900X", "brand": "AMD", "socket": "AM5", "gen": "Zen 5", "cores": 12, "tdp": 120, "tdpSustained": 120, "price": 449, "confirmed": true },
+    { "id": "ryzen-7-9800x3d", "name": "AMD Ryzen 7 9800X3D", "brand": "AMD", "socket": "AM5", "gen": "Zen 5 3D", "cores": 8, "tdp": 120, "tdpSustained": 120, "price": 479, "confirmed": true },
+    { "id": "ryzen-7-9700x", "name": "AMD Ryzen 7 9700X", "brand": "AMD", "socket": "AM5", "gen": "Zen 5", "cores": 8, "tdp": 65, "tdpSustained": 65, "price": 299, "confirmed": true },
+    { "id": "ryzen-5-9600x", "name": "AMD Ryzen 5 9600X", "brand": "AMD", "socket": "AM5", "gen": "Zen 5", "cores": 6, "tdp": 65, "tdpSustained": 65, "price": 229, "confirmed": true },
+    { "id": "ryzen-9-7950x", "name": "AMD Ryzen 9 7950X", "brand": "AMD", "socket": "AM5", "gen": "Zen 4", "cores": 16, "tdp": 170, "tdpSustained": 170, "price": 449, "confirmed": true },
+    { "id": "ryzen-9-7900x", "name": "AMD Ryzen 9 7900X", "brand": "AMD", "socket": "AM5", "gen": "Zen 4", "cores": 12, "tdp": 170, "tdpSustained": 170, "price": 349, "confirmed": true },
+    { "id": "ryzen-7-7800x3d", "name": "AMD Ryzen 7 7800X3D", "brand": "AMD", "socket": "AM5", "gen": "Zen 4 3D", "cores": 8, "tdp": 120, "tdpSustained": 120, "price": 349, "confirmed": true },
+    { "id": "ryzen-7-7700x", "name": "AMD Ryzen 7 7700X", "brand": "AMD", "socket": "AM5", "gen": "Zen 4", "cores": 8, "tdp": 105, "tdpSustained": 105, "price": 249, "confirmed": true },
+    { "id": "ryzen-5-7600x", "name": "AMD Ryzen 5 7600X", "brand": "AMD", "socket": "AM5", "gen": "Zen 4", "cores": 6, "tdp": 105, "tdpSustained": 105, "price": 199, "confirmed": true },
+    { "id": "ryzen-5-7600", "name": "AMD Ryzen 5 7600", "brand": "AMD", "socket": "AM5", "gen": "Zen 4", "cores": 6, "tdp": 65, "tdpSustained": 65, "price": 179, "confirmed": true },
+    { "id": "core-ultra-9-285k", "name": "Intel Core Ultra 9 285K", "brand": "Intel", "socket": "LGA1851", "gen": "Arrow Lake", "cores": 24, "tdp": 125, "tdpSustained": 250, "price": 589, "confirmed": true },
+    { "id": "core-ultra-7-265k", "name": "Intel Core Ultra 7 265K", "brand": "Intel", "socket": "LGA1851", "gen": "Arrow Lake", "cores": 20, "tdp": 125, "tdpSustained": 250, "price": 394, "confirmed": true },
+    { "id": "core-ultra-7-265kf", "name": "Intel Core Ultra 7 265KF", "brand": "Intel", "socket": "LGA1851", "gen": "Arrow Lake", "cores": 20, "tdp": 125, "tdpSustained": 250, "price": 364, "confirmed": true },
+    { "id": "core-ultra-5-245k", "name": "Intel Core Ultra 5 245K", "brand": "Intel", "socket": "LGA1851", "gen": "Arrow Lake", "cores": 14, "tdp": 125, "tdpSustained": 159, "price": 309, "confirmed": true },
+    { "id": "core-ultra-5-245kf", "name": "Intel Core Ultra 5 245KF", "brand": "Intel", "socket": "LGA1851", "gen": "Arrow Lake", "cores": 14, "tdp": 125, "tdpSustained": 159, "price": 279, "confirmed": true },
+    { "id": "core-i9-14900k", "name": "Intel Core i9-14900K", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake Refresh", "cores": 24, "tdp": 125, "tdpSustained": 253, "price": 419, "confirmed": true },
+    { "id": "core-i7-14700k", "name": "Intel Core i7-14700K", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake Refresh", "cores": 20, "tdp": 125, "tdpSustained": 253, "price": 319, "confirmed": true },
+    { "id": "core-i5-14600k", "name": "Intel Core i5-14600K", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake Refresh", "cores": 14, "tdp": 125, "tdpSustained": 181, "price": 249, "confirmed": true },
+    { "id": "core-i5-14400f", "name": "Intel Core i5-14400F", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake Refresh", "cores": 10, "tdp": 65, "tdpSustained": 148, "price": 159, "confirmed": true },
+    { "id": "core-i3-14100f", "name": "Intel Core i3-14100F", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake Refresh", "cores": 4, "tdp": 58, "tdpSustained": 110, "price": 99, "confirmed": true },
+    { "id": "ryzen-9-9950x3d", "name": "AMD Ryzen 9 9950X3D", "brand": "AMD", "socket": "AM5", "gen": "Zen 5 3D", "cores": 16, "tdp": 170, "tdpSustained": 170, "price": 599, "confirmed": true },
+    { "id": "ryzen-9-9900x3d", "name": "AMD Ryzen 9 9900X3D", "brand": "AMD", "socket": "AM5", "gen": "Zen 5 3D", "cores": 12, "tdp": 120, "tdpSustained": 120, "price": 499, "confirmed": true }
+  ]
+}

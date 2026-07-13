@@ -1,0 +1,839 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const websiteSchema = {
+  "@type": "WebApplication",
+  "name": "VoltForge PC PSU Calculator",
+  "url": "https://voltforge.app",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": "Free PC power supply calculator and build cost estimator. Calculates transient power spikes, ATX 3.1 compliance, per-rail analysis, and 5-year TCO.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "PSU wattage recommendation with transient spike modeling",
+    "ATX 3.1 compliance checker",
+    "PC build cost estimator with pie chart",
+    "5-year total cost of ownership calculator",
+    "Cable-Melt Prevention Auditor",
+    "Per-rail current analysis"
+  ]
+};
+
+const faqSchema = {
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much PSU wattage do I need for my PC build?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The PSU wattage you need depends on your CPU and GPU power draw plus a safety buffer. A modern RTX 5080 + Ryzen 7 9800X3D system needs at minimum 850W, accounting for the RTX 5080's 540W transient peak plus CPU and other components. VoltForge calculates this precisely using published Cybenetics transient multipliers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is ATX 3.1 and do I need it?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ATX 3.1 is the current power supply standard designed to handle modern GPU transient power spikes of up to 200% of rated wattage for 100 microseconds. It also introduces the 12V-2x6 connector (successor to 12VHPWR) with improved safety. For RTX 5090, 5080, or other high-end GPUs, an ATX 3.1 PSU is strongly recommended."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does my GPU need more than its rated TDP from the PSU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Modern GPUs draw significantly more power in microsecond transient spikes than their rated TBP (Total Board Power). The RTX 5090, for example, is rated at 575W but can spike to 900W+ for sub-millisecond durations. A PSU that can only deliver 575W may trip its over-current protection during these spikes, causing system crashes or shutdowns."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="VoltForge — PC PSU Calculator & Build Cost Estimator"
+  description="Free PC power supply calculator with transient spike analysis, ATX 3.1 compliance checker, build cost estimator, and 5-year TCO. Unbiased recommendations based on real Cybenetics data."
+  schema={[websiteSchema, faqSchema]}
+>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="hero-grid"></div>
+      <div class="hero-glow hero-glow-1"></div>
+      <div class="hero-glow hero-glow-2"></div>
+    </div>
+
+    <div class="container hero-inner">
+      <div class="hero-badge">
+        <span class="badge badge-safe">⚡ Free · Independent · No Manufacturer Bias</span>
+      </div>
+
+      <h1 id="hero-heading" class="hero-h1">
+        Know Exactly What<br/>
+        <span class="gradient-text">Your PC Needs</span>
+      </h1>
+
+      <p class="hero-sub">
+        The only calculator that models real-world transient power spikes, ATX&nbsp;3.1 compliance,
+        and 5-year electricity costs — not just a simple TDP sum.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="/psu-calculator" class="btn btn-primary" id="cta-psu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          PSU Calculator
+        </a>
+        <a href="/pc-builder" class="btn btn-secondary" id="cta-builder">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Build Cost Calculator
+        </a>
+      </div>
+
+      <!-- Live stat counters -->
+      <div class="hero-stats" aria-label="Calculator statistics">
+        <div class="hero-stat">
+          <span class="hero-stat-num tabular-nums" id="stat-cpus">23</span>
+          <span class="hero-stat-label">Modern CPUs</span>
+        </div>
+        <div class="hero-stat-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num tabular-nums" id="stat-gpus">25</span>
+          <span class="hero-stat-label">Modern GPUs</span>
+        </div>
+        <div class="hero-stat-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num tabular-nums" id="stat-psus">35</span>
+          <span class="hero-stat-label">PSU Models</span>
+        </div>
+        <div class="hero-stat-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num tabular-nums">7,440+</span>
+          <span class="hero-stat-label">Oracle Pages</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COMPETITOR GAP VISUAL ===== -->
+  <section class="gap-section" aria-labelledby="gap-heading">
+    <div class="container">
+      <div class="section-eyebrow">Why VoltForge?</div>
+      <h2 id="gap-heading">Every other tool misses at least two pillars</h2>
+      <p style="max-width:58ch;margin-top:0.75rem;">
+        PCPartPicker gives prices but no PSU depth. TechSearchers gives PSU depth but no build cost.
+        No manufacturer tool is unbiased. VoltForge is the only tool combining all three.
+      </p>
+
+      <div class="comparison-table-wrap" role="region" aria-label="Competitor comparison table">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th scope="col">Tool</th>
+              <th scope="col">Build Cost</th>
+              <th scope="col">PSU Depth</th>
+              <th scope="col">Guides</th>
+              <th scope="col">Unbiased</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PCPartPicker</td>
+              <td class="cell-partial">Partial</td>
+              <td class="cell-no">Basic TDP only</td>
+              <td class="cell-no">None</td>
+              <td class="cell-yes">✓</td>
+            </tr>
+            <tr>
+              <td>TechSearchers</td>
+              <td class="cell-no">None</td>
+              <td class="cell-yes">✓ Excellent</td>
+              <td class="cell-partial">Some</td>
+              <td class="cell-yes">✓</td>
+            </tr>
+            <tr>
+              <td>Manufacturer Tools</td>
+              <td class="cell-no">None</td>
+              <td class="cell-partial">Biased</td>
+              <td class="cell-no">None</td>
+              <td class="cell-no">Brand-locked</td>
+            </tr>
+            <tr class="row-voltforge">
+              <td><strong>⚡ VoltForge</strong></td>
+              <td class="cell-yes">✓ Full + Chart</td>
+              <td class="cell-yes">✓ Transients + ATX 3.1</td>
+              <td class="cell-yes">✓ 6 Guides</td>
+              <td class="cell-yes">✓ Always</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== THREE PILLARS ===== -->
+  <section class="pillars-section" aria-labelledby="pillars-heading">
+    <div class="container">
+      <div class="section-eyebrow">What We Calculate</div>
+      <h2 id="pillars-heading">Three tools. One place.</h2>
+
+      <div class="pillars-grid">
+        <a href="/psu-calculator" class="pillar-card gradient-border" id="pillar-psu">
+          <div class="pillar-icon" aria-hidden="true">⚡</div>
+          <h3>PSU Deep Analysis</h3>
+          <p>
+            Goes beyond TDP sum. Models real-world transient spikes using Cybenetics-sourced
+            multipliers, checks ATX&nbsp;3.1 compliance, audits cable requirements, and calculates
+            5-year electricity costs.
+          </p>
+          <ul class="pillar-features">
+            <li>Transient spike modeling (1.20× – 1.57× TBP)</li>
+            <li>ATX 3.1 / 3.0 / 2.x compliance badge</li>
+            <li>12V-2x6 cable audit for RTX&nbsp;50-series</li>
+            <li>Per-rail current (+12V, +5V, +3.3V)</li>
+            <li>5-year TCO comparison across efficiency tiers</li>
+          </ul>
+          <span class="pillar-cta">Open PSU Calculator →</span>
+        </a>
+
+        <a href="/pc-builder" class="pillar-card gradient-border" id="pillar-builder">
+          <div class="pillar-icon" aria-hidden="true">🖥️</div>
+          <h3>Build Cost Estimator</h3>
+          <p>
+            Select your components and get an instant total cost with pie chart breakdown,
+            per-component percentage allocation, budget advice, and optimization tips.
+            All with direct affiliate links.
+          </p>
+          <ul class="pillar-features">
+            <li>23 CPUs × 25 GPUs × 24 motherboards in database</li>
+            <li>Pie chart with budget allocation advice</li>
+            <li>"Save $X by choosing Y instead" tips</li>
+            <li>Tax rate and assembly fee controls</li>
+            <li>Shareable build URL</li>
+          </ul>
+          <span class="pillar-cta">Open PC Builder →</span>
+        </a>
+
+        <a href="/guides/how-to-build-a-pc" class="pillar-card gradient-border" id="pillar-guides">
+          <div class="pillar-icon" aria-hidden="true">📖</div>
+          <h3>Planning Guides</h3>
+          <p>
+            Six in-depth guides covering every stage of the PC building process — from understanding
+            ATX standards to allocating a $1,500 budget. Cross-linked with calculators throughout.
+          </p>
+          <ul class="pillar-features">
+            <li>How to Build a PC — 12-step walkthrough</li>
+            <li>ATX 3.1 Guide — connectors, standards, compatibility</li>
+            <li>PSU Sizing Guide — debunking wattage myths</li>
+            <li>80+ Efficiency Guide — which tier is worth it</li>
+            <li>PC Budget Guide — $500 to $2,500 breakdowns</li>
+          </ul>
+          <span class="pillar-cta">Read the Guides →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== UNIQUE FEATURES SHOWCASE ===== -->
+  <section class="features-section" aria-labelledby="features-heading">
+    <div class="container">
+      <div class="section-eyebrow">Unique to VoltForge</div>
+      <h2 id="features-heading">Visuals no other tool shows you</h2>
+
+      <div class="features-grid">
+        <!-- Transient Waveform Preview -->
+        <div class="feature-card card">
+          <div class="feature-visual" aria-hidden="true">
+            <div class="waveform-preview">
+              <svg viewBox="0 0 300 120" class="waveform-demo-svg" role="img" aria-label="Example transient waveform showing power spike exceeding PSU limit">
+                <defs>
+                  <linearGradient id="grad-safe" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#7c4dff" stop-opacity="0.8"/>
+                  </linearGradient>
+                  <filter id="glow-red">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
+                <!-- PSU rating dashed line -->
+                <line x1="0" y1="55" x2="300" y2="55" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-dasharray="6,4"/>
+                <text x="4" y="50" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace">850W PSU</text>
+                <!-- Continuous load line (blue) -->
+                <path d="M 0 90 L 300 90" stroke="#00e5ff" stroke-width="2" fill="none" opacity="0.8"/>
+                <text x="4" y="86" fill="#00e5ff" font-size="8" font-family="monospace">360W</text>
+                <!-- Area fill under baseline -->
+                <path d="M 0 90 L 300 90 L 300 115 L 0 115 Z" fill="rgba(0,229,255,0.05)"/>
+                <!-- Spike path (red) -->
+                <path d="M 0 90 L 60 90 L 80 90 L 100 45 L 120 90 L 300 90"
+                  stroke="#ff1744" stroke-width="2.5" fill="none" filter="url(#glow-red)"
+                  class="demo-spike"/>
+                <!-- Spike peak label -->
+                <text x="105" y="40" fill="#ff1744" font-size="9" font-family="monospace" font-weight="bold">540W peak</text>
+                <!-- Time axis -->
+                <text x="0" y="118" fill="rgba(255,255,255,0.25)" font-size="8" font-family="monospace">0ms</text>
+                <text x="130" y="118" fill="rgba(255,255,255,0.25)" font-size="8" font-family="monospace">50ms</text>
+                <text x="262" y="118" fill="rgba(255,255,255,0.25)" font-size="8" font-family="monospace">100ms</text>
+              </svg>
+            </div>
+          </div>
+          <h3>Live Transient Waveform</h3>
+          <p>
+            See exactly how your GPU's power spike compares to your PSU's rated capacity —
+            in real time as you change components. The red spike shows the peak transient;
+            the dashed line is your PSU limit. No competitor shows this.
+          </p>
+        </div>
+
+        <!-- Power Gauge Preview -->
+        <div class="feature-card card">
+          <div class="feature-visual" aria-hidden="true">
+            <div class="gauge-preview">
+              <svg viewBox="0 0 200 140" role="img" aria-label="Power gauge showing 78% PSU utilization">
+                <defs>
+                  <linearGradient id="gauge-grad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#00e5ff"/>
+                    <stop offset="100%" stop-color="#7c4dff"/>
+                  </linearGradient>
+                </defs>
+                <!-- Track -->
+                <path d="M 30 110 A 70 70 0 0 1 170 110"
+                  fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" stroke-linecap="round"/>
+                <!-- Fill — 78% of arc -->
+                <path d="M 30 110 A 70 70 0 0 1 170 110"
+                  fill="none" stroke="url(#gauge-grad)" stroke-width="12" stroke-linecap="round"
+                  stroke-dasharray="220 282" stroke-dashoffset="0" class="gauge-fill-demo"/>
+                <!-- Center text -->
+                <text x="100" y="95" text-anchor="middle" fill="white" font-size="28" font-weight="900" font-family="monospace">850W</text>
+                <text x="100" y="115" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="monospace">RECOMMENDED</text>
+                <!-- Labels -->
+                <text x="26" y="126" fill="rgba(255,255,255,0.3)" font-size="9" font-family="monospace">0W</text>
+                <text x="158" y="126" fill="rgba(255,255,255,0.3)" font-size="9" font-family="monospace">1200W</text>
+              </svg>
+            </div>
+          </div>
+          <h3>Animated Power Gauge</h3>
+          <p>
+            An arc gauge visualizes your recommended PSU wattage within the range of available
+            options. Instantly see where your build sits between a 550W budget unit and a
+            1,500W flagship — and whether you have headroom for upgrades.
+          </p>
+        </div>
+
+        <!-- TCO Chart Preview -->
+        <div class="feature-card card">
+          <div class="feature-visual" aria-hidden="true">
+            <div class="tco-preview">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:10px;font-family:monospace;color:rgba(255,255,255,0.5);width:60px;">Bronze</span>
+                  <div style="flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+                    <div style="width:88%;height:100%;background:rgba(255,23,68,0.6);border-radius:4px;"></div>
+                  </div>
+                  <span style="font-size:10px;font-family:monospace;color:rgba(255,255,255,0.5);width:40px;">$2,190</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:10px;font-family:monospace;color:rgba(255,255,255,0.5);width:60px;">Gold</span>
+                  <div style="flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+                    <div style="width:82%;height:100%;background:rgba(255,171,0,0.6);border-radius:4px;"></div>
+                  </div>
+                  <span style="font-size:10px;font-family:monospace;color:rgba(255,255,255,0.5);width:40px;">$2,040</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:10px;font-family:monospace;color:rgba(255,255,255,0.5);width:60px;">Platinum</span>
+                  <div style="flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+                    <div style="width:76%;height:100%;background:rgba(0,230,118,0.7);border-radius:4px;"></div>
+                  </div>
+                  <span style="font-size:10px;font-family:monospace;color:rgba(0,230,118,0.9);width:40px;">$1,980</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:10px;font-family:monospace;color:rgba(255,255,255,0.5);width:60px;">Titanium</span>
+                  <div style="flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+                    <div style="width:71%;height:100%;background:rgba(0,229,255,0.8);border-radius:4px;"></div>
+                  </div>
+                  <span style="font-size:10px;font-family:monospace;color:rgba(0,229,255,0.9);width:40px;">$1,960</span>
+                </div>
+                <p style="font-size:9px;color:rgba(0,230,118,0.8);margin-top:4px;font-family:monospace;">✓ Platinum saves $210 vs Bronze over 5 years</p>
+              </div>
+            </div>
+          </div>
+          <h3>5-Year Cost Comparison</h3>
+          <p>
+            See whether upgrading from 80+ Bronze to Platinum actually saves money over 5 years
+            when you factor in electricity costs. Enter your kWh rate and usage hours — we show
+            exactly when the premium PSU pays for itself.
+          </p>
+        </div>
+
+        <!-- Cable Audit Preview -->
+        <div class="feature-card card">
+          <div class="feature-visual" aria-hidden="true">
+            <div class="cable-audit-demo cable-warning" style="margin:0;padding:14px 16px;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:1.25rem;flex-shrink:0;">⚠️</span>
+                <div>
+                  <p style="font-size:0.75rem;font-weight:700;color:#ff1744;margin-bottom:4px;">RTX 5080 DETECTED</p>
+                  <p style="font-size:0.7rem;line-height:1.5;color:rgba(255,255,255,0.7);">
+                    Requires ATX 3.1 PSU with native <strong>12V-2x6</strong> cable. DO NOT use 8-pin adapters or daisy-chain cables. Using incorrect cabling risks connector overheating.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h3>Cable-Melt Prevention Audit</h3>
+          <p>
+            When a high-end GPU is selected, VoltForge instantly audits your cabling requirements
+            and warns against dangerous configurations — like daisy-chaining 8-pin adapters on a
+            575W RTX 5090. An engineering safety check no other tool provides.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ORACLE SECTION ===== -->
+  <section class="oracle-section" aria-labelledby="oracle-heading">
+    <div class="container">
+      <div class="oracle-inner">
+        <div>
+          <div class="section-eyebrow">Programmatic Oracle</div>
+          <h2 id="oracle-heading">"Is X watts enough for Y?"<br/> — answered instantly.</h2>
+          <p style="max-width:52ch;margin-top:0.75rem;">
+            7,440+ pre-built pages answering exact GPU + CPU + wattage combinations.
+            Each page includes transient spike analysis, binding constraint identification,
+            and three recommended PSUs at budget/mid/premium tiers.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:1.5rem;">
+            <a href="/oracle/is-850w-enough-for-rtx-5080" class="oracle-pill">Is 850W enough for RTX 5080?</a>
+            <a href="/oracle/is-1000w-enough-for-rtx-5090" class="oracle-pill">Is 1000W enough for RTX 5090?</a>
+            <a href="/oracle/is-650w-enough-for-rtx-5070" class="oracle-pill">Is 650W enough for RTX 5070?</a>
+            <a href="/oracle/is-750w-enough-for-rx-9070-xt" class="oracle-pill">Is 750W enough for RX 9070 XT?</a>
+          </div>
+        </div>
+        <div class="oracle-visual" aria-hidden="true">
+          <div class="oracle-card card-accent">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+              <span class="badge badge-safe" style="font-size:1rem;padding:0.5rem 1rem;">✓ YES</span>
+              <span style="font-size:0.875rem;color:var(--text-secondary);">Confidence: 94%</span>
+            </div>
+            <p style="font-size:1.125rem;font-weight:700;margin-bottom:0.5rem;">850W is enough for RTX 5080 + Ryzen 7 9800X3D</p>
+            <p style="font-size:0.875rem;color:var(--text-secondary);">
+              Binding constraint: <strong>GPU</strong> (540W transient peak).
+              Your 850W PSU leaves 310W of headroom — comfortable margin for ATX 3.1 transient handling.
+            </p>
+            <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border-subtle);">
+              <p style="font-size:0.75rem;color:var(--text-tertiary);">Top pick: Seasonic FOCUS GX-850 · $149 · Gold · ATX 3.1</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ SECTION (FAQPage schema content) ===== -->
+  <section class="faq-section" aria-labelledby="faq-heading">
+    <div class="container">
+      <div class="section-eyebrow">Common Questions</div>
+      <h2 id="faq-heading">Frequently Asked Questions</h2>
+
+      <div class="faq-list">
+        <details class="faq-item" id="faq-1">
+          <summary class="faq-question">
+            How much PSU wattage do I need for my PC build?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>
+              The PSU wattage you need depends on your CPU and GPU power draw plus a safety buffer.
+              A modern RTX&nbsp;5080 + Ryzen&nbsp;7&nbsp;9800X3D system needs at minimum 850W, accounting for
+              the RTX&nbsp;5080's 540W transient peak plus CPU and other components. VoltForge calculates
+              this precisely using published Cybenetics transient multipliers.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="faq-2">
+          <summary class="faq-question">
+            What is ATX 3.1 and do I need it?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>
+              ATX 3.1 is the current power supply standard designed to handle modern GPU transient power
+              spikes of up to 200% of rated wattage for 100 microseconds. It also introduces the
+              12V-2x6 connector (successor to 12VHPWR) with improved safety features. For RTX&nbsp;5090,
+              5080, or other high-end GPUs, an ATX&nbsp;3.1 PSU is strongly recommended.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="faq-3">
+          <summary class="faq-question">
+            Why does my GPU need more than its rated TDP from the PSU?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>
+              Modern GPUs draw significantly more power in microsecond transient spikes than their rated
+              TBP (Total Board Power). The RTX&nbsp;5090, for example, is rated at 575W but can spike to
+              900W+ for sub-millisecond durations. A PSU that can only deliver 575W may trip its
+              over-current protection during these spikes, causing system crashes or shutdowns.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GUIDE CARDS ===== -->
+  <section class="guides-section" aria-labelledby="guides-heading">
+    <div class="container">
+      <div class="section-eyebrow">Learn</div>
+      <h2 id="guides-heading">PC Building Guides</h2>
+      <div class="guides-grid">
+        <a href="/guides/how-to-build-a-pc" class="guide-card card">
+          <div class="guide-icon" aria-hidden="true">🔧</div>
+          <h3>How to Build a PC</h3>
+          <p>Complete 12-step walkthrough from component selection to first boot. Includes tool checklist and common mistakes to avoid.</p>
+          <span class="guide-read">Read guide →</span>
+        </a>
+        <a href="/guides/atx-3-1-guide" class="guide-card card">
+          <div class="guide-icon" aria-hidden="true">⚡</div>
+          <h3>ATX 3.1 Guide</h3>
+          <p>Everything about the current PSU standard: what changed, why it matters for RTX 50-series, and which PSUs support it.</p>
+          <span class="guide-read">Read guide →</span>
+        </a>
+        <a href="/guides/psu-sizing-guide" class="guide-card card">
+          <div class="guide-icon" aria-hidden="true">📐</div>
+          <h3>PSU Sizing Guide</h3>
+          <p>Debunking common wattage myths. Why "650W is enough for everything" is wrong and how transient spikes change the math.</p>
+          <span class="guide-read">Read guide →</span>
+        </a>
+        <a href="/guides/psu-efficiency-guide" class="guide-card card">
+          <div class="guide-icon" aria-hidden="true">📊</div>
+          <h3>80+ Efficiency Guide</h3>
+          <p>Bronze vs Gold vs Platinum vs Titanium — which tier actually saves money over 3-5 years based on your usage hours.</p>
+          <span class="guide-read">Read guide →</span>
+        </a>
+        <a href="/guides/budget-guide" class="guide-card card">
+          <div class="guide-icon" aria-hidden="true">💰</div>
+          <h3>PC Budget Guide</h3>
+          <p>How to allocate $500, $1,000, $1,500, and $2,500 builds for gaming, content creation, and productivity.</p>
+          <span class="guide-read">Read guide →</span>
+        </a>
+        <a href="/guides/building-tips" class="guide-card card">
+          <div class="guide-icon" aria-hidden="true">💡</div>
+          <h3>PC Building Tips</h3>
+          <p>Cable management, thermal paste application, ESD precautions, POST troubleshooting — the things first-time builders wish they knew.</p>
+          <span class="guide-read">Read guide →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+/* ---- Hero ---- */
+.hero {
+  position: relative;
+  padding: 6rem 0 5rem;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center top, black 0%, transparent 70%);
+}
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: hero-float 8s ease-in-out infinite;
+}
+.hero-glow-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #00e5ff 0%, transparent 70%);
+  top: -100px;
+  left: 10%;
+  animation-delay: 0s;
+}
+.hero-glow-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #7c4dff 0%, transparent 70%);
+  top: 50px;
+  right: 15%;
+  animation-delay: 3s;
+}
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow { animation: none; }
+}
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.hero-badge { display: flex; }
+.hero-h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+.hero-sub {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  max-width: 58ch;
+  line-height: 1.65;
+}
+.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.hero-stat { text-align: left; }
+.hero-stat-num {
+  display: block;
+  font-size: 1.875rem;
+  font-weight: 900;
+  background: var(--accent-gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.hero-stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.25rem;
+}
+.hero-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border-subtle);
+}
+
+/* ---- Section helpers ---- */
+.section-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-primary);
+  margin-bottom: 0.75rem;
+}
+
+/* ---- Comparison table ---- */
+.gap-section { padding: 5rem 0; background: var(--bg-secondary); }
+.comparison-table-wrap { overflow-x: auto; margin-top: 2rem; }
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 560px;
+}
+.comparison-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border-default);
+}
+.comparison-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+.comparison-table tr:last-child td { border-bottom: none; }
+.cell-yes { color: var(--status-safe) !important; font-weight: 600; }
+.cell-no { color: var(--status-danger) !important; }
+.cell-partial { color: var(--status-warning) !important; }
+.row-voltforge {
+  background: linear-gradient(90deg, rgba(0,229,255,0.05) 0%, rgba(124,77,255,0.05) 100%);
+}
+.row-voltforge td { border-top: 1px solid var(--border-accent); }
+
+/* ---- Pillars ---- */
+.pillars-section { padding: 5rem 0; }
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.pillar-card {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 250ms var(--ease-out), box-shadow 250ms var(--ease-out);
+}
+.pillar-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-glow); text-decoration: none; }
+.pillar-card h3 { color: var(--text-primary); }
+.pillar-card p { font-size: 0.9rem; }
+.pillar-icon { font-size: 2rem; }
+.pillar-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+}
+.pillar-features li {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  padding-left: 1.25rem;
+  position: relative;
+}
+.pillar-features li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--accent-primary);
+}
+.pillar-cta {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin-top: auto;
+}
+
+/* ---- Features ---- */
+.features-section { padding: 5rem 0; background: var(--bg-secondary); }
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.feature-card { display: flex; flex-direction: column; gap: 1rem; }
+.feature-visual {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.waveform-preview, .gauge-preview, .tco-preview { width: 100%; }
+.waveform-demo-svg { width: 100%; }
+.demo-spike {
+  animation: spike-pulse 2.5s ease-in-out infinite;
+}
+@keyframes spike-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(255,23,68,0.6)); }
+  50% { filter: drop-shadow(0 0 12px rgba(255,23,68,1)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo-spike { animation: none; }
+}
+.cable-audit-demo { animation: cable-pulse 2s ease-in-out infinite; }
+.feature-card h3 { color: var(--text-primary); font-size: 1.125rem; }
+.feature-card p { font-size: 0.875rem; color: var(--text-secondary); }
+
+/* ---- Oracle ---- */
+.oracle-section { padding: 5rem 0; }
+.oracle-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+@media (max-width: 768px) { .oracle-inner { grid-template-columns: 1fr; } }
+.oracle-pill {
+  display: inline-block;
+  padding: 0.4rem 0.875rem;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  color: var(--accent-primary);
+  transition: background 150ms ease, color 150ms ease;
+}
+.oracle-pill:hover {
+  background: var(--accent-glow);
+  text-decoration: none;
+}
+.oracle-card { padding: 1.5rem; }
+
+/* ---- FAQ ---- */
+.faq-section { padding: 5rem 0; background: var(--bg-secondary); }
+.faq-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 2rem; max-width: 760px; }
+.faq-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 150ms ease;
+}
+.faq-item[open] { border-color: var(--border-accent); }
+.faq-question {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.125rem 1.25rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+  gap: 1rem;
+}
+.faq-question::-webkit-details-marker { display: none; }
+.faq-chevron { flex-shrink: 0; transition: transform 200ms ease; color: var(--accent-primary); }
+.faq-item[open] .faq-chevron { transform: rotate(180deg); }
+.faq-answer {
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.faq-answer p { font-size: 0.9375rem; line-height: 1.7; max-width: 65ch; margin-top: 1rem; }
+
+/* ---- Guides ---- */
+.guides-section { padding: 5rem 0 6rem; }
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+.guide-card {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 200ms var(--ease-out), border-color 200ms ease, box-shadow 200ms ease;
+}
+.guide-card:hover { transform: translateY(-3px); border-color: var(--border-accent); box-shadow: var(--shadow-glow); text-decoration: none; }
+.guide-icon { font-size: 1.75rem; }
+.guide-card h3 { font-size: 1.0625rem; color: var(--text-primary); }
+.guide-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+.guide-read { font-size: 0.8125rem; font-weight: 600; color: var(--accent-primary); margin-top: auto; padding-top: 0.5rem; }
+</style>

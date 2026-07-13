@@ -1,0 +1,187 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
+import { InteractiveTco } from '../components/calculators/InteractiveTco';
+
+const schema = {
+  "@type": "WebApplication",
+  "name": "VoltForge PSU Calculator",
+  "url": "https://voltforge.app/psu-calculator",
+  "applicationCategory": "UtilitiesApplication",
+  "description": "Free PC power supply calculator with transient spike analysis, ATX 3.1 compliance checking, per-rail analysis, cable safety audit, and 5-year TCO comparison.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+---
+
+<Layout
+  title="PSU Calculator — VoltForge: Transient Spike Analysis & ATX 3.1 Checker"
+  description="Free PC power supply calculator that models real-world GPU transient spikes, checks ATX 3.1 compliance, audits cable safety (12V-2x6), and calculates 5-year electricity costs. Unbiased. No manufacturer lock-in."
+  schema={schema}
+>
+  <!-- Calculator Hero -->
+  <section class="calc-hero" aria-labelledby="calc-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">PSU Calculator</span>
+          </div>
+          <h1 id="calc-hero-heading" class="calc-h1">
+            PC Power Supply Calculator
+          </h1>
+          <p class="calc-subtitle">
+            Select your components below. Get transient spike analysis, ATX 3.1 compliance check,
+            cable audit, and PSU recommendation — all updated in real time.
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Calculator features">
+          <span class="badge badge-safe">⚡ Transient Modeling</span>
+          <span class="badge badge-safe">✓ ATX 3.1 Aware</span>
+          <span class="badge badge-safe">🔌 Cable Audit</span>
+          <span class="badge badge-safe">📊 5-Year TCO</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology trust strip -->
+  <div class="methodology-strip" role="complementary" aria-label="Data sources">
+    <div class="container">
+      <div class="methodology-strip-inner">
+        <span class="method-label">Data sources:</span>
+        <span class="method-item">Cybenetics PSU Lab</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">NVIDIA / AMD Official TBP</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">Intel ATX 3.1 Design Guide</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">80 PLUS Certification Database</span>
+        <a href="/about#methodology" class="method-link">Full methodology →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VIRTUAL ASSEMBLY DESK (Preact Island) ===== -->
+  <VirtualAssemblyDesk client:load />
+
+  <!-- ===== TCO SECTION ===== -->
+  <section class="tco-section" id="tco" aria-labelledby="tco-heading">
+    <div class="container">
+      <div class="section-eyebrow">Interactive Cost Analysis</div>
+      <h2 id="tco-heading">Is a premium power supply worth it?</h2>
+      <p style="max-width:56ch;margin-top:0.75rem;margin-bottom:2rem;">
+        Calculated dynamically based on your selected components. Adjust your electricity cost, usage hours,
+        and period to analyze cumulative TCO savings.
+      </p>
+
+      <InteractiveTco client:load />
+    </div>
+  </section>
+
+  <!-- ===== RELATED GUIDES ===== -->
+  <section class="related-section" aria-labelledby="related-heading">
+    <div class="container">
+      <h2 id="related-heading">Related Guides</h2>
+      <div class="related-grid">
+        <a href="/guides/atx-3-1-guide" class="related-card card">
+          <h3>ATX 3.1 Guide</h3>
+          <p>What changed, why it matters for RTX 50-series, and how to verify your PSU supports it.</p>
+        </a>
+        <a href="/guides/psu-sizing-guide" class="related-card card">
+          <h3>PSU Sizing Guide</h3>
+          <p>Debunking the "add 20% headroom" myth and why transient spikes change the math.</p>
+        </a>
+        <a href="/guides/psu-efficiency-guide" class="related-card card">
+          <h3>80+ Efficiency Guide</h3>
+          <p>When does upgrading from Bronze to Gold to Platinum actually pay off?</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.calc-hero {
+  padding: 3rem 0 1.5rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.calc-hero-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+.calc-h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.calc-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 60ch;
+  line-height: 1.65;
+  margin-top: 0.75rem;
+}
+.calc-hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* Methodology strip */
+.methodology-strip {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.625rem 0;
+}
+.methodology-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+.method-label { font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+.method-item { color: var(--text-secondary); }
+.method-sep { color: var(--border-default); }
+.method-link { color: var(--accent-primary); margin-left: auto; font-weight: 600; white-space: nowrap; }
+.method-link:hover { text-decoration: underline; }
+
+/* TCO */
+.tco-section { padding: 4rem 0; background: var(--bg-secondary); }
+.tco-grid { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; max-width: 640px; }
+.tco-tier { display: flex; flex-direction: column; gap: 0.375rem; }
+.tco-tier-label { font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; }
+.tco-bar-wrap { height: 10px; background: var(--bg-tertiary); border-radius: 9999px; overflow: hidden; }
+.tco-bar {
+  height: 100%;
+  border-radius: 9999px;
+  transition-property: width;
+  transition-duration: 600ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tco-bar--bronze   { background: rgba(255,23,68,0.6); }
+.tco-bar--gold     { background: rgba(255,171,0,0.7); }
+.tco-bar--platinum { background: rgba(0,230,118,0.75); }
+.tco-bar--titanium { background: rgba(0,229,255,0.8); }
+.tco-tier-cost { font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-secondary); }
+.tco-note { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 0.5rem; line-height: 1.5; }
+
+/* Related */
+.related-section { padding: 4rem 0 5rem; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.related-card { text-decoration: none; color: inherit; transition-property: transform, border-color; transition-duration: 200ms; }
+.related-card:hover { transform: translateY(-2px); border-color: var(--border-accent); text-decoration: none; }
+.related-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+.related-card p { font-size: 0.875rem; color: var(--text-secondary); }
+</style>

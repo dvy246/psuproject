@@ -1,0 +1,236 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
+
+const schema = {
+  "@type": "WebApplication",
+  "name": "VoltForge PC Build Cost Calculator",
+  "url": "https://voltforge.app/pc-builder",
+  "applicationCategory": "UtilitiesApplication",
+  "description": "Free PC builder and cost calculator with budget allocation visual charts, real-time optimization advice, sales tax, assembly fee, and custom OS/peripheral selectors.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+---
+
+<Layout
+  title="PC Build Cost Calculator — VoltForge: Budget Allocation & Cost Optimizer"
+  description="Build your custom PC and estimate total cost in real time. Get visual budget allocation breakdowns, sales tax calculations, assembly fee add-ons, and real-time cost-saving suggestions."
+  schema={schema}
+>
+  <!-- Builder Hero -->
+  <section class="calc-hero" aria-labelledby="builder-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">PC Builder</span>
+          </div>
+          <h1 id="builder-hero-heading" class="calc-h1">
+            PC Build Cost Calculator
+          </h1>
+          <p class="calc-subtitle">
+            Assemble your virtual PC configuration. View cost allocations, add peripherals, customize taxes/fees,
+            and get real-time suggestions on how to save money on your build.
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Calculator features">
+          <span class="badge badge-safe">📊 Cost Breakdown</span>
+          <span class="badge badge-safe">💡 Savings Optimizer</span>
+          <span class="badge badge-safe">💼 Tax & Fees Config</span>
+          <span class="badge badge-safe">🎮 Peripheral Pricing</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology trust strip -->
+  <div class="methodology-strip" role="complementary" aria-label="Pricing sources">
+    <div class="container">
+      <div class="methodology-strip-inner">
+        <span class="method-label">Pricing Data:</span>
+        <span class="method-item">Quarterly Updated Retail Averages (US Market)</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">Real Manufacturer MSRP</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">No Fabricated Pricing</span>
+        <a href="/about#methodology" class="method-link">Pricing policy →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VIRTUAL ASSEMBLY DESK (Preact Island in Cost Mode) ===== -->
+  <VirtualAssemblyDesk client:load mode="cost" />
+
+  <!-- ===== BUDGET RECOMMENDATION SECTION ===== -->
+  <section class="tco-section" aria-labelledby="budget-rules-heading">
+    <div class="container">
+      <div class="section-eyebrow">Standard Budget Allocations</div>
+      <h2 id="budget-rules-heading">How much should you spend on each component?</h2>
+      <p style="max-width:56ch;margin-top:0.75rem;margin-bottom:2rem;">
+        A balanced system ensures no single component bottlenecks the rest. Here is our recommended
+        allocation breakdown for gaming and productivity workloads.
+      </p>
+
+      <div class="comparison-table-wrap" role="region" aria-label="Budget allocation recommendations">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">Entry Gaming ($600-800)</th>
+              <th scope="col">Mid-Range ($1000-1500)</th>
+              <th scope="col">High-End ($2000+)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Graphics Card (GPU)</strong></td>
+              <td class="cell-yes">35% - 40%</td>
+              <td class="cell-yes">35% - 45%</td>
+              <td class="cell-yes">40% - 50%</td>
+            </tr>
+            <tr>
+              <td><strong>Processor (CPU)</strong></td>
+              <td>20% - 25%</td>
+              <td>15% - 20%</td>
+              <td>15% - 20%</td>
+            </tr>
+            <tr>
+              <td><strong>Motherboard</strong></td>
+              <td>12% - 15%</td>
+              <td>10% - 12%</td>
+              <td>8% - 10%</td>
+            </tr>
+            <tr>
+              <td><strong>RAM & Storage</strong></td>
+              <td>15% - 18%</td>
+              <td>15% - 20%</td>
+              <td>12% - 15%</td>
+            </tr>
+            <tr>
+              <td><strong>Power Supply & Case</strong></td>
+              <td>12% - 15%</td>
+              <td>10% - 12%</td>
+              <td>10% - 12%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RELATED GUIDES ===== -->
+  <section class="related-section" aria-labelledby="builder-guides-heading">
+    <div class="container">
+      <h2 id="builder-guides-heading">PC Building & Budget Guides</h2>
+      <div class="related-grid">
+        <a href="/guides/budget-guide" class="related-card card">
+          <h3>PC Budget Guide</h3>
+          <p>Detailed component lists and allocation advice for $500, $1,000, $1,500, and $2,500 system builds.</p>
+        </a>
+        <a href="/guides/how-to-build-a-pc" class="related-card card">
+          <h3>How to Build a PC</h3>
+          <p>Step-by-step walkthrough covering parts check, component installation, and initial startup troubleshooting.</p>
+        </a>
+        <a href="/guides/building-tips" class="related-card card">
+          <h3>PC Building Tips</h3>
+          <p>Critical tips regarding thermal application, motherboard standoff installation, and cable routing.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.calc-hero {
+  padding: 3rem 0 1.5rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.calc-hero-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+.calc-h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.calc-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 60ch;
+  line-height: 1.65;
+  margin-top: 0.75rem;
+}
+.calc-hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* Methodology strip */
+.methodology-strip {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.625rem 0;
+}
+.methodology-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+.method-label { font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+.method-item { color: var(--text-secondary); }
+.method-sep { color: var(--border-default); }
+.method-link { color: var(--accent-primary); margin-left: auto; font-weight: 600; white-space: nowrap; }
+.method-link:hover { text-decoration: underline; }
+
+/* TCO / Spacing */
+.tco-section { padding: 4rem 0; background: var(--bg-secondary); }
+.tco-note { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 0.5rem; line-height: 1.5; }
+
+/* Table styling */
+.comparison-table-wrap { overflow-x: auto; margin-top: 1rem; }
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 560px;
+}
+.comparison-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border-default);
+}
+.comparison-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+.comparison-table tr:last-child td { border-bottom: none; }
+.cell-yes { color: var(--status-safe) !important; font-weight: 600; }
+
+/* Related */
+.related-section { padding: 4rem 0 5rem; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.related-card { text-decoration: none; color: inherit; transition-property: transform, border-color; transition-duration: 200ms; }
+.related-card:hover { transform: translateY(-2px); border-color: var(--border-accent); text-decoration: none; }
+.related-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+.related-card p { font-size: 0.875rem; color: var(--text-secondary); }
+</style>

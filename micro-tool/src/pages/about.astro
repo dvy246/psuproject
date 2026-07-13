@@ -1,0 +1,174 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const schema = {
+  "@type": "AboutPage",
+  "name": "About VoltForge",
+  "url": "https://voltforge.app/about",
+  "description": "VoltForge is an independent, unbiased PC power supply calculator and build cost estimator built by PC enthusiasts.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "VoltForge",
+    "url": "https://voltforge.app"
+  }
+};
+---
+
+<Layout
+  title="About VoltForge — Independent PC PSU & Build Cost Calculator"
+  description="Learn about VoltForge: an independent, unbiased PC power supply calculator and build cost estimator. No manufacturer bias. Methodology sourced from Cybenetics, TechPowerUp, and official hardware specs."
+  schema={schema}
+>
+  <div class="about-page">
+    <!-- Hero -->
+    <section class="about-hero">
+      <div class="container">
+        <div class="about-hero-inner">
+          <div class="about-badge">
+            <span class="badge badge-safe">✓ Independent & Unbiased</span>
+          </div>
+          <h1>About VoltForge</h1>
+          <p class="about-lead">
+            VoltForge exists because PC builders deserve better tools. Every PSU calculator we found was either
+            built by a manufacturer recommending only their own products, or was a shallow wattage sum with no
+            real engineering depth. We built the tool we wished existed.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- What we are -->
+    <section class="about-section">
+      <div class="container">
+        <div class="two-column" style="align-items:start;gap:3rem;">
+          <div>
+            <h2>What VoltForge Is</h2>
+            <p>
+              VoltForge is a free, independent web application that helps PC builders accurately calculate
+              power supply requirements, estimate total build cost, and understand the real engineering
+              behind modern PC power delivery.
+            </p>
+            <p style="margin-top:1rem;">
+              Unlike manufacturer tools (Seasonic, Corsair, be quiet!, ASUS, Cooler Master) that are
+              structurally limited to recommending only their own products, VoltForge is brand-agnostic.
+              We recommend whatever PSU best fits your build — regardless of who makes it.
+            </p>
+          </div>
+          <div>
+            <h2>What VoltForge Is Not</h2>
+            <p>
+              VoltForge is not a retailer, manufacturer, or affiliated with any hardware company.
+              We do not receive payment from hardware brands for recommendations. Affiliate commissions
+              (from Amazon and Newegg links) are based solely on user purchases — not on which brands
+              we feature or how prominently.
+            </p>
+            <p style="margin-top:1rem;">
+              VoltForge does not collect personally identifiable information. Calculator results are
+              computed client-side in your browser. We do not store your build configurations.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Methodology -->
+    <section class="about-section" style="background:var(--bg-secondary);padding:3rem 0;">
+      <div class="container">
+        <h2 style="margin-bottom:1.5rem;">Our Methodology</h2>
+        <p style="max-width:70ch;margin-bottom:2rem;">
+          Every calculation in VoltForge is based on published, verifiable data sources. We do not
+          fabricate wattage figures, invent transient multipliers, or guess at hardware specs.
+          If a data point is uncertain, we flag it explicitly.
+        </p>
+        <div class="methodology-grid">
+          <div class="card">
+            <h3 style="font-size:1.125rem;margin-bottom:0.5rem;">⚡ Transient Multipliers</h3>
+            <p style="font-size:0.875rem;">GPU and CPU transient scaling factors sourced from <strong>Cybenetics PSU Lab</strong> published methodology. GPU tier multipliers: 1.20× (budget) to 1.57× (halo-class RTX 5090).</p>
+          </div>
+          <div class="card">
+            <h3 style="font-size:1.125rem;margin-bottom:0.5rem;">🔌 ATX 3.1 Spec</h3>
+            <p style="font-size:0.875rem;">ATX 3.1 transient tolerance (200% of rated output for 100μs) sourced from the <strong>Intel ATX 3.1 Design Guide (2024 revision)</strong>.</p>
+          </div>
+          <div class="card">
+            <h3 style="font-size:1.125rem;margin-bottom:0.5rem;">🎮 GPU Power Data</h3>
+            <p style="font-size:0.875rem;">GPU Total Board Power (TBP) from <strong>NVIDIA/AMD official product pages</strong> and cross-referenced against <strong>TechPowerUp GPU database</strong>.</p>
+          </div>
+          <div class="card">
+            <h3 style="font-size:1.125rem;margin-bottom:0.5rem;">🖥️ CPU Power Data</h3>
+            <p style="font-size:0.875rem;">Intel CPUs use PL2 (Maximum Turbo Power) from <strong>Intel ARK</strong>. AMD CPUs use TDP from <strong>AMD official specifications</strong>.</p>
+          </div>
+          <div class="card">
+            <h3 style="font-size:1.125rem;margin-bottom:0.5rem;">📊 Efficiency Curves</h3>
+            <p style="font-size:0.875rem;">80 PLUS efficiency curves (Bronze through Titanium at 10/20/50/100% load) from <strong>CLEAResult 80 PLUS certification program</strong> public data.</p>
+          </div>
+          <div class="card">
+            <h3 style="font-size:1.125rem;margin-bottom:0.5rem;">💰 Component Pricing</h3>
+            <p style="font-size:0.875rem;">Retail prices compiled from manufacturer suggested retail prices (MSRP) and current US retailer listings. Updated quarterly. Prices are estimates and may vary.</p>
+          </div>
+        </div>
+        <p style="margin-top:1.5rem;font-size:0.875rem;">
+          Full methodology documentation: <a href="/methodology">voltforge.app/methodology</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- Limitations -->
+    <section class="about-section">
+      <div class="container">
+        <h2 style="margin-bottom:1rem;">Known Limitations</h2>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.75rem;max-width:70ch;">
+          <li style="padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);border-left:3px solid var(--status-warning);">
+            <strong>Transient measurements are tier-based estimates.</strong> Per-SKU sub-millisecond oscilloscope measurements are not publicly available for all GPUs. We use Cybenetics' published tier multipliers, the same methodology used by TechSearchers.
+          </li>
+          <li style="padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);border-left:3px solid var(--status-warning);">
+            <strong>Pricing is approximate.</strong> Component prices fluctuate daily. Our database is updated quarterly. Always verify current pricing before purchasing.
+          </li>
+          <li style="padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);border-left:3px solid var(--status-warning);">
+            <strong>Unconfirmed hardware is flagged.</strong> Leaked or rumored GPU/CPU specs (e.g., RTX 5080 SUPER) are explicitly labeled "⚠ Estimated — Not Yet Confirmed by Manufacturer."
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="about-section" style="text-align:center;padding:3rem 0;">
+      <div class="container">
+        <h2>Questions or Corrections?</h2>
+        <p style="max-width:50ch;margin:1rem auto 2rem;">
+          If you find an error in our data, a stale price, or a missing component, please let us know.
+          We're committed to accuracy.
+        </p>
+        <a href="/contact" class="btn btn-primary">Contact Us</a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+.about-hero {
+  padding: 5rem 0 3rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.about-hero-inner {
+  max-width: 760px;
+}
+.about-badge {
+  margin-bottom: 1rem;
+}
+.about-lead {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 65ch;
+  margin-top: 1rem;
+}
+.about-section {
+  padding: 4rem 0;
+}
+.methodology-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+</style>

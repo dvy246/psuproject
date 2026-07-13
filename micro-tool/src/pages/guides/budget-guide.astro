@@ -1,0 +1,137 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How should I divide my budget for a gaming PC build?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a balanced gaming PC, allocate 35-45% to the GPU, 15-20% to the CPU, 10% to the motherboard, 10% to RAM, 10% to storage, and 10% to the PSU and case combined."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the best budget allocation for a $1,500 PC build?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Spend about $600 on the GPU (e.g., RTX 4070 SUPER), $250 on the CPU (e.g., Ryzen 5 7600X), $150 on the motherboard, $100 on 32GB RAM, $80 on a 1TB SSD, $100 on an 850W ATX 3.1 PSU, and $100 on a case and cooler."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="PC Build Budget Allocation Guide ($500 to $2500) — VoltForge"
+  description="How to divide your budget when building a PC. Complete component allocation tips for $500 budget to $2500 high-end gaming systems."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>PC Build Budget Allocation Guide ($500 to $2500)</h1>
+        <p class="guide-lead">
+          Building a balanced PC is about making trade-offs. Spend too much on the motherboard and you'll
+          have to settle for a weaker GPU. Here is how to allocate your budget at different price tiers.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>The Golden Rule of Allocation</h2>
+          <p>
+            For a gaming PC, the single most critical component is the **Graphics Card (GPU)**.
+            You should dedicate between <strong>35% and 45%</strong> of your total system budget
+            to the GPU. Any less, and you are leaving gaming performance on the table; any more,
+            and you risk bottlenecking the GPU with an underpowered processor.
+          </p>
+
+          <h2>Budget Tiers Breakdown</h2>
+
+          <h3>1. The Entry-Level Tier (~$500 to $700)</h3>
+          <p>
+            At this level, focus strictly on performance-per-dollar. Do not buy expensive coolers or
+            flashy cases. Use stock coolers.
+          </p>
+          <ul>
+            <li><strong>GPU (~$200-250):</strong> AMD RX 6600 or Intel Arc A580</li>
+            <li><strong>CPU (~$100-120):</strong> Intel Core i3-12100F or AMD Ryzen 5 5600</li>
+            <li><strong>Motherboard (~$80-90):</strong> H610 or B550M</li>
+            <li><strong>RAM (~$40):</strong> 16GB DDR4</li>
+            <li><strong>PSU (~$60):</strong> 600W 80+ Bronze</li>
+          </ul>
+
+          <h3>2. The Sweet-Spot Tier (~$1,000 to $1,500)</h3>
+          <p>
+            The ideal point for 1440p gaming. Excellent performance without diminishing returns.
+          </p>
+          <ul>
+            <li><strong>GPU (~$450-600):</strong> RTX 4070 SUPER or RX 7800 XT</li>
+            <li><strong>CPU (~$200-250):</strong> Ryzen 5 7600X or Intel Core i5-13600K</li>
+            <li><strong>Motherboard (~$140-180):</strong> B650 or B760</li>
+            <li><strong>RAM (~$90-100):</strong> 32GB DDR5-6000</li>
+            <li><strong>PSU (~$100-120):</strong> 750W-850W ATX 3.1 Gold</li>
+          </ul>
+
+          <h3>3. High-End / Flagship Tier ($2,000+)</h3>
+          <p>
+            Designed for 4K ultra gaming and content creation. Premium cases, liquid coolers, and
+            top-tier power supplies are appropriate here.
+          </p>
+          <ul>
+            <li><strong>GPU (~$800-1600):</strong> RTX 4080 SUPER, RTX 5080, or RTX 5090</li>
+            <li><strong>CPU (~$350-450):</strong> Ryzen 7 7800X3D or 9800X3D</li>
+            <li><strong>PSU (~$150-250):</strong> 1000W-1200W ATX 3.1 Platinum</li>
+          </ul>
+
+          <div style="margin-top:3rem;">
+            <a href="/pc-builder" class="btn btn-primary">Start planning your budget build</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/how-to-build-a-pc">How to Build a PC</a></li>
+              <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
+              <li><a href="/guides/building-tips">PC Building Tips</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content h3 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-size:1.1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

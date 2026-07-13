@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I apply thermal paste correctly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For standard CPUs, apply a pea-sized dot directly in the center of the CPU metal lid. For larger CPUs (like Intel LGA1700 or AMD AM5), apply a small cross pattern or five small dots (one in each corner, one in the center) to ensure complete spread under cooler pressure."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can static electricity kill PC components?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "While modern components have built-in electrostatic discharge (ESD) protection, it is still possible to damage them. Avoid assembling on carpets, touch a grounded metal object (like a plugged-in PSU chassis) frequently, or wear an anti-static wristband."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="PC Building Tips: Best Practices & Pitfalls — VoltForge"
+  description="Common PC building mistakes and expert tips. Learn about standoff checks, cable routing shortcuts, thermal paste application, and POST checks."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>PC Building Tips: Best Practices &amp; Pitfalls</h1>
+        <p class="guide-lead">
+          Save yourself hours of troubleshooting. Here are the crucial building tips and common mistakes
+          that first-time and veteran builders wish they remembered.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>1. Pre-Assembly POST Check (Out-of-Box Test)</h2>
+          <p>
+            Do not install everything in the case first. Assemble the CPU, cooler, RAM, and GPU on top
+            of the motherboard box, plug in power, and bridge the power switch pins with a screwdriver.
+            Verifying that your system boots to BIOS *before* mounting it in the case saves massive teardown time if a component is DOA (Dead On Arrival).
+          </p>
+
+          <h2>2. Motherboard Standoff Verification</h2>
+          <p>
+            PC cases use brass standoffs to elevate the motherboard circuit board away from the metal case tray.
+            <strong>Never mount a motherboard directly to the case sheet metal without standoffs</strong> — doing so will immediately short out the motherboard, destroying it. Ensure standoffs align *only* with the mounting holes of your motherboard form factor; extra standoffs positioned in the wrong spot can contact circuits on the back of the board, causing shorts.
+          </p>
+
+          <h2>3. The Thermal Paste "Pea-Size" Rule</h2>
+          <p>
+            Too little thermal paste leaves air pockets, causing thermal throttling. Too much paste overflows
+            the CPU socket. A single pea-sized drop (about 5-6mm diameter) in the center is perfect for most
+            CPUs.
+          </p>
+          <div class="important-warning">
+            <strong>⚠ Warning:</strong> Don't forget to peel off the plastic protective film on the bottom
+            of your CPU cooler block before mounting. Leaving this on is one of the most common thermal mistakes.
+          </div>
+
+          <h2>4. RAM Channel Optimization</h2>
+          <p>
+            Almost all modern motherboards prefer RAM to be installed in slots 2 and 4 (counting outwards from the CPU socket).
+            Installing RAM in adjacent slots (slots 1 and 2) runs memory in single-channel mode, which severely limits CPU memory bandwidth and lowers gaming framerates by up to 15%.
+          </p>
+
+          <h2>5. PSU Cable Routing Discipline</h2>
+          <ul>
+            <li>Pass cables through case routing grommets *before* screwing down the motherboard if clearances are tight (especially top CPU 8-pin power cables).</li>
+            <li>Connect all cable tails to modular power supplies before mounting the PSU inside the basement.</li>
+            <li>Do not bundle cables too tightly behind the motherboard tray until you've successfully verified the system boots.</li>
+          </ul>
+
+          <div style="margin-top:3rem;">
+            <a href="/pc-builder" class="btn btn-primary">Start planning your custom build</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/how-to-build-a-pc">How to Build a PC</a></li>
+              <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide</a></li>
+              <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--status-danger-bg); border-left: 4px solid var(--status-danger); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

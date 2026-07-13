@@ -1,0 +1,188 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
+
+const schema = {
+  "@type": "WebApplication",
+  "name": "VoltForge PSU Upgrade Checker",
+  "url": "https://voltforge.app/psu-checker",
+  "applicationCategory": "UtilitiesApplication",
+  "description": "Check if your current PC power supply (PSU) can support a GPU or CPU upgrade. Calculates transient spikes and safety headroom margins.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+---
+
+<Layout
+  title="PSU Upgrade Checker — VoltForge: Will my current PSU support an upgrade?"
+  description="Check if your current power supply can handle a planned graphics card or processor upgrade. Enter your new GPU or CPU and test against your existing PSU."
+  schema={schema}
+>
+  <!-- Checker Hero -->
+  <section class="calc-hero" aria-labelledby="checker-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">PSU Upgrade Checker</span>
+          </div>
+          <h1 id="checker-hero-heading" class="calc-h1">
+            PSU Upgrade Compatibility Checker
+          </h1>
+          <p class="calc-subtitle">
+            Planning to upgrade your GPU or CPU? Select your target new hardware and select your
+            current power supply in the tray below. We'll audit compatibility and safety margins instantly.
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Checker features">
+          <span class="badge badge-safe">⚡ Upgrade Headroom Check</span>
+          <span class="badge badge-safe">🔌 Cable Validation</span>
+          <span class="badge badge-safe">✕ Excursion Auditing</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology trust strip -->
+  <div class="methodology-strip" role="complementary" aria-label="Audit criteria">
+    <div class="container">
+      <div class="methodology-strip-inner">
+        <span class="method-label">Upgrade Audit Criteria:</span>
+        <span class="method-item">GPU Transient Multiplier (Cybenetics)</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">ATX standard safety bounds (2.x vs 3.1)</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">No Fabricated Tolerances</span>
+        <a href="/about#methodology" class="method-link">Upgrade rules →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VIRTUAL ASSEMBLY DESK (Preact Island in PSU Mode) ===== -->
+  <VirtualAssemblyDesk client:load mode="psu" />
+
+  <!-- ===== UPGRADE PLANNING TIPS ===== -->
+  <section class="tco-section" aria-labelledby="upgrade-tips-heading">
+    <div class="container">
+      <div class="section-eyebrow">Expert Upgrade Advice</div>
+      <h2 id="upgrade-tips-heading">PSU Upgrade Checklist</h2>
+      <p style="max-width:56ch;margin-top:0.75rem;margin-bottom:2rem;">
+        Keep these three rules in mind before keeping your current PSU for a new GPU upgrade.
+      </p>
+
+      <div class="related-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        <div class="card" style="padding:1.5rem;">
+          <h3 style="font-size:1.1rem;margin-bottom:0.5rem;color:var(--text-primary);">1. The ATX standard limitation</h3>
+          <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+            If you are upgrading to an Nvidia RTX 4080/4090 or RTX 50-series card, using power adapters
+            on an older ATX 2.x PSU can cause power failures because older PSUs cannot absorb sub-millisecond
+            transient spikes (up to 200% load).
+          </p>
+        </div>
+        <div class="card" style="padding:1.5rem;">
+          <h3 style="font-size:1.1rem;margin-bottom:0.5rem;color:var(--text-primary);">2. Power supply age penalty</h3>
+          <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+            PSUs degrade slowly over time. Electrolytic capacitors lose charge capacity (~5% annually after
+            3-4 years). If your PSU is over 5 years old, consider upgrading if you are pushing close to its limit.
+          </p>
+        </div>
+        <div class="card" style="padding:1.5rem;">
+          <h3 style="font-size:1.1rem;margin-bottom:0.5rem;color:var(--text-primary);">3. Do not daisy chain</h3>
+          <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+            Never use single-cable splitters (pigtails) to supply power to high-end cards. Run independent,
+            isolated PCIe power cables from the PSU for each GPU connection port to avoid cable overheating.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RELATED GUIDES ===== -->
+  <section class="related-section" aria-labelledby="upgrade-guides-heading">
+    <div class="container">
+      <h2 id="upgrade-guides-heading">Power Compatibility Guides</h2>
+      <div class="related-grid">
+        <a href="/guides/psu-sizing-guide" class="related-card card">
+          <h3>PSU Sizing Guide</h3>
+          <p>Learn how to select the right wattage buffer and size your PSU correctly for any future upgrades.</p>
+        </a>
+        <a href="/guides/atx-3-1-guide" class="related-card card">
+          <h3>ATX 3.1 Guide</h3>
+          <p>Everything about the latest power supply standard and the safety revisions of 12V-2x6 cables.</p>
+        </a>
+        <a href="/guides/psu-efficiency-guide" class="related-card card">
+          <h3>PSU Efficiency Guide</h3>
+          <p>Does a more efficient PSU pay off? Let's check the multi-year return on investment metrics.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.calc-hero {
+  padding: 3rem 0 1.5rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.calc-hero-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+.calc-h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.calc-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 60ch;
+  line-height: 1.65;
+  margin-top: 0.75rem;
+}
+.calc-hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* Methodology strip */
+.methodology-strip {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.625rem 0;
+}
+.methodology-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+.method-label { font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+.method-item { color: var(--text-secondary); }
+.method-sep { color: var(--border-default); }
+.method-link { color: var(--accent-primary); margin-left: auto; font-weight: 600; white-space: nowrap; }
+.method-link:hover { text-decoration: underline; }
+
+/* TCO / Spacing */
+.tco-section { padding: 4rem 0; background: var(--bg-secondary); }
+
+/* Related */
+.related-section { padding: 4rem 0 5rem; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.related-card { text-decoration: none; color: inherit; transition-property: transform, border-color; transition-duration: 200ms; }
+.related-card:hover { transform: translateY(-2px); border-color: var(--border-accent); text-decoration: none; }
+.related-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+.related-card p { font-size: 0.875rem; color: var(--text-secondary); }
+</style>

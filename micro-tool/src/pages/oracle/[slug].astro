@@ -1,0 +1,382 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { runFullPsuAnalysis } from '../../lib/psu';
+import type { CpuIndex, GpuIndex, PsuIndex } from '../../types/components';
+
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+import psuData from '../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const cpus = cpuData.items as CpuIndex[];
+  const gpus = gpuData.items as GpuIndex[];
+  const wattages = [550, 650, 750, 850, 1000];
+
+  const paths = [];
+
+  // Generate GPU-only oracle pages: /oracle/is-{wattage}w-enough-for-{gpu} and /oracle/is-{wattage}-enough-for-{gpu}
+  for (const gpu of gpus) {
+    for (const wattage of wattages) {
+      paths.push({
+        params: { slug: `is-${wattage}w-enough-for-${gpu.id}` },
+        props: { gpu, cpu: null, wattage }
+      });
+      paths.push({
+        params: { slug: `is-${wattage}-enough-for-${gpu.id}` },
+        props: { gpu, cpu: null, wattage }
+      });
+    }
+  }
+
+  // Generate GPU + CPU combo oracle pages
+  const topCpus = cpus.slice(0, 8);
+  const topGpus = gpus.slice(0, 8);
+
+  for (const gpu of topGpus) {
+    for (const cpu of topCpus) {
+      for (const wattage of wattages) {
+        paths.push({
+          params: { slug: `is-${wattage}w-enough-for-${gpu.id}-with-${cpu.id}` },
+          props: { gpu, cpu, wattage }
+        });
+        paths.push({
+          params: { slug: `is-${wattage}-enough-for-${gpu.id}-with-${cpu.id}` },
+          props: { gpu, cpu, wattage }
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { gpu, cpu, wattage } = Astro.props as { gpu: GpuIndex; cpu: CpuIndex | null; wattage: number };
+
+// Run calculations at build time
+const components = {
+  cpu,
+  gpu,
+  ram: { capacity: 32, speed: 6000, type: 'DDR5' as const, sticks: 2, price: 99, typicalWatts: 10 },
+  storage: [{ type: 'NVMe' as const, capacity: 1000, price: 69, typicalWatts: 7 }],
+  cooling: { type: 'aio-240' as const, price: 89, typicalWatts: 10 },
+  fans: 3
+};
+
+const analysis = runFullPsuAnalysis(components, wattage, '3.1');
+
+const verdictColor = analysis.verdict === 'yes' ? 'safe' : analysis.verdict === 'borderline' ? 'warning' : 'danger';
+const verdictLabel = analysis.verdict === 'yes' ? '✓ YES - SAFE' : analysis.verdict === 'borderline' ? '⚠ BORDERLINE' : '✕ NO - INSUFFICIENT';
+
+// Find PSU recommendations from our database matching wattage and ATX 3.1
+const psus = psuData.items as PsuIndex[];
+const recommendedPsus = psus
+  .filter(p => p.wattage >= analysis.recommendedWattage && p.atxVersion === '3.1')
+  .slice(0, 3);
+
+// JSON-LD Schema
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Is a ${wattage}W PSU enough for ${gpu.name}${cpu ? ` and ${cpu.name}` : ''}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${analysis.verdict === 'yes' ? 'Yes' : analysis.verdict === 'borderline' ? 'It is borderline' : 'No'}. A ${wattage}W PSU is ${analysis.verdict === 'yes' ? 'fully capable of handling' : analysis.verdict === 'borderline' ? 'very tight for' : 'insufficient for'} this setup. The system has a base sustained draw of ${analysis.baseDraw}W and can experience sub-millisecond transient power spikes up to ${analysis.transientPeak}W. We recommend a PSU rated at least ${analysis.recommendedWattage}W.`
+      }
+    }
+  ]
+};
+
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": `${gpu.name} Power Compatibility Guide`,
+  "description": `Detailed power supply compatibility analysis for ${gpu.name} running on a ${wattage}W PSU.`,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+};
+---
+
+<Layout
+  title={`Is a ${wattage}W PSU enough for ${gpu.name}${cpu ? ` + ${cpu.name}` : ''}? — VoltForge`}
+  description={`Calculate if a ${wattage}W power supply can support ${gpu.name}${cpu ? ` and ${cpu.name}` : ''}. View transient spikes, per-rail amp draws, and PSU upgrade recommendations.`}
+  schema={[faqSchema, productSchema]}
+>
+  <section class="oracle-page" aria-labelledby="oracle-heading">
+    <div class="container">
+      <div class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span>Oracle</span>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Is {wattage}W enough?</span>
+      </div>
+
+      <header class="oracle-header">
+        <h1 id="oracle-heading">
+          Is a <span class="gradient-text">{wattage}W PSU</span> enough for the <span class="gradient-text">{gpu.name}</span>{cpu && ` and ${cpu.name}`}?
+        </h1>
+        <p class="oracle-intro">
+          This page runs an automated power compatibility audit modeling transient spikes and ATX 3.1 tolerances.
+        </p>
+      </header>
+
+      <!-- Main Verdict Panel -->
+      <div class={`verdict-panel verdict-panel--${verdictColor}`} role="region" aria-label="Power compatibility verdict">
+        <div class="verdict-header-row">
+          <span class="verdict-label">Power Compatibility Verdict</span>
+          <span class={`badge badge-${verdictColor}`}>{verdictLabel}</span>
+        </div>
+        <div class="verdict-description">
+          {analysis.verdict === 'yes' ? (
+            <p>
+              Yes, a <strong>{wattage}W power supply</strong> is fully adequate for this system.
+              The total peak transient draw is estimated at <strong>{analysis.transientPeak}W</strong>,
+              leaving <strong>{analysis.headroom}W ({analysis.headroomPercent}%)</strong> of safety headroom.
+            </p>
+          ) : analysis.verdict === 'borderline' ? (
+            <p>
+              A <strong>{wattage}W power supply</strong> is borderline. Under gaming workloads,
+              the system peak draw can reach <strong>{analysis.transientPeak}W</strong>. While it
+              may run stable under normal conditions, you have very little headroom and a high-end spike
+              could cause shutdowns.
+            </p>
+          ) : (
+            <p>
+              No, a <strong>{wattage}W power supply</strong> is insufficient. The peak transient
+              power spikes reach <strong>{analysis.transientPeak}W</strong>, which exceeds the safe limits of
+              a {wattage}W power supply. You must upgrade to a larger PSU.
+            </p>
+          )}
+        </div>
+      </div>
+
+      <!-- Specs Grid -->
+      <div class="oracle-grid">
+        <!-- Power Metrics -->
+        <div class="card card-dark">
+          <h2>Power Metrics</h2>
+          <div style="display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem;">
+            <div class="stat-row">
+              <span class="stat-label">Sustained Draw (Base)</span>
+              <span class="stat-val tabular">{analysis.baseDraw}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Transient Peak (Spike)</span>
+              <span class="stat-val tabular">{analysis.transientPeak}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Recommended Minimum PSU</span>
+              <span class="stat-val tabular" style="color:var(--color-accent-cyan);font-weight:800;">{analysis.recommendedWattage}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Safety Margin</span>
+              <span class="stat-val tabular">{analysis.headroom}W</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Per-Rail Currents -->
+        <div class="card card-dark">
+          <h2>Per-Rail Current Allocations</h2>
+          <p style="font-size:0.75rem;color:var(--color-text-tertiary);margin-top:0.25rem;margin-bottom:1.5rem;">
+            Estimated current allocations across the power rails during sustained draw:
+          </p>
+          <table class="rail-table" aria-label="Power rail current allocations">
+            <thead>
+              <tr>
+                <th scope="col">Rail</th>
+                <th scope="col" class="text-right">Estimated Amps</th>
+                <th scope="col" class="text-right">Sustained Watts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">+12V</th>
+                <td class="text-right tabular">{analysis.perRail.v12Amps}A</td>
+                <td class="text-right tabular">{analysis.perRail.v12Watts}W</td>
+              </tr>
+              <tr>
+                <th scope="row">+5V</th>
+                <td class="text-right tabular">{analysis.perRail.v5Amps}A</td>
+                <td class="text-right tabular">{analysis.perRail.v5Watts}W</td>
+              </tr>
+              <tr>
+                <th scope="row">+3.3V</th>
+                <td class="text-right tabular">{analysis.perRail.v3_3Amps}A</td>
+                <td class="text-right tabular">{analysis.perRail.v3_3Watts}W</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recommended PSU matches -->
+      {recommendedPsus.length > 0 && (
+        <section class="rec-section" aria-labelledby="recs-heading" style="margin-top:3rem;">
+          <h2 id="recs-heading">Recommended ATX 3.1 PSU Upgrades</h2>
+          <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-bottom:1.5rem;">
+            These ATX 3.1 power supplies meet the required safety threshold of {analysis.recommendedWattage}W:
+          </p>
+          <div class="related-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+            {recommendedPsus.map(p => (
+              <div key={p.id} class="card card-accent" style="padding:1.25rem;display:flex;flex-direction:column;justify-content:space-between;">
+                <div>
+                  <div style="font-size:0.75rem;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;">{p.brand}</div>
+                  <h3 style="font-size:1.1rem;margin-top:0.25rem;color:var(--text-primary);">{p.name}</h3>
+                  <div style="display:flex;gap:4px;margin-top:0.5rem;">
+                    <span class="hw-spec">{p.wattage}W</span>
+                    <span class="hw-spec text-capitalize">{p.efficiencyTier}</span>
+                    <span class="hw-spec">ATX {p.atxVersion}</span>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;">
+                  <span style="font-weight:800;color:var(--color-accent-cyan);font-family:var(--font-mono);">${p.price}</span>
+                  <a href="/psu-calculator" class="btn btn-secondary" style="font-size:0.75rem;padding:6px 12px;min-height:36px;">Configure →</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Internal quick link -->
+      <div style="margin-top:4rem;text-align:center;">
+        <a href="/psu-calculator" class="btn btn-primary">Run custom PSU analysis on your full PC build →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.oracle-page {
+  padding: 3rem 0 6rem;
+}
+.oracle-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.oracle-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  max-width: 25ch;
+}
+.oracle-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.verdict-panel {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  margin-bottom: 2.5rem;
+}
+.verdict-panel--safe {
+  border-color: var(--color-safe-border);
+  background: var(--color-safe-bg);
+}
+.verdict-panel--warning {
+  border-color: var(--color-warning-border);
+  background: var(--color-warning-bg);
+}
+.verdict-panel--danger {
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
+}
+.verdict-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.verdict-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+}
+.verdict-description p {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.verdict-description strong {
+  color: var(--text-primary);
+}
+.oracle-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .oracle-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.card-dark {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1.5rem;
+}
+.card-dark h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.stat-row:last-child {
+  border-bottom: none;
+}
+.stat-label {
+  color: var(--text-secondary);
+}
+.stat-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.rail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.rail-table th, .rail-table td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--text-secondary);
+}
+.rail-table th[scope="col"] {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  font-weight: 700;
+}
+.rail-table th[scope="row"] {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-accent-cyan);
+  text-align: left;
+}
+.rail-table td {
+  font-family: var(--font-mono);
+}
+.rail-table tr:last-child th, .rail-table tr:last-child td {
+  border-bottom: none;
+}
+</style>

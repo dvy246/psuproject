@@ -1,0 +1,43 @@
+{
+  "version": "2026-07-13",
+  "sources": {
+    "psus": "Manufacturer official specifications, Cybenetics database, TechPowerUp PSU reviews"
+  },
+  "items": [
+    { "id": "corsair-rm1000x-2024", "name": "Corsair RM1000x (2024)", "brand": "Corsair", "wattage": 1000, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 189, "has12v2x6": true, "cybeneticsRating": "ETA-A" },
+    { "id": "corsair-rm850x-2024", "name": "Corsair RM850x (2024)", "brand": "Corsair", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 139, "has12v2x6": true, "cybeneticsRating": "ETA-A" },
+    { "id": "corsair-rm750x-2024", "name": "Corsair RM750x (2024)", "brand": "Corsair", "wattage": 750, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 109, "has12v2x6": true, "cybeneticsRating": "ETA-A" },
+    { "id": "corsair-hx1500i", "name": "Corsair HX1500i", "brand": "Corsair", "wattage": 1500, "efficiencyTier": "platinum", "atxVersion": "3.1", "modular": "full", "price": 399, "has12v2x6": true, "cybeneticsRating": "ETA-A+" },
+    { "id": "corsair-hx1200i", "name": "Corsair HX1200i", "brand": "Corsair", "wattage": 1200, "efficiencyTier": "platinum", "atxVersion": "3.1", "modular": "full", "price": 299, "has12v2x6": true, "cybeneticsRating": "ETA-A+" },
+    { "id": "seasonic-prime-tx-1000", "name": "Seasonic PRIME TX-1000", "brand": "Seasonic", "wattage": 1000, "efficiencyTier": "titanium", "atxVersion": "3.1", "modular": "full", "price": 329, "has12v2x6": true, "cybeneticsRating": "ETA-A++" },
+    { "id": "seasonic-prime-px-850", "name": "Seasonic PRIME PX-850", "brand": "Seasonic", "wattage": 850, "efficiencyTier": "platinum", "atxVersion": "3.1", "modular": "full", "price": 219, "has12v2x6": true, "cybeneticsRating": "ETA-A+" },
+    { "id": "seasonic-focus-gx-850", "name": "Seasonic FOCUS GX-850", "brand": "Seasonic", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 149, "has12v2x6": true, "cybeneticsRating": "ETA-A" },
+    { "id": "seasonic-focus-gx-750", "name": "Seasonic FOCUS GX-750", "brand": "Seasonic", "wattage": 750, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 119, "has12v2x6": true, "cybeneticsRating": "ETA-A" },
+    { "id": "seasonic-focus-gx-650", "name": "Seasonic FOCUS GX-650", "brand": "Seasonic", "wattage": 650, "efficiencyTier": "gold", "atxVersion": "3.0", "modular": "full", "price": 99, "has12v2x6": false, "cybeneticsRating": "ETA-A" },
+    { "id": "bequiet-dark-power-13-1000", "name": "be quiet! Dark Power Pro 13 1000W", "brand": "be quiet!", "wattage": 1000, "efficiencyTier": "titanium", "atxVersion": "3.1", "modular": "full", "price": 349, "has12v2x6": true, "cybeneticsRating": "ETA-A++" },
+    { "id": "bequiet-dark-power-13-850", "name": "be quiet! Dark Power Pro 13 850W", "brand": "be quiet!", "wattage": 850, "efficiencyTier": "titanium", "atxVersion": "3.1", "modular": "full", "price": 279, "has12v2x6": true, "cybeneticsRating": "ETA-A+" },
+    { "id": "bequiet-straight-power-12-850", "name": "be quiet! Straight Power 12 850W", "brand": "be quiet!", "wattage": 850, "efficiencyTier": "platinum", "atxVersion": "3.1", "modular": "full", "price": 189, "has12v2x6": true, "cybeneticsRating": "ETA-A+" },
+    { "id": "bequiet-straight-power-12-750", "name": "be quiet! Straight Power 12 750W", "brand": "be quiet!", "wattage": 750, "efficiencyTier": "platinum", "atxVersion": "3.1", "modular": "full", "price": 159, "has12v2x6": true, "cybeneticsRating": "ETA-A" },
+    { "id": "bequiet-pure-power-12-m-750", "name": "be quiet! Pure Power 12 M 750W", "brand": "be quiet!", "wattage": 750, "efficiencyTier": "gold", "atxVersion": "3.0", "modular": "full", "price": 109, "has12v2x6": true },
+    { "id": "evga-supernova-1000-g7", "name": "EVGA SuperNOVA 1000 G7", "brand": "EVGA", "wattage": 1000, "efficiencyTier": "gold", "atxVersion": "2.x", "modular": "full", "price": 169, "has12v2x6": false, "cybeneticsRating": "ETA-A" },
+    { "id": "evga-supernova-850-g7", "name": "EVGA SuperNOVA 850 G7", "brand": "EVGA", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "2.x", "modular": "full", "price": 139, "has12v2x6": false },
+    { "id": "msi-meg-ai1300p", "name": "MSI MEG Ai1300P PCIE5", "brand": "MSI", "wattage": 1300, "efficiencyTier": "platinum", "atxVersion": "3.1", "modular": "full", "price": 369, "has12v2x6": true, "cybeneticsRating": "ETA-A+" },
+    { "id": "msi-mpg-a1000g", "name": "MSI MPG A1000G PCIE5", "brand": "MSI", "wattage": 1000, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 179, "has12v2x6": true },
+    { "id": "msi-mag-a850gl", "name": "MSI MAG A850GL PCIE5", "brand": "MSI", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 119, "has12v2x6": true },
+    { "id": "asus-rog-thor-1200p2", "name": "ASUS ROG Thor 1200P2", "brand": "ASUS", "wattage": 1200, "efficiencyTier": "platinum", "atxVersion": "3.1", "modular": "full", "price": 449, "has12v2x6": true, "cybeneticsRating": "ETA-A+" },
+    { "id": "asus-rog-strix-1000g", "name": "ASUS ROG Strix 1000G", "brand": "ASUS", "wattage": 1000, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 199, "has12v2x6": true },
+    { "id": "asus-tuf-gaming-850g", "name": "ASUS TUF Gaming 850G", "brand": "ASUS", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 139, "has12v2x6": true },
+    { "id": "thermaltake-toughpower-gf3-850", "name": "Thermaltake Toughpower GF3 850W", "brand": "Thermaltake", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "3.0", "modular": "full", "price": 129, "has12v2x6": true },
+    { "id": "thermaltake-toughpower-gf3-1000", "name": "Thermaltake Toughpower GF3 1000W", "brand": "Thermaltake", "wattage": 1000, "efficiencyTier": "gold", "atxVersion": "3.0", "modular": "full", "price": 169, "has12v2x6": true },
+    { "id": "fractal-ion-gold-850", "name": "Fractal Design Ion Gold 850W", "brand": "Fractal Design", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "2.x", "modular": "full", "price": 119, "has12v2x6": false },
+    { "id": "nzxt-c1200-gold", "name": "NZXT C1200 Gold", "brand": "NZXT", "wattage": 1200, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 219, "has12v2x6": true },
+    { "id": "nzxt-c850-gold", "name": "NZXT C850 Gold", "brand": "NZXT", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "3.1", "modular": "full", "price": 129, "has12v2x6": true },
+    { "id": "silverstone-hela-850r", "name": "SilverStone HELA 850R Platinum", "brand": "SilverStone", "wattage": 850, "efficiencyTier": "platinum", "atxVersion": "3.1", "modular": "full", "price": 179, "has12v2x6": true, "cybeneticsRating": "ETA-A+" },
+    { "id": "coolermaster-v850-sfx", "name": "Cooler Master V850 SFX Gold", "brand": "Cooler Master", "wattage": 850, "efficiencyTier": "gold", "atxVersion": "3.0", "modular": "full", "price": 159, "has12v2x6": true },
+    { "id": "corsair-sf750", "name": "Corsair SF750 Platinum", "brand": "Corsair", "wattage": 750, "efficiencyTier": "platinum", "atxVersion": "2.x", "modular": "full", "price": 179, "has12v2x6": false },
+    { "id": "evga-supernova-650-g6", "name": "EVGA SuperNOVA 650 G6", "brand": "EVGA", "wattage": 650, "efficiencyTier": "gold", "atxVersion": "2.x", "modular": "full", "price": 79, "has12v2x6": false },
+    { "id": "corsair-cv650", "name": "Corsair CV650", "brand": "Corsair", "wattage": 650, "efficiencyTier": "bronze", "atxVersion": "2.x", "modular": "none", "price": 59, "has12v2x6": false },
+    { "id": "evga-600-ba", "name": "EVGA 600 BA", "brand": "EVGA", "wattage": 600, "efficiencyTier": "bronze", "atxVersion": "2.x", "modular": "none", "price": 49, "has12v2x6": false },
+    { "id": "thermaltake-smart-500", "name": "Thermaltake Smart 500W", "brand": "Thermaltake", "wattage": 500, "efficiencyTier": "80plus", "atxVersion": "2.x", "modular": "none", "price": 39, "has12v2x6": false }
+  ]
+}

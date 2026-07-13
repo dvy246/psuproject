@@ -1,0 +1,51 @@
+{
+  "version": "2026-07-13",
+  "ram": [
+    { "capacity": 16, "speed": 4800, "type": "DDR5", "sticks": 2, "price": 49, "typicalWatts": 5 },
+    { "capacity": 32, "speed": 5600, "type": "DDR5", "sticks": 2, "price": 79, "typicalWatts": 8 },
+    { "capacity": 32, "speed": 6000, "type": "DDR5", "sticks": 2, "price": 99, "typicalWatts": 10 },
+    { "capacity": 32, "speed": 6400, "type": "DDR5", "sticks": 2, "price": 129, "typicalWatts": 12 },
+    { "capacity": 64, "speed": 5600, "type": "DDR5", "sticks": 2, "price": 149, "typicalWatts": 12 },
+    { "capacity": 64, "speed": 6000, "type": "DDR5", "sticks": 4, "price": 199, "typicalWatts": 16 },
+    { "capacity": 16, "speed": 3200, "type": "DDR4", "sticks": 2, "price": 29, "typicalWatts": 5 },
+    { "capacity": 32, "speed": 3600, "type": "DDR4", "sticks": 2, "price": 55, "typicalWatts": 8 }
+  ],
+  "storage": [
+    { "type": "NVMe", "capacity": 500, "price": 39, "typicalWatts": 7 },
+    { "type": "NVMe", "capacity": 1000, "price": 69, "typicalWatts": 7 },
+    { "type": "NVMe", "capacity": 2000, "price": 119, "typicalWatts": 7 },
+    { "type": "NVMe", "capacity": 4000, "price": 249, "typicalWatts": 8 },
+    { "type": "SATA SSD", "capacity": 500, "price": 35, "typicalWatts": 3 },
+    { "type": "SATA SSD", "capacity": 1000, "price": 59, "typicalWatts": 3 },
+    { "type": "SATA SSD", "capacity": 2000, "price": 99, "typicalWatts": 3 },
+    { "type": "HDD", "capacity": 2000, "price": 49, "typicalWatts": 8 },
+    { "type": "HDD", "capacity": 4000, "price": 79, "typicalWatts": 8 },
+    { "type": "HDD", "capacity": 8000, "price": 129, "typicalWatts": 10 }
+  ],
+  "cooling": [
+    { "type": "stock", "price": 0, "typicalWatts": 5 },
+    { "type": "air-tower", "price": 39, "typicalWatts": 5 },
+    { "type": "aio-240", "price": 89, "typicalWatts": 10 },
+    { "type": "aio-360", "price": 129, "typicalWatts": 15 },
+    { "type": "custom-loop", "price": 299, "typicalWatts": 20 }
+  ],
+  "cases": [
+    { "id": "nzxt-h7-flow", "name": "NZXT H7 Flow", "formFactor": "ATX", "price": 129 },
+    { "id": "corsair-4000d-airflow", "name": "Corsair 4000D Airflow", "formFactor": "ATX", "price": 104 },
+    { "id": "fractal-north", "name": "Fractal Design North", "formFactor": "ATX", "price": 139 },
+    { "id": "lian-li-lancool-iii", "name": "Lian Li Lancool III", "formFactor": "ATX", "price": 149 },
+    { "id": "phanteks-xt-pro", "name": "Phanteks XT Pro", "formFactor": "ATX", "price": 109 },
+    { "id": "be-quiet-pure-base-500dx", "name": "be quiet! Pure Base 500DX", "formFactor": "ATX", "price": 109 },
+    { "id": "coolermaster-nr200p", "name": "Cooler Master NR200P", "formFactor": "Mini-ITX", "price": 99 },
+    { "id": "nzxt-h5-flow", "name": "NZXT H5 Flow", "formFactor": "ATX", "price": 89 },
+    { "id": "deepcool-ch510", "name": "DeepCool CH510", "formFactor": "ATX", "price": 69 },
+    { "id": "thermaltake-ceres-300", "name": "Thermaltake Ceres 300 TG", "formFactor": "ATX", "price": 79 }
+  ],
+  "peripherals": {
+    "os": { "windows": 139, "linux": 0, "none": 0 },
+    "monitor": { "1080p": 149, "1440p": 249, "4k": 449, "ultrawide": 599, "none": 0 },
+    "keyboardMouse": { "budget": 39, "mid": 99, "premium": 199, "none": 0 }
+  },
+  "fanWatts": 3,
+  "miscSystemWatts": 15
+}

@@ -1,0 +1,221 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const schema = {
+  "@type": "ContactPage",
+  "name": "Contact VoltForge",
+  "url": "https://voltforge.app/contact",
+  "description": "Contact VoltForge for data corrections, partnership inquiries, or general questions about our PC PSU calculator."
+};
+---
+
+<Layout
+  title="Contact VoltForge — Report Errors, Ask Questions"
+  description="Contact the VoltForge team to report data errors, suggest missing components, ask methodology questions, or inquire about partnerships."
+  schema={schema}
+>
+  <div class="contact-page">
+    <section class="contact-hero">
+      <div class="container">
+        <h1>Contact Us</h1>
+        <p class="contact-lead">
+          Found a data error? Missing a component? Have a methodology question?
+          We want to hear from you.
+        </p>
+      </div>
+    </section>
+
+    <section class="contact-body">
+      <div class="container">
+        <div class="two-column" style="align-items:start;gap:3rem;">
+
+          <!-- Contact reasons -->
+          <div>
+            <h2 style="font-size:1.5rem;margin-bottom:1.5rem;">Why contact us?</h2>
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="contact-reason card">
+                <div class="contact-reason-icon">🔧</div>
+                <div>
+                  <h3 style="font-size:1rem;margin-bottom:0.25rem;">Data Corrections</h3>
+                  <p style="font-size:0.875rem;">If a TDP figure, price, or spec is wrong or stale, let us know. We commit to reviewing corrections within 48 hours.</p>
+                </div>
+              </div>
+              <div class="contact-reason card">
+                <div class="contact-reason-icon">➕</div>
+                <div>
+                  <h3 style="font-size:1rem;margin-bottom:0.25rem;">Missing Components</h3>
+                  <p style="font-size:0.875rem;">If your CPU, GPU, or PSU isn't in our database, submit the model name and we'll add it in the next update cycle.</p>
+                </div>
+              </div>
+              <div class="contact-reason card">
+                <div class="contact-reason-icon">🤝</div>
+                <div>
+                  <h3 style="font-size:1rem;margin-bottom:0.25rem;">Partnerships & Press</h3>
+                  <p style="font-size:0.875rem;">For media inquiries or partnership discussions, reach out with subject "Partnership" or "Press."</p>
+                </div>
+              </div>
+              <div class="contact-reason card">
+                <div class="contact-reason-icon">❓</div>
+                <div>
+                  <h3 style="font-size:1rem;margin-bottom:0.25rem;">General Questions</h3>
+                  <p style="font-size:0.875rem;">Questions about our methodology, calculations, or recommendations? We're happy to explain our engineering decisions.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="contact-info-block">
+              <h3 style="font-size:1rem;margin-bottom:0.75rem;">Response Times</h3>
+              <ul style="list-style:none;font-size:0.875rem;display:flex;flex-direction:column;gap:0.5rem;">
+                <li><strong>Data corrections:</strong> Within 48 hours</li>
+                <li><strong>General questions:</strong> Within 5 business days</li>
+                <li><strong>Partnership inquiries:</strong> Within 7 business days</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Contact form -->
+          <div>
+            <h2 style="font-size:1.5rem;margin-bottom:1.5rem;">Send a Message</h2>
+            <form
+              class="contact-form card-accent"
+              id="contact-form"
+              action="https://formspree.io/f/placeholder"
+              method="POST"
+              novalidate
+            >
+              <div class="form-group">
+                <label for="contact-name" class="form-label">Your Name</label>
+                <input
+                  type="text"
+                  id="contact-name"
+                  name="name"
+                  class="form-input"
+                  placeholder="Jane Smith…"
+                  required
+                  autocomplete="name"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="contact-email" class="form-label">Email Address</label>
+                <input
+                  type="email"
+                  id="contact-email"
+                  name="email"
+                  class="form-input"
+                  placeholder="jane@example.com…"
+                  required
+                  autocomplete="email"
+                  spellcheck="false"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="contact-subject" class="form-label">Subject</label>
+                <select id="contact-subject" name="subject" class="form-input" required>
+                  <option value="">Select a subject…</option>
+                  <option value="data-correction">Data Correction</option>
+                  <option value="missing-component">Missing Component</option>
+                  <option value="methodology">Methodology Question</option>
+                  <option value="partnership">Partnership / Press</option>
+                  <option value="general">General Question</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="contact-message" class="form-label">Message</label>
+                <textarea
+                  id="contact-message"
+                  name="message"
+                  class="form-input"
+                  rows="5"
+                  placeholder="Describe your question or report in detail…"
+                  required
+                  style="resize:vertical;min-height:120px;"
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="contact-submit" style="width:100%;">
+                Send Message
+              </button>
+
+              <p style="font-size:0.75rem;color:var(--text-tertiary);margin-top:0.75rem;">
+                By submitting this form, you agree to our <a href="/privacy-policy">Privacy Policy</a>.
+                We will only use your email to respond to your inquiry.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+.contact-hero {
+  padding: 5rem 0 3rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.contact-lead {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-top: 1rem;
+  max-width: 55ch;
+}
+.contact-body {
+  padding: 4rem 0;
+}
+.contact-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.contact-reason-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+.contact-info-block {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.form-input {
+  padding: 0.625rem 0.875rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.form-input::placeholder {
+  color: var(--text-tertiary);
+}
+select.form-input option {
+  background: var(--bg-secondary);
+}
+</style>

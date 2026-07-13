@@ -1,0 +1,25 @@
+{
+  "gpuTierMultipliers": {
+    "budget":  1.20,
+    "mid":     1.35,
+    "high":    1.50,
+    "ultra":   1.50,
+    "halo":    1.57
+  },
+  "cpuTransientMultiplier": 1.20,
+  "multiGpuOverlapFactor": 1.50,
+  "atx31TransientTolerance": 2.00,
+  "atx31HoldUpTimeMs": 12,
+  "atx2xTransientTolerance": 1.30,
+  "capacitorAgingPerYear": 0.05,
+  "safetyBufferDefault": 0.25,
+  "pcieSlotMaxW": 75,
+  "connector12v2x6MaxW": 600,
+  "sources": {
+    "gpuMultipliers": "Cybenetics PSU Lab published methodology — GPU transient scaling factors by performance tier",
+    "cpuMultiplier": "Cybenetics PSU Lab published methodology — universal CPU transient factor",
+    "atx31": "Intel ATX 3.1 Design Guide (2024 revision) — transient excursion tolerance and hold-up time",
+    "rtx5090Transient": "Independent reviewer oscilloscope measurements (TechPowerUp, Igor's Lab, 2025) — observed 900W+ sub-1ms excursions on 575W TBP",
+    "capacitorAging": "Industry consensus — electrolytic capacitor derating ~5% annually after 3 years of continuous operation"
+  }
+}
