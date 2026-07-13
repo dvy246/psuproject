@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
 import { InteractiveTco } from '../components/calculators/InteractiveTco';
+import AdSlot from '../components/AdSlot.astro';
 
 const schema = {
   "@type": "WebApplication",
@@ -11,12 +12,29 @@ const schema = {
   "description": "Free PC power supply calculator with transient spike analysis, ATX 3.1 compliance checking, per-rail analysis, cable safety audit, and 5-year TCO comparison.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 };
+
+const faqSchema = {
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How do I calculate what PSU I need?", "acceptedAnswer": { "@type": "Answer", "text": "Sum CPU TDP + GPU TBP + ~50W overhead, then multiply by GPU transient factor (1.35×–1.57×), then add 20–35% safety buffer for ATX 3.1." } },
+    { "@type": "Question", "name": "What PSU do I need for RTX 5090?", "acceptedAnswer": { "@type": "Answer", "text": "RTX 5090 (575W TBP) spikes to 900W+. NVIDIA requires 1000W minimum. For high-end CPU pairings, use a 1200W ATX 3.1 PSU with native 12V-2x6 port." } },
+    { "@type": "Question", "name": "What PSU do I need for RTX 4090?", "acceptedAnswer": { "@type": "Answer", "text": "RTX 4090 (450W TBP) spikes to ~707W. With a high-TDP CPU, total transient peak can exceed 960W. NVIDIA recommends 850W minimum; 1000W ATX 3.1 is safer." } },
+    { "@type": "Question", "name": "Is 850W enough for a high-end gaming PC?", "acceptedAnswer": { "@type": "Answer", "text": "850W is sufficient for RTX 5080 + mid CPU. It is borderline for RTX 4090 + high-TDP Intel, and insufficient for RTX 5090." } },
+    { "@type": "Question", "name": "What is a GPU transient power spike?", "acceptedAnswer": { "@type": "Answer", "text": "A sub-millisecond burst of 135–200% of rated TBP. ATX 3.1 PSUs must tolerate 200% excursions for 100 microseconds." } },
+    { "@type": "Question", "name": "Does a more powerful PSU waste electricity?", "acceptedAnswer": { "@type": "Answer", "text": "Not significantly. PSUs only draw what components need. Peak efficiency is at 40–60% load. Oversizing by 3× may reduce efficiency by 2–5%." } },
+    { "@type": "Question", "name": "What is ATX 3.1 transient tolerance?", "acceptedAnswer": { "@type": "Answer", "text": "ATX 3.1 PSUs must handle up to 200% of rated wattage for under 100 microseconds per Intel ATX 3.1 Design Guide (2024)." } },
+    { "@type": "Question", "name": "Is Gold or Platinum PSU better for gaming?", "acceptedAnswer": { "@type": "Answer", "text": "Gold vs Platinum saves $8–15/year for casual gamers. Platinum is worth it for 24/7 systems. Gold is excellent value for gaming 4–6 hours/day." } },
+    { "@type": "Question", "name": "Can I daisy-chain PCIe power cables?", "acceptedAnswer": { "@type": "Answer", "text": "Never daisy-chain 8-pin PCIe cables for high-power GPUs (above 225W). Each cable must run directly from the PSU." } },
+    { "@type": "Question", "name": "What does a Cybenetics rating mean?", "acceptedAnswer": { "@type": "Answer", "text": "Cybenetics tests PSU efficiency at more load points than 80 PLUS. ETA-A++ is roughly equivalent to Titanium efficiency." } },
+    { "@type": "Question", "name": "How much does electricity cost to run a gaming PC?", "acceptedAnswer": { "@type": "Answer", "text": "A 500W system at 4 hours/day costs ~$95/year at US average rates ($0.13/kWh). Use VoltForge TCO to compare by efficiency tier." } }
+  ]
+};
 ---
 
 <Layout
   title="PSU Calculator — VoltForge: Transient Spike Analysis & ATX 3.1 Checker"
   description="Free PC power supply calculator that models real-world GPU transient spikes, checks ATX 3.1 compliance, audits cable safety (12V-2x6), and calculates 5-year electricity costs. Unbiased. No manufacturer lock-in."
-  schema={schema}
+  schema={[schema, faqSchema]}
 >
   <!-- Calculator Hero -->
   <section class="calc-hero" aria-labelledby="calc-hero-heading">
@@ -97,6 +115,151 @@ const schema = {
           <h3>80+ Efficiency Guide</h3>
           <p>When does upgrading from Bronze to Gold to Platinum actually pay off?</p>
         </a>
+        <a href="/guides/cybenetics-vs-80-plus" class="related-card card">
+          <h3>Cybenetics vs 80 PLUS</h3>
+          <p>Why Cybenetics tests are more rigorous than traditional 80 PLUS certifications.</p>
+        </a>
+        <a href="/guides/gpu-power-connectors" class="related-card card">
+          <h3>GPU Power Connectors</h3>
+          <p>Understand 8-pin, 12VHPWR, and 12V-2x6 cable safety requirements.</p>
+        </a>
+        <a href="/guides/psu-cable-extensions" class="related-card card">
+          <h3>Cable Extensions Safety</h3>
+          <p>Custom cables, pinouts, and risks of daisy-chaining power adapters.</p>
+        </a>
+        <a href="/guides/single-vs-multi-rail" class="related-card card">
+          <h3>Single vs Multi Rail</h3>
+          <p>Which +12V rail layout is safer for transient-heavy GPU configurations.</p>
+        </a>
+        <a href="/guides/ups-backup-power" class="related-card card">
+          <h3>UPS & Surge Protection</h3>
+          <p>How to size a backup battery and surge protector for high-end PCs.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ad Placement -->
+  <div class="container" style="margin-top: 3rem; margin-bottom: 1rem;">
+    <AdSlot slot="8501234567" type="leaderboard" />
+  </div>
+
+  <!-- ===== FAQ SECTION ===== -->
+  <section class="faq-section" aria-labelledby="faq-heading-calc">
+    <div class="container">
+      <div class="section-eyebrow">Common Questions</div>
+      <h2 id="faq-heading-calc">PSU Calculator — Frequently Asked Questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item" id="calc-faq-1">
+          <summary class="faq-question">
+            How do I calculate what PSU I need?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>To calculate your required PSU wattage: (1) Sum the TDP of your CPU and TBP of your GPU. (2) Add ~50W for RAM, storage, fans, and motherboard overhead. (3) Apply a transient multiplier — typically 1.35× for mid-range GPUs or 1.57× for halo-tier GPUs like RTX 5090. (4) Add a 20–35% safety buffer depending on ATX version. VoltForge automates all of these steps using real Cybenetics-sourced data.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-2">
+          <summary class="faq-question">
+            What PSU do I need for RTX 5090?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>The RTX 5090 (575W TBP) can spike to over 900W transiently. NVIDIA officially requires a 1000W PSU minimum. With a high-end CPU like the i9-14900K (253W sustained), the total transient peak can exceed 1100W. We recommend a 1200W ATX 3.1 PSU with a native 12V-2x6 port — not an 8-pin adapter cable.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-3">
+          <summary class="faq-question">
+            What PSU do I need for RTX 4090?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>The RTX 4090 (450W TBP) spikes to ~707W transiently (1.57× multiplier). With a 125W+ CPU, total peak exceeds 830W+. NVIDIA recommends 850W minimum. For a high-end pairing like i9-14900K + RTX 4090, use a 1000W ATX 3.1 PSU to ensure safe margins at all transient loads.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-4">
+          <summary class="faq-question">
+            Is 850W enough for a high-end gaming PC?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>850W is sufficient for systems with RTX 5080 (360W TBP → 540W transient) paired with a mid-to-high CPU. However, 850W is borderline for RTX 4090 + high-TDP Intel CPUs, and insufficient for RTX 5090 configurations. Use VoltForge to calculate your exact transient peak before buying a PSU.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-5">
+          <summary class="faq-question">
+            What is a GPU transient power spike?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>A GPU transient power spike is a sub-millisecond burst of power demand — typically 135–200% of the GPU's rated TBP — that occurs during workload transitions (e.g., starting a game, loading a shader). Oscilloscope measurements from TechPowerUp and Igor's Lab show the RTX 5090 reaching 900W+ in these spikes. ATX 3.1 PSUs are designed to tolerate 200% excursions for 100 microseconds.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-6">
+          <summary class="faq-question">
+            Does a more powerful PSU waste electricity?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Not significantly. PSUs only draw the power your components need, regardless of rated capacity. However, PSUs run at peak efficiency at 40–60% load. A 1600W PSU powering a 400W system runs at only 25% load — a less-optimal efficiency point. Oversizing by more than 3× can reduce efficiency by 2–5%, costing a few extra dollars per year in electricity.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-7">
+          <summary class="faq-question">
+            What is the ATX 3.1 transient tolerance?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>According to the Intel ATX 3.1 Design Guide (2024), compliant PSUs must withstand power excursions up to 200% of rated capacity for durations under 100 microseconds, and hold output voltages within ±5% during those excursions. This is the standard that allows 850W ATX 3.1 PSUs to safely power RTX 5080 systems with 540W transient peaks.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-8">
+          <summary class="faq-question">
+            Is Gold or Platinum PSU better for gaming?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>For gaming PCs running 4–6 hours/day, Gold (87–90% efficiency) vs Platinum (89–92%) saves roughly $8–15/year at US electricity rates. The $40–80 price premium for Platinum takes 3–7 years to break even. For 24/7 systems or mining rigs, Platinum or Titanium is clearly worth it. For casual gamers, Gold provides excellent value.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-9">
+          <summary class="faq-question">
+            Can I daisy-chain PCIe power cables?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Never daisy-chain PCIe 8-pin connectors for high-power GPUs (above 225W). Each connector should run as a dedicated cable directly from the PSU. Daisy-chaining multiplies resistance and can cause connector melting or fire at the transient current levels of modern GPUs. This is especially critical for RTX 4080, 4090, 5080, and 5090.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-10">
+          <summary class="faq-question">
+            What does Cybenetics rating mean for a PSU?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Cybenetics is an independent PSU testing laboratory that measures efficiency across more load points (10%, 20%, 40%, 60%, 80%, 100%, and 110%) than the basic 80 PLUS test (only 20%, 50%, 100%). Their ETA (efficiency) and LAMBDA (noise) ratings are considered more rigorous and real-world accurate. ETA-A++ corresponds roughly to Titanium efficiency tier.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="calc-faq-11">
+          <summary class="faq-question">
+            How much does electricity cost to run a gaming PC?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>A 500W gaming PC running 4 hours/day at $0.13/kWh (US average) costs roughly $95/year in electricity. A 750W system costs ~$143/year. High-end builds with RTX 5090 running 8 hours/day can approach $400–500/year. Use VoltForge's 5-Year TCO Calculator to compare electricity costs by PSU efficiency tier for your specific usage profile.</p>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -184,4 +347,17 @@ const schema = {
 .related-card:hover { transform: translateY(-2px); border-color: var(--border-accent); text-decoration: none; }
 .related-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
 .related-card p { font-size: 0.875rem; color: var(--text-secondary); }
+
+/* FAQ section */
+.faq-section { padding: 5rem 0; background: var(--bg-secondary); }
+.faq-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--border-subtle); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question { display: flex; align-items: center; justify-content: space-between; padding: 1.125rem 1.25rem; font-size: 0.9375rem; font-weight: 600; cursor: pointer; color: var(--text-primary); gap: 1rem; list-style: none; transition: background 150ms ease; }
+.faq-question:hover { background: var(--bg-tertiary); }
+.faq-question::-webkit-details-marker { display: none; }
+.faq-chevron { flex-shrink: 0; transition: transform 200ms ease; color: var(--accent-primary); }
+.faq-item[open] .faq-chevron { transform: rotate(180deg); }
+.faq-answer { padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border-subtle); }
+.faq-answer p { font-size: 0.9375rem; line-height: 1.7; max-width: 65ch; margin-top: 1rem; }
 </style>

@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
+import AdSlot from '../components/AdSlot.astro';
 
 const schema = {
   "@type": "WebApplication",
@@ -10,12 +11,29 @@ const schema = {
   "description": "Check if your current PC power supply (PSU) can support a GPU or CPU upgrade. Calculates transient spikes and safety headroom margins.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 };
+
+const faqSchema = {
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Will my current PSU support a new GPU?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on the rated wattage of your PSU, its ATX compliance standard, and the transient power peak of the new GPU. An RTX 5080 requires a minimum 850W PSU with 12V-2x6 cable compatibility. Demanding cards like RTX 5090 require at least 1000W-1200W." } },
+    { "@type": "Question", "name": "What happens if my PSU is too weak for my GPU upgrade?", "acceptedAnswer": { "@type": "Answer", "text": "If your GPU draws more power than the PSU's overcurrent protection (OCP) threshold, the PC will instantly crash or shut down. Repeatedly overloading a weak PSU can degrade its capacitors, reduce efficiency, and potentially cause voltage spikes that damage other PC parts." } },
+    { "@type": "Question", "name": "Do I need to upgrade my PSU for RTX 50-series?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, if your existing PSU is an older ATX 2.x standard and you upgrade to RTX 5080 or RTX 5090. These GPUs use the 12V-2x6 connection standard and demand strict transient handling (up to 200% excursion tolerance) that older PSUs lack." } },
+    { "@type": "Question", "name": "Can I use an 8-pin adapter for the 12V-2x6 GPU connector?", "acceptedAnswer": { "@type": "Answer", "text": "While physical adapters exist, using three or four 8-pin cables via an adapter is not recommended for high-end GPUs over 300W. Adapters introduce extra connector contact resistance and potential safety issues. A native ATX 3.1 PSU with a direct 12V-2x6 cable is highly recommended." } },
+    { "@type": "Question", "name": "How does power supply capacitor aging affect upgrade compatibility?", "acceptedAnswer": { "@type": "Answer", "text": "Electrolytic capacitors lose roughly 5% of their initial capacity annually after 3-4 years of operation. A 750W PSU after 5 years may only reliably deliver ~650W continuous load. Factor in a higher safety margin when upgrading hardware on an older PSU." } },
+    { "@type": "Question", "name": "How much headroom should I leave on my power supply?", "acceptedAnswer": { "@type": "Answer", "text": "We recommend leaving at least 20% headroom on ATX 3.0/3.1 PSUs, and 35% headroom on older ATX 2.x PSUs. Headroom accommodates capacitor aging, high ambient temperatures, and CPU/GPU transient power spikes without triggering shutdowns." } },
+    { "@type": "Question", "name": "Is a 750W PSU enough for an RTX 4070 Ti Super?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, a quality 750W PSU is sufficient for RTX 4070 Ti Super (285W TBP) paired with a mainstream CPU like Ryzen 7 7800X3D. However, if paired with an Intel i9-14900K, the peak system power draw may exceed safe limits on a 750W unit." } },
+    { "@type": "Question", "name": "Can I upgrade my CPU without upgrading my PSU?", "acceptedAnswer": { "@type": "Answer", "text": "Usually yes, if you upgrade to a CPU with the same or lower TDP. Upgrading from a 65W Ryzen 5 to a 125W+ Core i9, however, requires checking if your PSU can handle the extra continuous and transient load." } },
+    { "@type": "Question", "name": "What is the difference between ATX 3.0 and ATX 3.1?", "acceptedAnswer": { "@type": "Answer", "text": "ATX 3.1 revises the GPU power connector standard from 12VHPWR to 12V-2x6, featuring shorter sense pins to prevent power delivery if the cable is not fully plugged in, significantly reducing melting risk." } },
+    { "@type": "Question", "name": "What is Cybenetics LAMBDA noise rating?", "acceptedAnswer": { "@type": "Answer", "text": "Cybenetics LAMBDA ratings measure PSU operating noise levels: LAMBDA-A++ is the quietest (under 15 dBA), while LAMBDA-Standard is the loudest (35-40 dBA). Silent system builders should target LAMBDA-A or A+." } },
+    { "@type": "Question", "name": "How do I test my PSU voltage output?", "acceptedAnswer": { "@type": "Answer", "text": "You can test voltage using a dedicated PSU tester or a digital multimeter on the 24-pin connector pins. Alternatively, check BIOS settings or software tools like HWInfo64. Safe ranges are: +12V (11.4V-12.6V), +5V (4.75V-5.25V)." } }
+  ]
+};
 ---
 
 <Layout
   title="PSU Upgrade Checker — VoltForge: Will my current PSU support an upgrade?"
   description="Check if your current power supply can handle a planned graphics card or processor upgrade. Enter your new GPU or CPU and test against your existing PSU."
-  schema={schema}
+  schema={[schema, faqSchema]}
 >
   <!-- Checker Hero -->
   <section class="calc-hero" aria-labelledby="checker-hero-heading">
@@ -115,6 +133,151 @@ const schema = {
           <h3>PSU Efficiency Guide</h3>
           <p>Does a more efficient PSU pay off? Let's check the multi-year return on investment metrics.</p>
         </a>
+        <a href="/guides/psu-lifespan" class="related-card card">
+          <h3>PSU Lifespan & Aging</h3>
+          <p>How capacitor degradation affects safe output and when to plan your upgrade.</p>
+        </a>
+        <a href="/guides/how-to-test-a-psu" class="related-card card">
+          <h3>How to Test a PSU</h3>
+          <p>Step-by-step paperclip test, multi-meter usage, and safety checklist.</p>
+        </a>
+        <a href="/guides/gpu-power-connectors" class="related-card card">
+          <h3>GPU Power Connectors</h3>
+          <p>Compare 8-pin, 12VHPWR, and 12V-2x6 — and avoid adapter hazards.</p>
+        </a>
+        <a href="/guides/overclocking-power-draw" class="related-card card">
+          <h3>Overclocking Power</h3>
+          <p>How PBO, voltage offsets, and boost profiles affect your PSU requirements.</p>
+        </a>
+        <a href="/guides/single-vs-multi-rail" class="related-card card">
+          <h3>Single vs Multi Rail</h3>
+          <p>Which rail layout provides safer over-current protection for GPU upgrades.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ad Placement -->
+  <div class="container" style="margin-top: 3rem; margin-bottom: 1rem;">
+    <AdSlot slot="6501234567" type="leaderboard" />
+  </div>
+
+  <!-- ===== FAQ SECTION ===== -->
+  <section class="faq-section" aria-labelledby="faq-heading-checker">
+    <div class="container">
+      <div class="section-eyebrow">Common Questions</div>
+      <h2 id="faq-heading-checker">PSU Upgrade Checker — Frequently Asked Questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item" id="checker-faq-1">
+          <summary class="faq-question">
+            Will my current PSU support a new GPU?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>It depends on the rated wattage of your PSU, its ATX compliance standard, and the transient power peak of the new GPU. An RTX 5080 requires a minimum 850W PSU with 12V-2x6 cable compatibility. Demanding cards like RTX 5090 require at least 1000W-1200W.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-2">
+          <summary class="faq-question">
+            What happens if my PSU is too weak for my GPU upgrade?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>If your GPU draws more power than the PSU's overcurrent protection (OCP) threshold, the PC will instantly crash or shut down. Repeatedly overloading a weak PSU can degrade its capacitors, reduce efficiency, and potentially cause voltage spikes that damage other PC parts.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-3">
+          <summary class="faq-question">
+            Do I need to upgrade my PSU for RTX 50-series?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes, if your existing PSU is an older ATX 2.x standard and you upgrade to RTX 5080 or RTX 5090. These GPUs use the 12V-2x6 connection standard and demand strict transient handling (up to 200% excursion tolerance) that older PSUs lack.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-4">
+          <summary class="faq-question">
+            Can I use an 8-pin adapter for the 12V-2x6 GPU connector?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>While physical adapters exist, using three or four 8-pin cables via an adapter is not recommended for high-end GPUs over 300W. Adapters introduce extra connector contact resistance and potential safety issues. A native ATX 3.1 PSU with a direct 12V-2x6 cable is highly recommended.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-5">
+          <summary class="faq-question">
+            How does power supply capacitor aging affect upgrade compatibility?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Electrolytic capacitors lose roughly 5% of their initial capacity annually after 3-4 years of operation. A 750W PSU after 5 years may only reliably deliver ~650W continuous load. Factor in a higher safety margin when upgrading hardware on an older PSU.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-6">
+          <summary class="faq-question">
+            How much headroom should I leave on my power supply?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>We recommend leaving at least 20% headroom on ATX 3.0/3.1 PSUs, and 35% headroom on older ATX 2.x PSUs. Headroom accommodates capacitor aging, high ambient temperatures, and CPU/GPU transient power spikes without triggering shutdowns.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-7">
+          <summary class="faq-question">
+            Is a 750W PSU enough for an RTX 4070 Ti Super?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes, a quality 750W PSU is sufficient for RTX 4070 Ti Super (285W TBP) paired with a mainstream CPU like Ryzen 7 7800X3D. However, if paired with an Intel i9-14900K, the peak system power draw may exceed safe limits on a 750W unit.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-8">
+          <summary class="faq-question">
+            Can I upgrade my CPU without upgrading my PSU?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Usually yes, if you upgrade to a CPU with the same or lower TDP. Upgrading from a 65W Ryzen 5 to a 125W+ Core i9, however, requires checking if your PSU can handle the extra continuous and transient load.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-9">
+          <summary class="faq-question">
+            What is the difference between ATX 3.0 and ATX 3.1?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>ATX 3.1 revises the GPU power connector standard from 12VHPWR to 12V-2x6, featuring shorter sense pins to prevent power delivery if the cable is not fully plugged in, significantly reducing melting risk.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-10">
+          <summary class="faq-question">
+            What is Cybenetics LAMBDA noise rating?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Cybenetics LAMBDA ratings measure PSU operating noise levels: LAMBDA-A++ is the quietest (under 15 dBA), while LAMBDA-Standard is the loudest (35-40 dBA). Silent system builders should target LAMBDA-A or A+.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="checker-faq-11">
+          <summary class="faq-question">
+            How do I test my PSU voltage output?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>You can test voltage using a dedicated PSU tester or a digital multimeter on the 24-pin connector pins. Alternatively, check BIOS settings or software tools like HWInfo64. Safe ranges are: +12V (11.4V-12.6V), +5V (4.75V-5.25V).</p>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -185,4 +348,17 @@ const schema = {
 .related-card:hover { transform: translateY(-2px); border-color: var(--border-accent); text-decoration: none; }
 .related-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
 .related-card p { font-size: 0.875rem; color: var(--text-secondary); }
+
+/* FAQ section */
+.faq-section { padding: 5rem 0; background: var(--bg-secondary); }
+.faq-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--border-subtle); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question { display: flex; align-items: center; justify-content: space-between; padding: 1.125rem 1.25rem; font-size: 0.9375rem; font-weight: 600; cursor: pointer; color: var(--text-primary); gap: 1rem; list-style: none; transition: background 150ms ease; }
+.faq-question:hover { background: var(--bg-tertiary); }
+.faq-question::-webkit-details-marker { display: none; }
+.faq-chevron { flex-shrink: 0; transition: transform 200ms ease; color: var(--accent-primary); }
+.faq-item[open] .faq-chevron { transform: rotate(180deg); }
+.faq-answer { padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border-subtle); }
+.faq-answer p { font-size: 0.9375rem; line-height: 1.7; max-width: 65ch; margin-top: 1rem; }
 </style>

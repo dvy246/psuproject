@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { runFullPsuAnalysis } from '../../lib/psu';
 import type { CpuIndex, GpuIndex, PsuIndex } from '../../types/components';
+import AdSlot from '../../components/AdSlot.astro';
 
 import cpuData from '../../data/index/cpus.index.json';
 import gpuData from '../../data/index/gpus.index.json';
@@ -14,15 +15,11 @@ export async function getStaticPaths() {
 
   const paths = [];
 
-  // Generate GPU-only oracle pages: /oracle/is-{wattage}w-enough-for-{gpu} and /oracle/is-{wattage}-enough-for-{gpu}
+  // Generate GPU-only oracle pages: /oracle/is-{wattage}w-enough-for-{gpu}
   for (const gpu of gpus) {
     for (const wattage of wattages) {
       paths.push({
         params: { slug: `is-${wattage}w-enough-for-${gpu.id}` },
-        props: { gpu, cpu: null, wattage }
-      });
-      paths.push({
-        params: { slug: `is-${wattage}-enough-for-${gpu.id}` },
         props: { gpu, cpu: null, wattage }
       });
     }
@@ -37,10 +34,6 @@ export async function getStaticPaths() {
       for (const wattage of wattages) {
         paths.push({
           params: { slug: `is-${wattage}w-enough-for-${gpu.id}-with-${cpu.id}` },
-          props: { gpu, cpu, wattage }
-        });
-        paths.push({
-          params: { slug: `is-${wattage}-enough-for-${gpu.id}-with-${cpu.id}` },
           props: { gpu, cpu, wattage }
         });
       }
@@ -244,6 +237,11 @@ const productSchema = {
           </div>
         </section>
       )}
+
+      <!-- Ad Placement -->
+      <div style="margin-top: 3rem;">
+        <AdSlot slot="5401234567" type="responsive" />
+      </div>
 
       <!-- Internal quick link -->
       <div style="margin-top:4rem;text-align:center;">

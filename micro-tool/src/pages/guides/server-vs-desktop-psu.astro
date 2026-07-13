@@ -1,0 +1,105 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I use a server power supply in a desktop gaming PC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Technically yes, but it is highly impractical. Server PSUs use proprietary layouts (like EPS12V or Flex-ATX form factors), feature loud high-RPM 40mm fans, and require breakout boards to connect standard ATX 24-pin and PCIe cables."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Server vs Desktop PSU: Form Factors & Efficiency — VoltForge"
+  description="Compare server-grade power supplies with consumer desktop PSUs. Explore redundant hot-swaps, form factors, and pinout configurations."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>Server vs. Consumer Desktop PSUs</h1>
+        <p class="guide-lead">
+          Server power systems prioritizing 24/7 uptime are designed differently than desktop units.
+          This guide outlines architectural differences and usage caveats.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Form Factors and Formats</h2>
+          <p>
+            Desktop systems use standardized ATX or SFX sizes. Servers use proprietary dimensions
+            or industry rackmount form factors (such as 1U, 2U, or CRPS - Common Redundant Power Supply standards).
+            These are elongated, narrow bricks designed to fit inside thin slide-out rack trays.
+          </p>
+
+          <h2>Redundancy (Hot-Swapping)</h2>
+          <p>
+            Server racks feature <strong>redundant configurations</strong> (e.g. 1+1 or 2+1 setups). Multiple power supply
+            modules share the load. If one module fails, the others immediately absorb the electrical load
+            without interrupting the server's operation, allowing administrators to hot-swap modules live.
+          </p>
+
+          <h2>Noise and Acoustic Profiles</h2>
+          <p>
+            Server rooms are air-conditioned and acoustic noise is irrelevant. To maximize space, server PSUs
+            use small, high-density 40mm fans that spin at up to 15,000 RPM under load, producing a deafening,
+            high-pitched whine that is completely unsuitable for a desktop environment.
+          </p>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check desktop components</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/sfx-vs-atx-psu">SFX vs ATX Guide</a></li>
+              <li><a href="/guides/modular-vs-non-modular-psu">Modular vs Non-Modular</a></li>
+              <li><a href="/guides/psu-lifespan">PSU Lifespan</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

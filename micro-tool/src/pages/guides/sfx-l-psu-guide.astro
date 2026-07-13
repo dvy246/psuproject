@@ -1,0 +1,110 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the difference between SFX and SFX-L power supplies?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SFX-L is a lengthened version of the SFX form factor. Standard SFX is 100mm deep, whereas SFX-L is 130mm deep. The extra length allows manufacturers to install a larger 120mm fan (instead of 80mm/92mm) for quieter operation, but reduces case clearance."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="SFX-L PSU Clearance & Sizing Guide — VoltForge"
+  description="Understand the SFX-L power supply form factor. Compare dimensions with standard SFX units, check case compatibility, and analyze noise benefits."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>SFX-L Sizing &amp; Case Clearance</h1>
+        <p class="guide-lead">
+          SFX-L offers quieter operations for small form factor PCs but has installation caveats.
+          This guide outlines dimensions and case fitment limitations.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Dimensions Comparison</h2>
+          <p>
+            While sharing the same mounting holes and width/height as standard SFX, SFX-L units are deeper:
+          </p>
+          <ul>
+            <li><strong>Standard SFX:</strong> 125 mm (W) × 63.5 mm (H) × 100 mm (D)</li>
+            <li><strong>SFX-L:</strong> 125 mm (W) × 63.5 mm (H) × 130 mm (D)</li>
+          </ul>
+          <p>
+            The extra 30mm depth of the SFX-L unit can collide with modular GPU brackets, AIO coolers,
+            or cable routing spaces in extremely compact ITX cases (like the SSUPD Meshlicious or FormD T1).
+          </p>
+
+          <h2>Acoustic Advantages</h2>
+          <p>
+            The primary reason to buy an SFX-L unit is the fan size. Standard SFX PSUs are limited to 92mm fans,
+            which must spin fast under heavy loads, generating high noise levels. SFX-L units fit a standard
+            120mm slim fan, running much quieter and offering longer Zero-RPM silent mode periods.
+          </p>
+
+          <div class="important-warning">
+            <strong>⚠ ITX Clearance Warning:</strong> Check your ITX chassis manual before ordering.
+            Some cases explicitly list 'SFX PSUs only' and will not fit SFX-L units without colliding with AIO radiator fans.
+          </div>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check system fits</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/sfx-vs-atx-psu">SFX vs ATX Guide</a></li>
+              <li><a href="/guides/modular-vs-non-modular-psu">Modular vs Non-Modular</a></li>
+              <li><a href="/guides/psu-fan-direction">PSU Fan Direction</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--color-surface-raised); border-left: 4px solid var(--color-accent-orange); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

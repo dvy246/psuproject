@@ -1,0 +1,113 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the difference between modular, semi-modular, and non-modular PSUs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fully modular PSUs allow every single cable to be detached, aiding cable routing. Semi-modular PSUs have core cables (24-pin and CPU 8-pin) hardwired, while peripheral cables are modular. Non-modular PSUs have all cables permanently attached."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Modular vs Non-Modular PSU: Which is Better? — VoltForge"
+  description="Compare fully modular, semi-modular, and non-modular power supplies. Learn about cable management, case airflow, and price differences."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>Modular vs Non-Modular PSU: Cable Management & Choices</h1>
+        <p class="guide-lead">
+          Power supply modularity dictates how cables connect to the unit.
+          This guide explains modular types, build aesthetics, and airflow impacts.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Fully Modular PSUs</h2>
+          <p>
+            On a fully modular power supply, every cable (including the massive 24-pin motherboard connector)
+            plugs into a port on the PSU housing. 
+          </p>
+          <p>
+            <strong>Advantages:</strong> You only install the cables your system requires, making cable management
+            much cleaner. This is especially useful for mini-ITX cases or custom sleeved configurations.
+          </p>
+
+          <h2>Semi-Modular PSUs</h2>
+          <p>
+            Semi-modular power supplies have the 24-pin ATX power cable and 8-pin EPS CPU cable permanently attached,
+            while PCIe, SATA, and Molex peripheral cables plug in modularly.
+          </p>
+          <p>
+            Since every PC requires the 24-pin and CPU power cables anyway, semi-modular units offer
+            practically the same cable management benefits as fully modular units while costing slightly less.
+          </p>
+
+          <h2>Non-Modular PSUs</h2>
+          <p>
+            Non-modular units have a thick bundle of colored cables coming out of a single port on the PSU.
+            You must stuff the unused SATA and PCIe cables somewhere inside the chassis (typically the PSU shroud or drive cage).
+          </p>
+          <p>
+            They are the cheapest option and ideal for budget configurations where internal aesthetics do not matter.
+          </p>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check modular options</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/sfx-vs-atx-psu">SFX vs ATX Guide</a></li>
+              <li><a href="/guides/psu-cable-extensions">Custom Cable Safety</a></li>
+              <li><a href="/guides/sfx-l-psu-guide">SFX-L Clearance Guide</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

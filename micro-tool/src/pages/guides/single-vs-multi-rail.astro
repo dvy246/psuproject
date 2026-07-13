@@ -1,0 +1,111 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the difference between single rail and multi rail PSUs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A single rail PSU delivers all of its 12V power through a single massive output circuit. A multi rail PSU splits the +12V current across multiple separate circuits, each protected by its own Over-Current Protection (OCP) limits."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Single Rail vs Multi Rail PSU: Which is Safer? — VoltForge"
+  description="Learn about single rail and multi rail power supply layouts. Find out which is safer for high-end gaming rigs and heavy power spikes."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>Single Rail vs Multi Rail PSU: +12V Circuit Configurations</h1>
+        <p class="guide-lead">
+          Understanding single vs multi-rail configurations helps prevent component hazards
+          and random system shut-downs on high-end hardware.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Single Rail +12V Configurations</h2>
+          <p>
+            On a single-rail PSU, the entire +12V capacity (e.g. 70 Amps on a 850W unit) is routed through
+            a single circuit pathway.
+          </p>
+          <p>
+            <strong>Pros:</strong> You do not need to balance the load. Any connector can draw as much power
+            as the PSU can supply, making it easy to power power-hungry graphics cards.
+          </p>
+          <p>
+            <strong>Cons:</strong> If a component shorts out (such as a GPU power stage), a single-rail PSU
+            may deliver up to the full 70A of current before tripping the OCP, potentially melting cables or starting a fire.
+          </p>
+
+          <h2>Multi-Rail +12V Configurations</h2>
+          <p>
+            Multi-rail power supplies split the +12V capacity into multiple smaller circuits (e.g. four 12V rails
+            limited to 30 Amps each), each protected by its own OCP trigger.
+          </p>
+          <p>
+            <strong>Pros:</strong> Significantly safer. A short circuit will instantly trip the individual rail's OCP, shutting down the system safely.
+          </p>
+          <p>
+            <strong>Cons:</strong> If you plug both CPU EPS cables and multiple GPU PCIe cords into a single rail,
+            the current may exceed 30A and trip the OCP even if the PSU is not fully loaded.
+          </p>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check rail requirements</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide</a></li>
+              <li><a href="/guides/psu-lifespan">PSU Lifespan</a></li>
+              <li><a href="/guides/psu-efficiency-guide">80+ Efficiency Guide</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

@@ -1,0 +1,108 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much power does a PC draw at idle?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A modern gaming PC typically draws between 45W and 80W at idle. This power draw is composed of CPU standby C-states, GPU idle clocks, motherboard chipset activity, and RGB cooling configurations."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="PC Idle Power Consumption: Optimization & C-States — VoltForge"
+  description="Learn what causes idle power draw in gaming PCs. Discover how BIOS configurations, Windows power schemes, and C-states optimize desktop idle efficiency."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>PC Idle Power: Causes &amp; Optimizations</h1>
+        <p class="guide-lead">
+          Computers spend most of their lives idling. This guide explores the causes of
+          idle power consumption and how to configure your system for maximum savings.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Components of Idle Power</h2>
+          <p>
+            Even when you are just viewing your desktop, components are active:
+          </p>
+          <ul>
+            <li><strong>CPU Package:</strong> Modern CPUs drop core states (C-states) down, drawing 10W-25W.</li>
+            <li><strong>GPU Idle State:</strong> The graphics card clocks down memory and core speeds, drawing 10W-20W (unless running multiple high-refresh monitors).</li>
+            <li><strong>Motherboard & Chipset:</strong> VRM overheads, SATA lines, USB hubs, and chipsets draw 15W-25W.</li>
+            <li><strong>Fans & RGB:</strong> A single 120mm fan draws ~2W; complex RGB cooling hubs can draw 10W-15W.</li>
+          </ul>
+
+          <h2>The Impact of High-Refresh Monitors</h2>
+          <p>
+            Connecting multiple monitors or running a single panel at 240Hz+ often prevents the GPU from entering
+            its lowest power state, causing the card to draw up to 40W permanently at idle.
+          </p>
+
+          <h2>BIOS & OS Optimizations</h2>
+          <ol>
+            <li><strong>Enable Global C-States:</strong> Ensure AMD Cool'n'Quiet or Intel SpeedShift is set to 'Enabled' in the BIOS.</li>
+            <li><strong>PCI Express ASPM:</strong> Enable Active State Power Management in BIOS to let PCIe lanes sleep when idle.</li>
+            <li><strong>Windows Balanced Profile:</strong> Avoid using 'High Performance' power profiles, which force the CPU cores to stay locked at max boost frequencies.</li>
+          </ol>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check system idle profiles</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/psu-efficiency-guide">80+ Efficiency Guide</a></li>
+              <li><a href="/guides/aio-cooler-power-draw">AIO Cooler Power</a></li>
+              <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

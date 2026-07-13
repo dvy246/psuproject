@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
+import AdSlot from '../components/AdSlot.astro';
 
 const schema = {
   "@type": "WebApplication",
@@ -10,12 +11,29 @@ const schema = {
   "description": "Free PC builder and cost calculator with budget allocation visual charts, real-time optimization advice, sales tax, assembly fee, and custom OS/peripheral selectors.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 };
+
+const faqSchema = {
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How much does it cost to build a gaming PC in 2025?", "acceptedAnswer": { "@type": "Answer", "text": "A budget gaming PC costs $500–$800. Mid-range with RTX 5060 Ti or RX 9070 costs $900–$1,400. High-end with RTX 5080/5090 costs $2,000–$4,000+. These estimates include CPU, GPU, RAM, storage, motherboard, PSU, and case." } },
+    { "@type": "Question", "name": "What percentage of PC budget should go to the GPU?", "acceptedAnswer": { "@type": "Answer", "text": "For gaming builds, aim for 35–45% of total budget on the GPU. A 50%+ GPU allocation is common for high-resolution gaming. CPU should be 15–25%, with the rest split across RAM, storage, motherboard, PSU, and case." } },
+    { "@type": "Question", "name": "Is it cheaper to build or buy a PC?", "acceptedAnswer": { "@type": "Answer", "text": "Building is typically 15–30% cheaper than a prebuilt with equivalent specs, and you get better component quality control. Prebuilts save assembly time but often use cheaper PSUs, motherboards, and cooling. For performance per dollar, building wins." } },
+    { "@type": "Question", "name": "What is a good PC build for $1000 in 2025?", "acceptedAnswer": { "@type": "Answer", "text": "A strong $1,000 build in 2025: AMD Ryzen 5 9600X ($229) + RTX 5060 Ti ($399) + 16GB DDR5-6000 ($60) + 1TB NVMe SSD ($70) + B650 motherboard ($120) + 650W Gold PSU ($80) + mid-tower case ($60). This targets 1080p/1440p gaming." } },
+    { "@type": "Question", "name": "How much RAM do I need for gaming?", "acceptedAnswer": { "@type": "Answer", "text": "16GB DDR5 (2x8GB) is the minimum for gaming in 2025. Most modern games recommend 16GB; demanding titles and future-proofing warrant 32GB. 64GB is only needed for professional workloads like video editing or 3D rendering." } },
+    { "@type": "Question", "name": "What CPU should I pair with an RTX 5080?", "acceptedAnswer": { "@type": "Answer", "text": "For RTX 5080, pair with AMD Ryzen 7 9800X3D ($479) or Intel Core Ultra 9 285K ($589) to avoid CPU bottlenecks at 1440p and 4K. Pairing RTX 5080 with a budget CPU will create a significant bottleneck in CPU-heavy games." } },
+    { "@type": "Question", "name": "Is DDR5 worth it over DDR4 in 2025?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. DDR5 is the standard for all modern AM5 and LGA1851 platforms. DDR5-6000 CL30 is the sweet spot for AMD Ryzen, providing optimal memory controller performance. DDR4 systems are limited to older LGA1700 (Intel) platforms and offer no upgrade path." } },
+    { "@type": "Question", "name": "How much storage do I need for a gaming PC?", "acceptedAnswer": { "@type": "Answer", "text": "2TB NVMe SSD is the ideal minimum for a gaming PC in 2025. Modern AAA games can take 80–150GB each. A 1TB SSD fills up fast with 10–15 games installed. Consider a 2TB primary drive + 4TB HDD for game archives." } },
+    { "@type": "Question", "name": "What is a CPU bottleneck?", "acceptedAnswer": { "@type": "Answer", "text": "A CPU bottleneck occurs when your CPU cannot feed frames to your GPU fast enough, limiting frame rates. This is common when pairing budget CPUs with high-end GPUs like RTX 5090. Use VoltForge's bottleneck guide to identify mismatched configurations." } },
+    { "@type": "Question", "name": "Should I get an AIO cooler or air cooler?", "acceptedAnswer": { "@type": "Answer", "text": "For CPUs up to 65W TDP, a quality air cooler ($30–$70) is sufficient and quieter. For 125W+ TDP CPUs like Ryzen 9 9950X or Intel i9-14900K running all-core workloads, a 240mm or 360mm AIO ($80–$150) prevents thermal throttling and maintains boost clocks." } },
+    { "@type": "Question", "name": "What sales tax do I pay on PC parts?", "acceptedAnswer": { "@type": "Answer", "text": "US sales tax on PC parts varies by state: 0% in Oregon, Montana, Delaware, and New Hampshire; 7–10% in most states. California charges 7.25%+. Major retailers (Amazon, Newegg, Micro Center) collect sales tax in all states. Use VoltForge's tax slider to factor your local rate into build cost." } }
+  ]
+};
 ---
 
 <Layout
   title="PC Build Cost Calculator — VoltForge: Budget Allocation & Cost Optimizer"
   description="Build your custom PC and estimate total cost in real time. Get visual budget allocation breakdowns, sales tax calculations, assembly fee add-ons, and real-time cost-saving suggestions."
-  schema={schema}
+  schema={[schema, faqSchema]}
 >
   <!-- Builder Hero -->
   <section class="calc-hero" aria-labelledby="builder-hero-heading">
@@ -137,6 +155,151 @@ const schema = {
           <h3>PC Building Tips</h3>
           <p>Critical tips regarding thermal application, motherboard standoff installation, and cable routing.</p>
         </a>
+        <a href="/guides/psu-sizing-guide" class="related-card card">
+          <h3>PSU Sizing Guide</h3>
+          <p>How to calculate the right wattage buffer and debunking headroom myths.</p>
+        </a>
+        <a href="/guides/atx-3-1-guide" class="related-card card">
+          <h3>ATX 3.1 Guide</h3>
+          <p>Why the new standard matters for modern GPU compatibility and safety.</p>
+        </a>
+        <a href="/guides/psu-efficiency-guide" class="related-card card">
+          <h3>80+ Efficiency Guide</h3>
+          <p>Compare Bronze through Titanium tiers and calculate multi-year savings.</p>
+        </a>
+        <a href="/guides/pc-bottleneck-guide" class="related-card card">
+          <h3>Bottleneck Guide</h3>
+          <p>Balance your CPU and GPU configurations to avoid performance mismatches.</p>
+        </a>
+        <a href="/guides/psu-lifespan" class="related-card card">
+          <h3>PSU Lifespan</h3>
+          <p>How capacitor aging affects your power supply and when to upgrade.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ad Placement -->
+  <div class="container" style="margin-top: 3rem; margin-bottom: 1rem;">
+    <AdSlot slot="7601234567" type="leaderboard" />
+  </div>
+
+  <!-- ===== FAQ SECTION ===== -->
+  <section class="faq-section" aria-labelledby="faq-heading-builder">
+    <div class="container">
+      <div class="section-eyebrow">Common Questions</div>
+      <h2 id="faq-heading-builder">PC Build Cost — Frequently Asked Questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item" id="builder-faq-1">
+          <summary class="faq-question">
+            How much does it cost to build a gaming PC in 2025?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>A budget gaming PC costs $500–$800. A mid-range build with RTX&nbsp;5060&nbsp;Ti or RX&nbsp;9070 costs $900–$1,400. A high-end gaming PC with RTX&nbsp;5080/5090 costs $2,000–$4,000+. These estimates include CPU, GPU, RAM, storage, motherboard, PSU, and case — but not monitor or peripherals.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-2">
+          <summary class="faq-question">
+            What percentage of PC budget should go to the GPU?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>For gaming builds, aim for 35–45% of total budget on the GPU. A 50%+ GPU allocation is common for high-resolution gaming. CPU should be 15–25%, with the rest split across RAM, storage, motherboard, PSU, and case.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-3">
+          <summary class="faq-question">
+            Is it cheaper to build or buy a PC?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Building is typically 15–30% cheaper than a prebuilt with equivalent specs, and you get better component quality control. Prebuilts save assembly time but often use cheaper PSUs, motherboards, and cooling. For performance per dollar, building wins.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-4">
+          <summary class="faq-question">
+            What is a good PC build for $1,000 in 2025?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>A strong $1,000 build in 2025: Ryzen 5 9600X ($229) + RTX 5060 Ti ($399) + 16GB DDR5-6000 ($60) + 1TB NVMe SSD ($70) + B650 motherboard ($120) + 650W Gold PSU ($80) + mid-tower case ($60). This targets excellent 1080p and capable 1440p gaming.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-5">
+          <summary class="faq-question">
+            How much RAM do I need for gaming?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>16GB DDR5 (2×8GB) is the minimum for gaming in 2025. Most modern games recommend 16GB; demanding titles and future-proofing warrant 32GB. 64GB is only needed for professional workloads like video editing or 3D rendering.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-6">
+          <summary class="faq-question">
+            What CPU should I pair with RTX 5080?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>For RTX&nbsp;5080, pair with AMD Ryzen 7 9800X3D ($479) or Intel Core Ultra 9 285K ($589) to avoid CPU bottlenecks at 1440p and 4K. Pairing RTX&nbsp;5080 with a budget CPU will create significant bottlenecks in CPU-heavy games like strategy titles or open-world games.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-7">
+          <summary class="faq-question">
+            Is DDR5 worth it over DDR4 in 2025?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Yes. DDR5 is the standard for all modern AM5 and LGA1851 platforms. DDR5-6000 CL30 is the sweet spot for AMD Ryzen, providing optimal memory controller performance. DDR4 systems are limited to older LGA1700 Intel platforms with no upgrade path.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-8">
+          <summary class="faq-question">
+            How much storage do I need for a gaming PC?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>2TB NVMe SSD is the ideal minimum for gaming in 2025. Modern AAA games take 80–150GB each. A 1TB SSD fills up with just 10–15 games. Consider a 2TB primary NVMe drive + 4TB HDD for game archives.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-9">
+          <summary class="faq-question">
+            What is a CPU bottleneck and how do I avoid it?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>A CPU bottleneck occurs when your CPU cannot feed frames to your GPU fast enough, limiting frame rates. Pair high-end GPUs (RTX 5080+) with high-end CPUs (Ryzen 7 9800X3D or Core Ultra 9 285K). Gaming at 4K is typically less CPU-bottlenecked since the GPU workload is heavier.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-10">
+          <summary class="faq-question">
+            Should I get an AIO or air CPU cooler?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>For CPUs up to 65W TDP, a quality air cooler ($30–$70) is sufficient and quieter. For 125W+ TDP CPUs like Ryzen 9 9950X or i9-14900K under all-core load, a 240mm or 360mm AIO ($80–$150) prevents thermal throttling and sustains higher boost clocks.</p>
+          </div>
+        </details>
+
+        <details class="faq-item" id="builder-faq-11">
+          <summary class="faq-question">
+            What sales tax do I pay on PC parts?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>US sales tax on PC parts varies by state: 0% in Oregon, Montana, Delaware, and New Hampshire; 7–10% in most states. California charges 7.25%+. Major retailers (Amazon, Newegg, Micro Center) collect tax in all states. Use VoltForge's tax rate slider to factor your local rate into the total build cost.</p>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -233,4 +396,17 @@ const schema = {
 .related-card:hover { transform: translateY(-2px); border-color: var(--border-accent); text-decoration: none; }
 .related-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
 .related-card p { font-size: 0.875rem; color: var(--text-secondary); }
+
+/* FAQ section */
+.faq-section { padding: 5rem 0; background: var(--bg-secondary); }
+.faq-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--border-subtle); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question { display: flex; align-items: center; justify-content: space-between; padding: 1.125rem 1.25rem; font-size: 0.9375rem; font-weight: 600; cursor: pointer; color: var(--text-primary); gap: 1rem; list-style: none; transition: background 150ms ease; }
+.faq-question:hover { background: var(--bg-tertiary); }
+.faq-question::-webkit-details-marker { display: none; }
+.faq-chevron { flex-shrink: 0; transition: transform 200ms ease; color: var(--accent-primary); }
+.faq-item[open] .faq-chevron { transform: rotate(180deg); }
+.faq-answer { padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border-subtle); }
+.faq-answer p { font-size: 0.9375rem; line-height: 1.7; max-width: 65ch; margin-top: 1rem; }
 </style>

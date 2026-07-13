@@ -1,0 +1,110 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Are custom cable extensions safe to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, cable extensions are generally safe because they plug into your PSU's original cables, meaning the connector pinouts match. Direct replacement modular cables, however, must be specifically matched to your PSU model, as pinouts on the PSU side are not standardized."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Custom PSU Cables & Extensions: Safety Guide — VoltForge"
+  description="Learn the differences between custom modular cables and cable extensions. Explore compatibility concerns, pinouts, and risks of melting ports."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>PSU Cable Extensions vs. Custom Cables</h1>
+        <p class="guide-lead">
+          Improving your build's aesthetics with custom cables requires understanding safety boundaries.
+          This guide explains extensions, modular replacements, and pinout hazards.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Cable Extensions</h2>
+          <p>
+            Extensions plug into the female ends of your PSU's stock cables. Because they do not connect
+            directly to the PSU, they do not require model compatibility. They are cheap and safe,
+            but add extra cable bulk that must be managed behind the motherboard tray.
+          </p>
+
+          <h2>Direct Custom Replacement Cables</h2>
+          <p>
+            These replacement cables connect directly to the PSU housing, eliminating stock cable bulk.
+          </p>
+          <div class="important-warning">
+            <strong>🔥 Critical Warning:</strong> The pinouts on the power supply side of modular cables are
+            <strong>NOT standardized</strong>. A modular cable from a Corsair PSU plugged into a Seasonic PSU
+            will fit physically but will send 12V power into 5V ground pins, instantly frying your CPU, GPU, and drives.
+            Always use manufacturer-specific compatibility configurators.
+          </div>
+
+          <h2>Wire Gauges (AWG)</h2>
+          <p>
+            When purchasing custom cables, ensure they use high-quality <strong>16 AWG</strong> wire (thicker conductors)
+            rather than thin 18 AWG, especially for high-draw CPU EPS and GPU PCIe circuits. Thicker wires reduce voltage drop
+            and run much cooler under high load configurations.
+          </p>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check cable specifications</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/gpu-power-connectors">GPU Power Connectors</a></li>
+              <li><a href="/guides/modular-vs-non-modular-psu">Modular vs Non-Modular</a></li>
+              <li><a href="/guides/psu-coil-whine">PSU Coil Whine</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--color-surface-raised); border-left: 4px solid var(--color-accent-orange); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

@@ -1,0 +1,192 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const websiteSchema = {
+  "@type": "CollectionPage",
+  "name": "VoltForge PC Hardware & PSU Sizing Guides",
+  "url": "https://voltforge.app/guides",
+  "description": "Expert engineering guides on PC power supplies, ATX 3.1, Cybenetics certifications, custom cables, UPS sizing, thermal designs, and hardware diagnostics."
+};
+
+const categories = [
+  {
+    title: "⚡ PSU Sizing & Power Diagnostics",
+    description: "Detailed guides on hardware power draw, transients, noise levels, and lifespan analysis.",
+    links: [
+      { name: "PSU Sizing Guide", href: "/guides/psu-sizing-guide", desc: "Learn how to calculate recommended wattage with transient buffers." },
+      { name: "PC Idle Power Analysis", href: "/guides/pc-idle-power", desc: "Understand C-states, motherboard chipset draws, and idle optimization." },
+      { name: "PC Hardware Bottlenecks", href: "/guides/pc-bottleneck-guide", desc: "Balance your CPU and GPU configurations to prevent power bottlenecks." },
+      { name: "AIO Liquid Cooler Power Draw", href: "/guides/aio-cooler-power-draw", desc: "Calculate pump amperage limits and radiator fan power consumption." },
+      { name: "Overclocking Sizing Constraints", href: "/guides/overclocking-power-draw", desc: "How overvolting and boost limits impact system wattage." },
+      { name: "How to Test a PSU Safely", href: "/guides/how-to-test-a-psu", desc: "Step-by-step jumpstart paperclip test and rail troubleshooting." },
+      { name: "PSU Lifespan & Aging", href: "/guides/psu-lifespan", desc: "How electrolytic capacitor degradation affects maximum output." },
+      { name: "Quiet PSU Sizing Guide", href: "/guides/quiet-psu-guide", desc: "Fluid dynamic bearings, ECO fan profiles, and noise levels." }
+    ]
+  },
+  {
+    title: "🔌 Power Standards, Cables & safety",
+    description: "Understanding ATX 3.1, connectors, custom extensions, and power quality.",
+    links: [
+      { name: "ATX 3.1 & 12V-2x6 Guide", href: "/guides/atx-3-1-guide", desc: "The definitive guide to the new ATX 3.1 safety and power standards." },
+      { name: "80 PLUS Efficiency Guide", href: "/guides/psu-efficiency-guide", desc: "Analyze Bronze, Gold, and Platinum efficiency tier differences." },
+      { name: "Cybenetics vs 80 PLUS", href: "/guides/cybenetics-vs-80-plus", desc: "Why Cybenetics tests are more reliable than traditional 80 PLUS." },
+      { name: "GPU Power Connectors", href: "/guides/gpu-power-connectors", desc: "Analyze 8-pin, 12VHPWR, and native 12V-2x6 cable safety." },
+      { name: "Single Rail vs Multi-Rail PSUs", href: "/guides/single-vs-multi-rail", desc: "Understand +12V rail currents, OCP triggers, and safety." },
+      { name: "Custom Cables & Extensions", href: "/guides/psu-cable-extensions", desc: "Avoid hardware failures: replacement pins, modular grids, and AWG gauges." },
+      { name: "UPS & Surge Protection Sizing", href: "/guides/ups-backup-power", desc: "How to size a backup battery for high-end gaming rigs." }
+    ]
+  },
+  {
+    title: "🖥️ PC Building & Budgeting",
+    description: "Practical assembly instructions, budget templates, and form factor compatibility.",
+    links: [
+      { name: "How to Build a PC (Step-by-Step)", href: "/guides/how-to-build-a-pc", desc: "Complete builder walkthrough from unboxing to first boot." },
+      { name: "Hardware Building Tips", href: "/guides/building-tips", desc: "Stand-off alignments, post testing, and thermal paste advice." },
+      { name: "PC Budget Allocation Guide", href: "/guides/budget-guide", desc: "Optimal cost distributions for $500 to $2000+ custom systems." },
+      { name: "Modular vs Non-Modular PSUs", href: "/guides/modular-vs-non-modular-psu", desc: "Choose the right cable layout format for your build case." },
+      { name: "SFX vs ATX Form Factors", href: "/guides/sfx-vs-atx-psu", desc: "Compare desktop standard units with small form factor configurations." },
+      { name: "SFX-L Case Clearances", href: "/guides/sfx-l-psu-guide", desc: "Understand deeper SFX form factor layouts and case fitment limits." },
+      { name: "Passive & Fanless Power Supplies", href: "/guides/fanless-psu-guide", desc: "Passive thermal management for fully silent desktop builds." },
+      { name: "Server vs Desktop PSUs", href: "/guides/server-vs-desktop-psu", desc: "RED redundancy, 1U/2U form factors, and noise comparisons." },
+      { name: "PSU Fan Intake Direction", href: "/guides/psu-fan-direction", desc: "Airflow guides: should your PSU fan face up or down?" }
+    ]
+  }
+];
+---
+
+<Layout
+  title="PC Hardware & Power Sizing Guides Library — VoltForge"
+  description="Master PC building, ATX 3.1 power requirements, custom sleeved cable configurations, surge protection, and noise optimization with 25+ expert guides."
+  schema={websiteSchema}
+>
+  <section class="guides-hero" aria-labelledby="guides-hero-heading">
+    <div class="container">
+      <div class="guides-hero-inner">
+        <h1 id="guides-hero-heading" class="calc-h1">
+          VoltForge Hardware <span class="gradient-text">Guides Library</span>
+        </h1>
+        <p class="calc-subtitle">
+          Expert, independent engineering guides on power delivery, component sizing, safety protocols,
+          and PC assembly best practices. Based on published Cybenetics efficiency and transient data.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="guides-directory">
+    <div class="container">
+      <div class="guides-grid">
+        {categories.map(category => (
+          <div class="guides-category-box card">
+            <h2 class="category-title">{category.title}</h2>
+            <p class="category-desc">{category.description}</p>
+            <hr class="category-divider" />
+            <ul class="guide-links-list">
+              {category.links.map(link => (
+                <li class="guide-link-item">
+                  <a href={link.href} class="guide-anchor">
+                    <span class="guide-link-name">{link.name}</span>
+                    <span class="guide-link-arrow">→</span>
+                  </a>
+                  <p class="guide-link-desc">{link.desc}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.guides-hero {
+  padding: 5rem 0 3rem;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.guides-hero-inner {
+  max-width: 800px;
+}
+.guides-directory {
+  padding: 4rem 0 6rem;
+  background: var(--bg-primary);
+}
+.guides-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+@media (min-width: 1024px) {
+  .guides-grid {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+}
+.guides-category-box {
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.category-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+.category-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+.category-divider {
+  border: 0;
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 0 0 1.5rem 0;
+}
+.guide-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.guide-link-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.guide-anchor {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-accent-cyan);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.guide-anchor:hover {
+  color: var(--color-accent-blue);
+}
+.guide-anchor:hover .guide-link-arrow {
+  transform: translateX(4px);
+}
+.guide-link-arrow {
+  font-family: var(--font-mono);
+  transition: transform 0.2s ease;
+}
+.guide-link-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+</style>

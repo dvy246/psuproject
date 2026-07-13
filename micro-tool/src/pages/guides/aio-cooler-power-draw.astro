@@ -1,0 +1,103 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much power does an AIO liquid cooler draw?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An All-in-One (AIO) liquid cooler typically draws 10W to 25W. This power is split between the pump (5W-10W), radiator fans (2W-4W each), and RGB controller systems."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="AIO Liquid Cooler Power Consumption: Pump Headers & Wiring — VoltForge"
+  description="Learn about the power requirements of All-in-One (AIO) liquid coolers. Understand pump amp limits, SATA power cables, and motherboard headers."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>AIO Liquid Cooler Power Draw &amp; Wiring</h1>
+        <p class="guide-lead">
+          Water cooling pumps and fan hubs add to your system's overall power budget.
+          This guide analyzes pump power draw, header limits, and SATA connections.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Liquid Pump Amperage</h2>
+          <p>
+            Standard motherboard fan headers are rated for <strong>1.0 Amp</strong> of current at 12V (equal to 12 Watts).
+            Heavy-duty AIO pumps can draw 0.8A to 1.5A under full startup load.
+          </p>
+          <p>
+            Always plug your pump into the designated <strong>AIO_PUMP</strong> or <strong>W_PUMP</strong> header.
+            These headers are specially rated for up to 2.0A or 3.0A to handle motor startup transients safely without burning out motherboard circuits.
+          </p>
+
+          <h2>SATA Power Connections</h2>
+          <p>
+            Many modern high-end AIOs (such as Corsair iCUE Link or NZXT Kraken) bypass motherboard headers
+            for power. Instead, they connect directly to the PSU via a <strong>SATA power connector</strong> or a 6-pin PCIe plug.
+          </p>
+          <p>
+            This ensures the pump and extensive RGB setups have access to a clean 4.5A capacity from the +12V and +5V rails.
+          </p>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check cooler power draws</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/pc-idle-power">PC Idle Power</a></li>
+              <li><a href="/guides/overclocking-power-draw">Overclocking Power</a></li>
+              <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

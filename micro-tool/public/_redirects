@@ -1,0 +1,11 @@
+# Cloudflare Pages redirects
+# Redirect legacy/common paths
+
+/psu  /psu-calculator  301
+/builder  /pc-builder  301
+/checker  /psu-checker  301
+/calculator  /psu-calculator  301
+/guide  /guides  301
+
+# SPA fallback — serve 404 page
+/*  /404  404

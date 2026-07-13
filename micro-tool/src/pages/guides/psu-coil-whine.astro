@@ -1,0 +1,115 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What causes PSU coil whine?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Coil whine is caused by electromagnetic coils inside the power supply vibrating physically when carrying current. If this vibration matches audible frequencies, you hear a high-pitched buzzing or squealing noise."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is PSU coil whine dangerous?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Coil whine is purely an acoustic annoyance and does not indicate hardware degradation, malfunction, or safety risks."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="PSU Coil Whine: Causes & How to Fix It — VoltForge"
+  description="Understand what causes coil whine in power supplies and graphics cards. Discover safety implications and practical methods to reduce buzzing."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>PSU Coil Whine: Causes &amp; Fixes</h1>
+        <p class="guide-lead">
+          A high-pitched squeal from your computer can be frustrating.
+          This guide explains the causes of PSU coil whine and methods to mitigate it.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>What is Coil Whine?</h2>
+          <p>
+            Inside your PSU, inductors (coils of wire wound around magnetic cores) act as filters to smooth
+            voltages. When current passes through these windings, it creates magnetic fields that cause the wire coils to vibrate.
+          </p>
+          <p>
+            Under heavy loads or high frame rates, these vibrations occur at frequencies within human hearing range, resulting in a high-pitched whine.
+          </p>
+
+          <h2>Common Triggers</h2>
+          <ul>
+            <li><strong>GPU Frame Rates:</strong> Uncapped frame rates in menus (e.g. 500+ FPS) cause rapid GPU transient spikes, inducing resonance in the PSU inductors.</li>
+            <li><strong>Electrical Resonance:</strong> Minor mismatch between GPU VRM and PSU switching frequencies.</li>
+            <li><strong>House Wiring issues:</strong> High electrical noise on the AC wall input.</li>
+          </ul>
+
+          <h2>Mitigation Methods</h2>
+          <ol>
+            <li><strong>Cap Frame Rates:</strong> Enable V-Sync or set global limits in NVIDIA Control Panel or Radeon Settings to limit extreme current oscillations.</li>
+            <li><strong>Use Surge Protection/UPS:</strong> Active line conditioning smooths out AC harmonics entering the PSU.</li>
+            <li><strong>Stress Testing:</strong> Often, letting the system run a heavy workload for 24-48 hours can break in the coil adhesives, damping the acoustics over time.</li>
+          </ol>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check system acoustics</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/quiet-psu-guide">Quiet PSU Guide</a></li>
+              <li><a href="/guides/single-vs-multi-rail">Single vs Multi Rail</a></li>
+              <li><a href="/guides/how-to-test-a-psu">How to Test a PSU</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

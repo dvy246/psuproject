@@ -8,6 +8,83 @@ import '../styles/tailwind.css';
 import '../styles/global.css';
 import '../styles/assembly-desk.css';
 
+const breadcrumbNames: Record<string, string> = {
+  '/': 'Home',
+  '/psu-calculator': 'PSU Calculator',
+  '/pc-builder': 'PC Builder',
+  '/psu-checker': 'PSU Checker',
+  '/guides': 'Guides',
+  '/about': 'About',
+  '/methodology': 'Methodology',
+  '/compare': 'Compare',
+  '/compare/psu': 'PSU Comparison',
+  '/contact': 'Contact',
+  '/privacy-policy': 'Privacy Policy',
+  '/terms': 'Terms & Conditions',
+};
+
+const guideNames: Record<string, string> = {
+  'psu-sizing-guide': 'PSU Sizing Guide',
+  'atx-3-1-guide': 'ATX 3.1 Guide',
+  'psu-efficiency-guide': '80+ Efficiency Guide',
+  'cybenetics-vs-80-plus': 'Cybenetics vs 80 PLUS',
+  'gpu-power-connectors': 'GPU Power Connectors',
+  'psu-cable-extensions': 'Cable Extensions Safety',
+  'single-vs-multi-rail': 'Single vs Multi Rail',
+  'ups-backup-power': 'UPS & Surge Protection',
+  'how-to-build-a-pc': 'How to Build a PC',
+  'budget-guide': 'PC Budget Guide',
+  'building-tips': 'PC Building Tips',
+  'pc-bottleneck-guide': 'PC Bottleneck Guide',
+  'overclocking-power-draw': 'Overclocking Power',
+  'aio-cooler-power-draw': 'AIO Cooler Power',
+  'pc-idle-power': 'PC Idle Power',
+  'how-to-test-a-psu': 'How to Test a PSU',
+  'psu-lifespan': 'PSU Lifespan & Aging',
+  'psu-coil-whine': 'PSU Coil Whine',
+  'quiet-psu-guide': 'Quiet PSU Guide',
+  'fanless-psu-guide': 'Fanless PSU Guide',
+  'psu-fan-direction': 'PSU Fan Direction',
+  'modular-vs-non-modular-psu': 'Modular vs Non-Modular',
+  'sfx-vs-atx-psu': 'SFX vs ATX Guide',
+  'sfx-l-psu-guide': 'SFX-L Clearance Guide',
+  'server-vs-desktop-psu': 'Server vs Desktop PSU',
+  'oracle': 'PSU Oracle',
+};
+
+function formatSlug(seg: string): string {
+  const known = guideNames[seg];
+  if (known) return known;
+  return seg.replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/\bPsu\b/g, 'PSU')
+    .replace(/\bAtx\b/g, 'ATX')
+    .replace(/\bRtx\b/g, 'RTX')
+    .replace(/\bGpu\b/g, 'GPU')
+    .replace(/\bCpu\b/g, 'CPU')
+    .replace(/\bTco\b/g, 'TCO')
+    .replace(/\bSfx\b/g, 'SFX')
+    .replace(/\bPsu\b/g, 'PSU');
+}
+
+function buildBreadcrumbSchema(pathname: string) {
+  const segments = pathname.split('/').filter(Boolean);
+  const items = [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://voltforge.app/' }];
+  let accumulated = '';
+  for (const seg of segments) {
+    accumulated += '/' + seg;
+    const known = breadcrumbNames[accumulated];
+    const name = known || formatSlug(seg);
+    if (accumulated !== pathname) {
+      items.push({ '@type': 'ListItem', position: items.length + 1, name, item: 'https://voltforge.app' + accumulated });
+    } else {
+      items.push({ '@type': 'ListItem', position: items.length + 1, name });
+    }
+  }
+  if (items.length === 1) return null;
+  return { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items };
+}
+
 export interface Props {
   title: string;
   description: string;
@@ -21,7 +98,7 @@ const {
   title,
   description,
   canonicalUrl = Astro.url.href,
-  ogImage = '/og-default.png',
+  ogImage = '/pc-hero.png',
   schema,
   noIndex = false,
 } = Astro.props;
@@ -54,7 +131,12 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <!-- Design system fonts: Fira Code (monospace/display) + Fira Sans (body) -->
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="VoltForge" />
+  <link rel="manifest" href="/site.webmanifest" />
   <script is:inline>
     (function() {
       const stored = localStorage.getItem('vf-theme');
@@ -64,11 +146,12 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
     })();
   </script>
   {schemaStr && <script type="application/ld+json" set:html={schemaStr} />}
+  {buildBreadcrumbSchema(Astro.url.pathname) && <script type="application/ld+json" set:html={JSON.stringify(buildBreadcrumbSchema(Astro.url.pathname))} />}
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context":"https://schema.org","@type":"Organization",
     "name":"VoltForge","url":"https://voltforge.app",
     "description":"Independent PC power supply calculator and build cost estimator.",
-    "logo":{"@type":"ImageObject","url":"https://voltforge.app/logo.png"},
+    "logo":{"@type":"ImageObject","url":"https://voltforge.app/favicon.svg"},
     "contactPoint":{"@type":"ContactPoint","contactType":"customer support","url":"https://voltforge.app/contact"}
   })} />
 </head>
@@ -83,7 +166,7 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
           <li><a href="/psu-calculator">PSU Calculator</a></li>
           <li><a href="/pc-builder">PC Builder</a></li>
           <li><a href="/psu-checker">PSU Checker</a></li>
-          <li><a href="/guides/how-to-build-a-pc">Guides</a></li>
+          <li><a href="/guides">Guides</a></li>
           <li><a href="/about">About</a></li>
         </ul>
         <div class="nav-right">
@@ -122,7 +205,7 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
           </ul>
         </div>
         <div class="footer-section">
-          <h4>Guides</h4>
+          <h4><a href="/guides" style="color:inherit;text-decoration:none;">Guides</a></h4>
           <ul>
             <li><a href="/guides/how-to-build-a-pc">How to Build a PC</a></li>
             <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide</a></li>

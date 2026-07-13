@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Are fanless power supplies reliable?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, but they rely entirely on passive convection cooling. They must have ventilated slots facing upwards, be installed in cases with active intake airflow, and not be overloaded beyond their rated specs."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Fanless & Passive PSUs: Silent PC Sizing Guide — VoltForge"
+  description="Explore passive and fanless power supply units. Learn about convection thermal design, efficiency requirements, and silent pc compatibility."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>Fanless &amp; Passive Power Supplies</h1>
+        <p class="guide-lead">
+          Building a completely silent computer requires fanless components.
+          This guide outlines passive thermal management and sizing for fanless PSUs.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Thermal Design of Passive PSUs</h2>
+          <p>
+            Fanless PSUs do not have a cooling fan. They use heavy internal heatsinks, highly efficient
+            components (usually 80 PLUS Platinum or Titanium), and a perforated chassis to dissipate heat.
+          </p>
+          <p>
+            Because they rely on natural air convection (warm air rising), they must be installed with their
+            ventilation grids facing upward, allowing heat to escape easily.
+          </p>
+
+          <h2>Case Airflow Requirements</h2>
+          <p>
+            While the PSU has no fan, the chassis must have adequate ventilation. Placing a fanless PSU
+            in a sealed case without system intake fans will cause it to overheat and trip its Over-Temperature Protection (OTP).
+          </p>
+
+          <div class="important-warning">
+            <strong>⚠ Wattage Limit:</strong> Fully passive ATX power supplies are typically limited to 500W to 700W.
+            If your gaming configuration demands more power (e.g. RTX 5080), choose a semi-passive (semi-fanless) unit
+            with a Zero-RPM fan mode instead. The fan will remain off under 40% load.
+          </div>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check system silence modes</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/quiet-psu-guide">Quiet PSU Guide</a></li>
+              <li><a href="/guides/psu-fan-direction">PSU Fan Direction</a></li>
+              <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--color-surface-raised); border-left: 4px solid var(--color-accent-orange); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

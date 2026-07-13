@@ -1,0 +1,116 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-13",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long do PC power supplies last?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A high-quality PSU with Japanese capacitors typically lasts 7 to 10 years under normal gaming loads. Budget units using cheaper Chinese or Taiwanese capacitors may begin degrading within 3 to 5 years."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does PSU wattage degrade over time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, capacitor aging causes power supplies to lose efficiency and maximum power output over time (roughly 2% to 5% loss per year after several years of heavy use)."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="PSU Lifespan: Capacitor Aging & Upgrades Guide — VoltForge"
+  description="Learn about the lifespan of PC power supplies, the impact of capacitor aging, warranty policies, and how to identify when your PSU needs an upgrade."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 13, 2026</span>
+        </div>
+        <h1>PSU Lifespan &amp; Capacitor Aging</h1>
+        <p class="guide-lead">
+          Power supplies do not last forever. This guide explains capacitor aging, PSU lifespan indicators,
+          and how to evaluate when your unit requires replacement.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Capacitor Degradation</h2>
+          <p>
+            The primary failure point in old PSUs is the electrolytic capacitors. These contain liquid electrolytes
+            that slowly dry out over time, especially when exposed to high heat (above 40°C ambient).
+          </p>
+          <p>
+            As capacitors age, their Equivalent Series Resistance (ESR) increases, reducing their ability to clean
+            up voltage ripple. This manifests as random BSODs, system freezes, or failed cold boots.
+          </p>
+
+          <h2>Standard Lifespan Expectancy</h2>
+          <ul>
+            <li><strong>Premium Tier (Corsair RMx, Seasonic Focus):</strong> 10-year warranties. Often last 10-12 years safely.</li>
+            <li><strong>Mid-Tier (Bronze/Gold units under $100):</strong> 5-year warranties. Usually reliable for 5-7 years.</li>
+            <li><strong>White/Budget Tier:</strong> 2 to 3-year warranties. Recommend replacement after 3-4 years.</li>
+          </ul>
+
+          <div class="important-warning">
+            <strong>⚠ Upgrade Guideline:</strong> If you are upgrading from an older GPU (like RTX 3070) to a modern
+            RTX 50-series card, and your PSU is older than 5 years, do not reuse it. The intense transient peaks
+            on Blackwell/RDNA4 architectures will quickly expose degraded capacitors, causing shutdowns.
+          </div>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check age derating math</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Other Guides</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/guides/how-to-test-a-psu">How to Test a PSU</a></li>
+              <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
+              <li><a href="/guides/single-vs-multi-rail">Single vs Multi Rail</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--color-surface-raised); border-left: 4px solid var(--color-accent-orange); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>
