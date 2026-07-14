@@ -1,0 +1,454 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import psuData from '../../data/index/psus.index.json';
+import reportCounts from '../../data/psu-report-counts.json';
+import type { PsuIndex } from '../../types/components';
+
+export async function getStaticPaths() {
+  const psus = psuData.items as PsuIndex[];
+  return psus.map(psu => ({ params: { id: psu.id }, props: { psu } }));
+}
+
+const { psu } = Astro.props as { psu: PsuIndex };
+const data = reportCounts.byPsu[psu.id] ?? { total: 0, running: 0, failed: 0, avgAgeRunning: null, failureModes: {} };
+
+const MIN_SAMPLE = 30;
+const hasStats = data.total >= MIN_SAMPLE;
+const runRate   = data.total > 0 ? Math.round((data.running / data.total) * 100) : null;
+const failRate  = data.total > 0 ? Math.round((data.failed  / data.total) * 100) : null;
+
+// Failure mode labels
+const MODE_LABELS: Record<string, string> = {
+  'no-power':             'Complete Power Loss',
+  'random-shutdowns':     'Random Shutdowns Under Load',
+  'component-damage':     'Component Damage on Failure',
+  'noise-sparks':         'Noise / Sparks / Burning Smell',
+  'degraded-performance': 'Degraded Output / Instability',
+  'other':                'Other',
+};
+
+// Sort failure modes by frequency
+const sortedModes = Object.entries(data.failureModes as Record<string, number>)
+  .sort(([,a], [,b]) => b - a);
+
+// Verdict colour for survival rate
+const verdictColor = runRate === null ? 'var(--color-text-tertiary)'
+  : runRate >= 90 ? 'var(--color-safe)'
+  : runRate >= 70 ? '#f59e0b'
+  : 'var(--color-danger)';
+
+// Structured data
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": `${psu.name} Real-World Reliability Data`,
+  "description": hasStats
+    ? `Community-reported reliability data for the ${psu.name}. Based on ${data.total} owner reports: ${runRate}% still running, average ${data.avgAgeRunning} years (running units).`
+    : `Collecting real-world reliability reports for the ${psu.name}. Submit your experience to help the community.`,
+  "url": `https://psucheck.com/psu-reliability/${psu.id}/`,
+  "creator": { "@type": "Organization", "name": "PSUCheck" },
+  "measurementTechnique": "Community self-reported outcomes",
+  "variableMeasured": ["PSU lifespan (years)", "failure rate", "failure mode"]
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `How long does the ${psu.name} typically last?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": hasStats && data.avgAgeRunning
+          ? `Based on ${data.total} community reports, the ${psu.name} averages ${data.avgAgeRunning} years of operation among units still running. The reported survival rate is ${runRate}% (${data.running} of ${data.total} units still running).`
+          : `We are currently collecting reliability reports for the ${psu.name}. The ${psu.wattage}W ${(psu.efficiencyTier ?? '').toUpperCase()}-rated unit carries a manufacturer warranty suggesting 5–10 years of expected lifespan. Submit your experience to help build the dataset.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Is the ${psu.name} reliable?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `The ${psu.name} is a ${psu.wattage}W ${(psu.efficiencyTier ?? '').toUpperCase()}-rated unit from ${psu.brand} with a Quality Tier ${psu.qualityTier ?? 'A'} rating (Cultists Network-aligned). ${hasStats ? `Community data shows a ${runRate}% survival rate across ${data.total} reports.` : 'Real-world longevity data is being collected — submit your report to help.'}`
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title={`${psu.name} Reliability Data — Real Owner Reports | PSUCheck`}
+  description={hasStats
+    ? `${psu.name} reliability: ${runRate}% of ${data.total} community reports show it still running. Average ${data.avgAgeRunning} years for running units. Real data, not manufacturer marketing.`
+    : `Collecting real-world reliability data for the ${psu.name} (${psu.wattage}W ${(psu.efficiencyTier ?? '').toUpperCase()}). Submit your experience and help the PC building community.`
+  }
+  schema={[schema, faqSchema]}
+>
+  <section style="padding:3rem 0 6rem;" aria-labelledby="psu-rel-heading">
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/psu/">PSU Database</a>
+        <span aria-hidden="true">›</span>
+        <a href={`/psu/${psu.id}/`}>{psu.name}</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Reliability Data</span>
+      </nav>
+
+      <!-- Header -->
+      <header style="margin-top:1.5rem; margin-bottom:2.5rem;">
+        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); border-radius:20px; padding:4px 12px; font-size:0.7rem; font-weight:700; color:var(--color-accent-cyan); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.75rem;">
+          📊 Community Data · {data.total} Report{data.total !== 1 ? 's' : ''}
+        </div>
+        <h1 id="psu-rel-heading" style="font-size:clamp(1.75rem,4vw,2.5rem); font-weight:850; line-height:1.15; letter-spacing:-0.03em;">
+          {psu.name} <span class="gradient-text">Reliability Report</span>
+        </h1>
+        <p style="font-size:1rem; color:var(--color-text-secondary); margin-top:0.75rem; line-height:1.6; max-width:600px;">
+          Real-world longevity data reported by {psu.name} owners.
+          Sample sizes are shown on every stat — data displayed only at ≥{MIN_SAMPLE} reports.
+        </p>
+      </header>
+
+      <div style="display:grid; grid-template-columns:1fr; gap:2rem;" class="rel-grid">
+
+        <!-- Left: Stats + Form -->
+        <div style="display:flex; flex-direction:column; gap:2rem;">
+
+          <!-- Stats card -->
+          <div class="card card-dark" style="padding:1.75rem;">
+            <h2 style="font-size:1.1rem; font-weight:800; margin-bottom:1.5rem; display:flex; align-items:center; gap:8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Aggregate Statistics
+            </h2>
+
+            {!hasStats ? (
+              <div style="text-align:center; padding:2rem 1rem;">
+                <div style="font-size:2.5rem; margin-bottom:0.75rem;">🔬</div>
+                <div style="font-size:1.1rem; font-weight:700; color:var(--color-text-primary); margin-bottom:0.5rem;">
+                  Collecting Data
+                </div>
+                <div style="font-size:0.875rem; color:var(--color-text-secondary); line-height:1.6; max-width:360px; margin:0 auto 1.25rem;">
+                  {data.total > 0
+                    ? `${data.total} report${data.total !== 1 ? 's' : ''} collected — ${MIN_SAMPLE - data.total} more needed before stats are published.`
+                    : `Be the first to submit a reliability report for this PSU model.`
+                  }
+                </div>
+
+                {data.total > 0 && (
+                  <div style="background:var(--color-border-subtle); border-radius:9999px; height:8px; max-width:280px; margin:0 auto 0.5rem;">
+                    <div style={`height:100%; border-radius:9999px; background:var(--color-accent-cyan); width:${Math.round((data.total/MIN_SAMPLE)*100)}%;`}></div>
+                  </div>
+                )}
+                {data.total > 0 && (
+                  <div style="font-size:0.7rem; color:var(--color-text-tertiary);">{data.total} / {MIN_SAMPLE} reports</div>
+                )}
+              </div>
+            ) : (
+              <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1.25rem;">
+                <div style="text-align:center; padding:1rem; background:var(--color-surface); border-radius:var(--radius-md);">
+                  <div style={`font-size:2.25rem; font-weight:850; font-family:var(--font-mono); color:${verdictColor};`}>{runRate}%</div>
+                  <div style="font-size:0.7rem; color:var(--color-text-tertiary); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Still Running</div>
+                  <div style="font-size:0.65rem; color:var(--color-text-tertiary); margin-top:2px;">n={data.total}</div>
+                </div>
+                <div style="text-align:center; padding:1rem; background:var(--color-surface); border-radius:var(--radius-md);">
+                  <div style="font-size:2.25rem; font-weight:850; font-family:var(--font-mono); color:var(--color-text-primary);">{data.avgAgeRunning ?? '—'}<span style="font-size:1rem; font-weight:400;"> yr</span></div>
+                  <div style="font-size:0.7rem; color:var(--color-text-tertiary); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Avg. Age (Running)</div>
+                  <div style="font-size:0.65rem; color:var(--color-text-tertiary); margin-top:2px;">n={data.running}</div>
+                </div>
+                <div style="text-align:center; padding:1rem; background:var(--color-surface); border-radius:var(--radius-md);">
+                  <div style="font-size:2.25rem; font-weight:850; font-family:var(--font-mono); color:var(--color-text-primary);">{data.total}</div>
+                  <div style="font-size:0.7rem; color:var(--color-text-tertiary); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Total Reports</div>
+                  <div style="font-size:0.65rem; color:var(--color-text-tertiary); margin-top:2px;">community-submitted</div>
+                </div>
+              </div>
+            )}
+
+            {/* Failure mode breakdown — only if enough data */}
+            {hasStats && data.failed > 0 && sortedModes.length > 0 && (
+              <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--color-border-subtle);">
+                <h3 style="font-size:0.85rem; font-weight:700; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:1rem;">
+                  Failure Modes (n={data.failed})
+                </h3>
+                <div style="display:flex; flex-direction:column; gap:0.625rem;">
+                  {sortedModes.map(([mode, count]) => {
+                    const pct = Math.round((count / data.failed) * 100);
+                    return (
+                      <div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.8125rem; margin-bottom:4px;">
+                          <span style="color:var(--color-text-secondary);">{MODE_LABELS[mode] ?? mode}</span>
+                          <span style="font-family:var(--font-mono); font-weight:700;">{pct}%</span>
+                        </div>
+                        <div style="height:6px; background:var(--color-border-subtle); border-radius:9999px;">
+                          <div style={`height:100%; width:${pct}%; background:var(--color-danger); border-radius:9999px; opacity:0.7;`}></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <!-- PSU Quick Specs -->
+          <div class="card card-dark" style="padding:1.5rem;">
+            <h2 style="font-size:1rem; font-weight:800; margin-bottom:1.25rem; display:flex; align-items:center; gap:8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+              PSU Specifications
+            </h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.625rem; font-size:0.8125rem;">
+              {[
+                ['Brand', psu.brand],
+                ['Wattage', `${psu.wattage}W`],
+                ['Efficiency', (psu.efficiencyTier ?? '').toUpperCase()],
+                ['ATX Version', `ATX ${psu.atxVersion}`],
+                ['Modular', psu.modular === 'full' ? 'Fully Modular' : psu.modular === 'semi' ? 'Semi-Modular' : 'Non-Modular'],
+                ['Quality Tier', `Tier ${psu.qualityTier ?? 'A'} (Cultists)`],
+              ].map(([label, value]) => (
+                <div style="padding:0.625rem 0.875rem; background:var(--color-surface); border-radius:var(--radius-sm);">
+                  <div style="font-size:0.65rem; color:var(--color-text-tertiary); text-transform:uppercase; margin-bottom:2px;">{label}</div>
+                  <div style="font-weight:700; color:var(--color-text-primary);">{value}</div>
+                </div>
+              ))}
+            </div>
+            <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+              <a href={`/psu/${psu.id}/`} class="btn btn-secondary" style="font-size:0.75rem; padding:6px 14px; text-decoration:none; display:inline-flex; align-items:center;">
+                Full Specs & Compatibility →
+              </a>
+              <a href="/psu/" class="btn btn-secondary" style="font-size:0.75rem; padding:6px 14px; text-decoration:none; display:inline-flex; align-items:center;">
+                All PSU Models
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Submit Form -->
+        <div>
+          <div class="card card-dark" style="padding:1.75rem; position:sticky; top:1rem;">
+            <h2 style="font-size:1.1rem; font-weight:800; margin-bottom:0.5rem; display:flex; align-items:center; gap:8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              Submit Your Report
+            </h2>
+            <p style="font-size:0.8125rem; color:var(--color-text-secondary); line-height:1.5; margin-bottom:1.5rem;">
+              Own a <strong style="color:var(--color-text-primary);">{psu.name}</strong>? 
+              Share your experience — 30 seconds, no account needed.
+            </p>
+
+            <!-- Success state (hidden, shown by JS) -->
+            <div id="form-success" style="display:none; text-align:center; padding:2rem 1rem;">
+              <div style="font-size:2.5rem; margin-bottom:0.75rem;">✅</div>
+              <div style="font-size:1.1rem; font-weight:800; margin-bottom:0.5rem;">Thank you!</div>
+              <p style="font-size:0.875rem; color:var(--color-text-secondary); line-height:1.5;">
+                Your report has been recorded. It will appear in the aggregate stats once enough reports are collected.
+              </p>
+            </div>
+
+            <!-- Error state (hidden, shown by JS) -->
+            <div id="form-error" style="display:none; padding:0.875rem; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); font-size:0.8rem; color:var(--color-danger); margin-bottom:1rem;"></div>
+
+            <form id="psu-report-form" novalidate>
+              <!-- Honeypot: hidden from humans, filled by bots -->
+              <input type="text" name="_hp" id="_hp" style="position:absolute; left:-9999px; opacity:0; width:1px; height:1px;" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+              <!-- PSU ID (hidden, pre-filled) -->
+              <input type="hidden" name="psuId" value={psu.id}>
+
+              <!-- Age -->
+              <div style="margin-bottom:1.25rem;">
+                <label for="age-years" style="display:block; font-size:0.8rem; font-weight:700; color:var(--color-text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">
+                  How long have you owned it?
+                </label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <input
+                    type="number" id="age-years" name="ageYears"
+                    min="0" max="25" step="0.5" placeholder="e.g. 3"
+                    style="flex:1; padding:0.625rem 0.875rem; background:var(--color-surface); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); color:var(--color-text-primary); font-size:0.9375rem; font-family:var(--font-mono);"
+                    required aria-required="true"
+                  >
+                  <span style="font-size:0.875rem; color:var(--color-text-tertiary); white-space:nowrap;">years</span>
+                </div>
+              </div>
+
+              <!-- Status -->
+              <div style="margin-bottom:1.25rem;">
+                <fieldset style="border:none; padding:0; margin:0;">
+                  <legend style="display:block; font-size:0.8rem; font-weight:700; color:var(--color-text-secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">
+                    Current status
+                  </legend>
+                  <div style="display:flex; gap:0.75rem;">
+                    <label style="flex:1; cursor:pointer;">
+                      <input type="radio" name="status" value="running" required style="display:none;" id="status-running">
+                      <div class="status-btn" data-value="running" style="padding:0.75rem; border:2px solid var(--color-border-subtle); border-radius:var(--radius-md); text-align:center; transition:all 150ms;">
+                        <div style="font-size:1.25rem; margin-bottom:2px;">✅</div>
+                        <div style="font-size:0.8rem; font-weight:700;">Still Running</div>
+                      </div>
+                    </label>
+                    <label style="flex:1; cursor:pointer;">
+                      <input type="radio" name="status" value="failed" style="display:none;" id="status-failed">
+                      <div class="status-btn" data-value="failed" style="padding:0.75rem; border:2px solid var(--color-border-subtle); border-radius:var(--radius-md); text-align:center; transition:all 150ms;">
+                        <div style="font-size:1.25rem; margin-bottom:2px;">❌</div>
+                        <div style="font-size:0.8rem; font-weight:700;">Failed</div>
+                      </div>
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+
+              <!-- Failure mode (shown only when failed) -->
+              <div id="failure-mode-wrapper" style="display:none; margin-bottom:1.25rem;">
+                <label for="failure-mode" style="display:block; font-size:0.8rem; font-weight:700; color:var(--color-text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">
+                  How did it fail?
+                </label>
+                <select id="failure-mode" name="failureMode" style="width:100%; padding:0.625rem 0.875rem; background:var(--color-surface); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); color:var(--color-text-primary); font-size:0.9rem;">
+                  <option value="">— Select failure mode —</option>
+                  <option value="no-power">Complete power loss</option>
+                  <option value="random-shutdowns">Random shutdowns under load</option>
+                  <option value="component-damage">Component damage on failure</option>
+                  <option value="noise-sparks">Noise / sparks / burning smell</option>
+                  <option value="degraded-performance">Degraded output / instability</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <!-- Notes (optional) -->
+              <div style="margin-bottom:1.5rem;">
+                <label for="notes-field" style="display:block; font-size:0.8rem; font-weight:700; color:var(--color-text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">
+                  Notes <span style="font-weight:400; text-transform:none;">(optional, max 500 chars)</span>
+                </label>
+                <textarea id="notes-field" name="notes" maxlength="500" rows="2" placeholder="e.g. Used in a gaming rig with RTX 5080, ran fine for 4 years before shutting down..."
+                  style="width:100%; padding:0.625rem 0.875rem; background:var(--color-surface); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); color:var(--color-text-primary); font-size:0.8375rem; line-height:1.5; resize:vertical; box-sizing:border-box;">
+                </textarea>
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%; font-size:0.9rem; justify-content:center;">
+                Submit Report
+              </button>
+
+              <p style="font-size:0.7rem; color:var(--color-text-tertiary); text-align:center; margin-top:0.75rem; line-height:1.5;">
+                No account needed · Max 5 reports/day · IP-hashed for privacy
+              </p>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Cross-links -->
+      <div style="margin-top:3rem; padding-top:2rem; border-top:1px solid var(--color-border-subtle);">
+        <h2 style="font-size:1rem; font-weight:800; margin-bottom:1.25rem; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.06em; font-size:0.75rem;">Related Tools</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+          <a href={`/psu/${psu.id}/`} class="btn btn-secondary" style="text-decoration:none; font-size:0.8rem;">
+            {psu.name} Full Specs & GPU Compatibility →
+          </a>
+          <a href="/psu-reliability/" class="btn btn-secondary" style="text-decoration:none; font-size:0.8rem;">
+            All PSU Reliability Data →
+          </a>
+          <a href="/psu-calculator" class="btn btn-secondary" style="text-decoration:none; font-size:0.8rem;">
+            PSU Calculator →
+          </a>
+          <a href="/psu-checker" class="btn btn-secondary" style="text-decoration:none; font-size:0.8rem;">
+            Check if Your PSU is Enough →
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</Layout>
+
+<script define:vars={{ psuId: psu.id }}>
+  const form     = document.getElementById('psu-report-form');
+  const success  = document.getElementById('form-success');
+  const errorBox = document.getElementById('form-error');
+  const submitBtn = document.getElementById('submit-btn');
+
+  // Status radio card toggle
+  document.querySelectorAll('.status-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.getAttribute('data-value');
+      document.querySelectorAll('.status-btn').forEach(b => {
+        b.style.borderColor = 'var(--color-border-subtle)';
+        b.style.background  = 'transparent';
+      });
+      btn.style.borderColor = val === 'running' ? 'var(--color-safe)' : 'var(--color-danger)';
+      btn.style.background  = val === 'running' ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)';
+      // Show/hide failure mode
+      const wrapper = document.getElementById('failure-mode-wrapper');
+      if (wrapper) wrapper.style.display = val === 'failed' ? 'block' : 'none';
+      // Set the hidden radio
+      const radio = document.getElementById(`status-${val}`);
+      if (radio) radio.checked = true;
+    });
+  });
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (errorBox) { errorBox.style.display = 'none'; errorBox.textContent = ''; }
+
+    const ageInput    = document.getElementById('age-years');
+    const statusRadio = form.querySelector('input[name="status"]:checked');
+    const failureMode = document.getElementById('failure-mode');
+    const notes       = document.getElementById('notes-field');
+    const honeypot    = document.getElementById('_hp');
+
+    // Client-side validation
+    const age = parseFloat(ageInput?.value ?? '');
+    if (isNaN(age) || age < 0 || age > 25) {
+      if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'Please enter a valid age between 0 and 25 years.'; }
+      return;
+    }
+    if (!statusRadio) {
+      if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'Please select "Still Running" or "Failed".'; }
+      return;
+    }
+    if (statusRadio.value === 'failed' && (!failureMode?.value)) {
+      if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'Please select how the PSU failed.'; }
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    const payload = {
+      psuId:       psuId,
+      ageYears:    age,
+      status:      statusRadio.value,
+      failureMode: statusRadio.value === 'failed' ? failureMode?.value : null,
+      notes:       notes?.value?.trim() || null,
+      _hp:         honeypot?.value || '',   // honeypot (empty for real humans)
+    };
+
+    try {
+      const res = await fetch('/api/psu-report', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        form.style.display = 'none';
+        if (success) success.style.display = 'block';
+      } else {
+        throw new Error(data.error ?? `Server error ${res.status}`);
+      }
+    } catch (err) {
+      if (errorBox) {
+        errorBox.style.display = 'block';
+        errorBox.textContent   = err.message ?? 'Submission failed. Please try again.';
+      }
+      submitBtn.disabled    = false;
+      submitBtn.textContent = 'Submit Report';
+    }
+  });
+</script>
+
+<style>
+  @media (min-width: 768px) {
+    .rel-grid { grid-template-columns: 3fr 2fr !important; }
+  }
+</style>

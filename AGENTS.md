@@ -104,10 +104,64 @@ Below is the chronological log of all changes completed to render VoltForge prod
 *   **Workbench Gallery Access:** Added a header button in the Virtual Assembly Desk's assembly tray to navigate directly to the Completed Builds Gallery.
 *   **Sitemap Registration:** Registered `/builds` to the `sitemap.xml` index.
 
+### 3.8 Phase 8: PSU Matchmaker (Programmatic SEO Hub)
+*   **PSU Matchmaker Engine:** Created a pure utility `src/lib/psu-matcher.ts` with brand-agnostic rankings, cost-per-watt value scores, and GPU compatibility matrices.
+*   **Programmatic Page Generator:** Built `src/pages/psu-for/[slug].astro` generating 250+ new static routes:
+    *   `/psu-for/[gpu]` — GPU-specific hub pages with premium/mid/budget recommendations.
+    *   `/psu-for/[gpu]-with-[cpu]` — GPU+CPU combo pages with binding constraint analysis.
+    *   `/psu-for/can-[wattage]w-run-[gpu]` — Upgrade checker landing pages with yes/no compatibility verdicts.
+*   **Navigation & Sitemap Mesh:** Updated header links in `Layout.astro` and registered top priority landing pages in `public/sitemap.xml` to build immediate crawl equity. Add CTAs linking from `oracle` pages to the matchmaker.
+
+### 3.9 Phase 9: PC Infrastructure & Electrical Safety Suite (Breaker Auditor + UPS Sizer)
+*   **Electrical Sizing Engine:** Created `src/lib/electrical.ts` containing equations for VA conversion, load amp calculations, and battery runtime coefficients.
+*   **Interactive Preact Calculators:** Created `BreakerAuditor.tsx` and `UpsSizer.tsx` with dynamic sliders for electric load tracking, pure sine wave Active PFC alerts, and timeline projections.
+*   **Astro Page Sizers:** Created `/compare/breaker-calculator` and `/compare/ups-calculator` pages, plus programmatic combo guides `/ups-for/[slug]`.
+*   **Internal Link Mesh:** Integrated pages into Layout footers and breadcrumbs, and sitemap registry.
+
+### 3.10 Phase 10: PSU Health Ecosystem (PSU Replacement Programmatic Pages + Oracle Age Expansion)
+*   **PSU Replacement Verdict Pages:** Created `src/pages/psu-replacement/[slug].astro` generating 344 static verdict pages analyzing whether an aging PSU (3/5/8/10yr) can safely power a specific GPU. Each page runs `calculatePsuHealthScore` and `generateReplacementVerdict` at build time, renders health score ring, degradation timeline, and brand-agnostic PSU upgrade recommendations.
+*   **Oracle Age Bucket Expansion:** Modified `src/pages/oracle/[slug].astro` to expand from 3 age buckets (3/5/8yr, halo/ultra GPUs only) to 5 buckets (3/5/8/10/12yr) applied across all 25 GPUs, yielding 625 age-aware oracle pages (+505 net new). Slug pattern: `is-{wattage}w-enough-for-{gpu}-age-{n}`.
+*   **Health Guide Creation:** Added two new EEAT health guides:
+    *   `/guides/when-to-replace-psu` — Age-based replacement thresholds, symptom checklist, upgrade trigger guide.
+    *   `/guides/older-psu-new-gpu` — Connector compatibility (12V-2x6), transient headroom math, keep vs replace decision matrix with real-world transient examples (RTX 5090 ~900W peak, RTX 5080 ~540W peak).
+*   **Cross-Link Integration:** Added PSU Health Check cross-link cards on all oracle pages linking to the age-5 replacement verdict for the same GPU/wattage combo. Updated guide sidebar CTAs pointing to the interactive `psu-replacement-calculator` and `psu-calculator`.
+
+### 3.11 Phase 11: Pre-Launch Technical & On-Page SEO Audit
+*   **Error Page Canonicals:** Conditionally omitted `<link rel="canonical">` and `<meta property="og:url">` tags in `Layout.astro` for pages where `noIndex` is true, resolving GSC "Soft 404" errors.
+*   **Headers Configuration Cleanup:** Purged invalid absolute path domain rule from `public/_headers`.
+*   **Breadcrumb Trailing Slash Consolidation:** Appended trailing slashes to dynamic breadcrumb JSON-LD schema links to match sitemap and canonical structures.
+*   **Missing Comparison Index Pages:** Created new pages `src/pages/compare/index.astro`, `src/pages/compare/cpu.astro`, and `src/pages/compare/gpu.astro` to act as master index hubs for all side-by-side comparison matchups.
+*   **Dynamic TechArticle Schema:** Implemented automatic layout-level generation of Google Search-compliant `TechArticle` schema markup on all guides.
+*   **Footer Link Mesh:** Added comparison index routes to the footer calculators section in `Layout.astro`.
+
+### 3.12 Phase 12: PSU Quality Tier Integration (Cultists List-Aligned)
+*   **Database Schema Update:** Added `qualityTier` (`A` | `B` | `C` | `Avoid`) to `PsuIndex` type definition in `src/types/components.ts`.
+*   **PSU Quality Tiers Seeding:** Populated Cultists Network-aligned quality tiers for all 35 models in `src/data/index/psus.index.json` (premium models marked Tier A, budget Tier C, and smart-500W marked Avoid).
+*   **UI Quality Badges:** Rendered color-coded quality badges in recommended PSU listings across `oracle/[slug].astro`, `psu-replacement/[slug].astro`, `PsuReplacementCalc.tsx`, `psu-for/[slug].astro`, and `best-under-[price].astro`.
+*   **Specs Table Integration:** Added a "PSU Quality Tier (Cultists List)" row in `src/pages/psu/[slug].astro` specs.
+
+### 3.13 Phase 13: Technical SEO & Sizing Methodology Transparency Audit
+*   **Deep Schema Enhancements:** Upgraded `WebApplication`/`SoftwareApplication` JSON-LD properties on `psu-calculator.astro`, `pc-builder.astro`, `psu-replacement-calculator.astro`, `ups-calculator.astro`, and `breaker-calculator.astro` with explicit browser dependencies, operating systems, and functional features lists.
+*   **Sizing Methodology Verified Badges:** Replaced all visual `✓ E-E-A-T Verified` badges with `✓ Sizing Methodology Verified` badges linking contextually to the `/methodology` page on all 28 guides.
+*   **Methodology Cards:** Built `MethodologyCard.astro` explaining transient-aware sizing standards and embedded it across all guide sidebars to build E-E-A-T without fake author persona profiles.
+*   **Table of Contents (TOC):** Designed and deployed a client-side Preact TOC component (`TableOfContents.tsx`) that dynamically reads headings, slugifies hash links, smooth-scrolls to anchor points, and tracks section intersections.
+*   **New Content Silos:** Created two new guides: `/guides/psu-cable-compatibility` (modular pinout safety warnings) and `/guides/power-glossary` (technical power terms hub). Integrated them into category directories and breadcrumb mappings.
+
+### 3.15 Phase 15: PSU Reliability Database Moat
+*   **Database Config & Binding**: Configured `wrangler.toml` to bind the new Cloudflare D1 database (`psu-reliability`) as `PSU_DB` and created the base table schema in `schema.sql`.
+*   **Secure API Route**: Created the serverless Cloudflare Pages Function `functions/api/psu-report.ts` implementing a rate-limited, CORS-protected, honeypot-guarded submission endpoint for PSU longevity reports.
+*   **Data Synchronization prebuild Hook**: Integrated a fallback-safe pre-build script `scripts/sync-psu-counts.mjs` and hook to download current database stats and update `src/data/psu-report-counts.json` for compilation.
+*   **Community Index & Detail Pages**: Created the main portal `/psu-reliability/index.astro` and `/psu-reliability/[id].astro` spec pages for all 35 tracked models.
+*   **Internal Link Mesh**: Cross-linked spec pages, oracle routes, and layout footer to make all reliability pages fully crawlable. Enforced `MIN_SAMPLE = 30` to guarantee high E-E-A-T and prevent thin content penalties.
+
 ---
 
 ## 4. Operational Instructions for Future Agents
 
 *   **Database Updates:** CPU, GPU, and PSU indexes are defined in `src/data/index/`. Update these JSON items whenever new models launch.
 *   **Build Commands:** Use `npm run build` to compile the static site and `npm run dev` to launch the local Astro development server.
-*   **Static Generation Limit:** Make sure the static page count in `oracle/[slug].astro` doesn't balloon past reasonable build times (limit combo matrices to popular models).
+*   **Static Generation Limit:** Make sure the static page count in `oracle/[slug].astro`, `psu-for/[slug].astro`, and `ups-for/[slug].astro` does not balloon past reasonable build times (limit combo matrices to popular models).
+*   **Adding New Matchmaker Slugs:** Extend the static path generation arrays in `src/pages/psu-for/[slug].astro` to target new hardware configurations or additional wattage levels.
+*   **Disclaimers for Safety Pages:** Always preserve the electrical liability warnings and disclaimers on the breaker and UPS pages.
+
+

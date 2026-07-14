@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "node scripts/generate-wrangler.mjs && node scripts/sync-psu-counts.mjs || true",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",

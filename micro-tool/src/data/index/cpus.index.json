@@ -27,6 +27,16 @@
     { "id": "core-i5-14400f", "name": "Intel Core i5-14400F", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake Refresh", "cores": 10, "tdp": 65, "tdpSustained": 148, "price": 159, "confirmed": true },
     { "id": "core-i3-14100f", "name": "Intel Core i3-14100F", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake Refresh", "cores": 4, "tdp": 58, "tdpSustained": 110, "price": 99, "confirmed": true },
     { "id": "ryzen-9-9950x3d", "name": "AMD Ryzen 9 9950X3D", "brand": "AMD", "socket": "AM5", "gen": "Zen 5 3D", "cores": 16, "tdp": 170, "tdpSustained": 170, "price": 599, "confirmed": true },
-    { "id": "ryzen-9-9900x3d", "name": "AMD Ryzen 9 9900X3D", "brand": "AMD", "socket": "AM5", "gen": "Zen 5 3D", "cores": 12, "tdp": 120, "tdpSustained": 120, "price": 499, "confirmed": true }
+    { "id": "ryzen-9-9900x3d", "name": "AMD Ryzen 9 9900X3D", "brand": "AMD", "socket": "AM5", "gen": "Zen 5 3D", "cores": 12, "tdp": 120, "tdpSustained": 120, "price": 499, "confirmed": true },
+    { "id": "ryzen-7-5800x3d", "name": "AMD Ryzen 7 5800X3D", "brand": "AMD", "socket": "AM4", "gen": "Zen 3 3D", "cores": 8, "tdp": 105, "tdpSustained": 105, "price": 299, "confirmed": true },
+    { "id": "ryzen-7-5700x3d", "name": "AMD Ryzen 7 5700X3D", "brand": "AMD", "socket": "AM4", "gen": "Zen 3 3D", "cores": 8, "tdp": 105, "tdpSustained": 105, "price": 199, "confirmed": true },
+    { "id": "ryzen-9-5950x", "name": "AMD Ryzen 9 5950X", "brand": "AMD", "socket": "AM4", "gen": "Zen 3", "cores": 16, "tdp": 105, "tdpSustained": 105, "price": 349, "confirmed": true },
+    { "id": "ryzen-9-5900x", "name": "AMD Ryzen 9 5900X", "brand": "AMD", "socket": "AM4", "gen": "Zen 3", "cores": 12, "tdp": 105, "tdpSustained": 105, "price": 249, "confirmed": true },
+    { "id": "ryzen-5-5600x", "name": "AMD Ryzen 5 5600X", "brand": "AMD", "socket": "AM4", "gen": "Zen 3", "cores": 6, "tdp": 65, "tdpSustained": 65, "price": 119, "confirmed": true },
+    { "id": "core-i9-13900k", "name": "Intel Core i9-13900K", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake", "cores": 24, "tdp": 125, "tdpSustained": 253, "price": 349, "confirmed": true },
+    { "id": "core-i7-13700k", "name": "Intel Core i7-13700K", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake", "cores": 16, "tdp": 125, "tdpSustained": 253, "price": 279, "confirmed": true },
+    { "id": "core-i5-13600k", "name": "Intel Core i5-13600K", "brand": "Intel", "socket": "LGA1700", "gen": "Raptor Lake", "cores": 14, "tdp": 125, "tdpSustained": 181, "price": 219, "confirmed": true },
+    { "id": "core-i9-12900k", "name": "Intel Core i9-12900K", "brand": "Intel", "socket": "LGA1700", "gen": "Alder Lake", "cores": 16, "tdp": 125, "tdpSustained": 241, "price": 279, "confirmed": true },
+    { "id": "core-i7-12700k", "name": "Intel Core i7-12700K", "brand": "Intel", "socket": "LGA1700", "gen": "Alder Lake", "cores": 12, "tdp": 125, "tdpSustained": 190, "price": 199, "confirmed": true }
   ]
 }

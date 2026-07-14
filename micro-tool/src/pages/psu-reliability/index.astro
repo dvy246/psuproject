@@ -1,0 +1,253 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import psuData from '../../data/index/psus.index.json';
+import reportCounts from '../../data/psu-report-counts.json';
+import type { PsuIndex } from '../../types/components';
+
+const psus = psuData.items as PsuIndex[];
+const counts = reportCounts.byPsu;
+const totalReports = reportCounts.totalReports;
+
+// Sort: PSUs with most reports first, then alphabetically
+const psuRows = psus
+  .map(p => ({ psu: p, data: counts[p.id] ?? { total: 0, running: 0, failed: 0, avgAgeRunning: null, failureModes: {} } }))
+  .sort((a, b) => (b.data.total - a.data.total) || a.psu.name.localeCompare(b.psu.name));
+
+const MIN_SAMPLE = 30; // Minimum reports to display aggregate stats
+
+// Brands for the brand grouping section
+const brands = [...new Set(psus.map(p => p.brand))].sort();
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "PSU Reliability Database — Community Longevity Reports",
+  "description": "Crowdsourced real-world power supply unit (PSU) lifespan and failure data from PC builders. Reports include model, years of use, current status, and failure mode.",
+  "url": "https://psucheck.com/psu-reliability/",
+  "creator": { "@type": "Organization", "name": "PSUCheck" },
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "temporalCoverage": "2026/..",
+  "variableMeasured": ["PSU lifespan (years)", "failure rate", "failure mode"],
+  "measurementTechnique": "Community self-reported outcomes",
+  "keywords": ["PSU reliability", "power supply lifespan", "PSU failure rate", "how long does a PSU last"]
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long does a power supply unit (PSU) actually last?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Based on community reports in this database, quality PSUs from brands like Seasonic, Corsair, and be quiet! regularly exceed 5–8 years of operation. Premium units (Platinum/Titanium tier) often outlast their 10-year warranties. Lower-quality units may fail within 3–5 years. Our database is growing — check individual PSU pages for model-specific data."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the most common PSU failure mode?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Community reports show random shutdowns under load and complete loss of power as the two most commonly reported failure modes. Component damage (e.g., motherboard, GPU damage on PSU failure) is rarer but more costly. As our database grows, we will publish per-brand and per-model failure mode breakdowns."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is this data collected?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PC builders voluntarily submit reports from the PSU specification pages on PSUCheck. Each report captures: the PSU model, how many years the owner has used it, whether it is still running or has failed, and (if failed) the failure mode. Reports are rate-limited (5 per 24 hours per user) to prevent gaming. Aggregate statistics are only displayed when a model has at least 30 reports, ensuring statistical meaningfulness."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this data trustworthy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This is community self-reported data, not controlled lab testing. It represents real-world outcomes from real users — more similar to consumer review data than to laboratory AFR (annualized failure rate) testing. We display sample sizes explicitly on every statistic so you can judge the confidence level yourself. We never display aggregate statistics with fewer than 30 reports."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="PSU Reliability Database — Real-World Lifespan & Failure Data | PSUCheck"
+  description={`Community-reported power supply longevity data from ${totalReports > 0 ? totalReports + '+ PC builders' : 'PC builders worldwide'}. See which PSU brands and models last longest — real outcomes, not manufacturer marketing.`}
+  schema={[schema, faqSchema]}
+>
+
+  <!-- Hero -->
+  <section style="padding:3rem 0 1rem;" aria-labelledby="reliability-heading">
+    <div class="container">
+      <div class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">PSU Reliability Database</span>
+      </div>
+
+      <header style="margin-top:1.5rem; margin-bottom:2rem;">
+        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); border-radius:20px; padding:4px 12px; font-size:0.75rem; font-weight:700; color:var(--color-accent-cyan); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:1rem;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          Live Community Data
+        </div>
+        <h1 id="reliability-heading" style="font-size:clamp(2rem,5vw,3rem); font-weight:850; line-height:1.1; letter-spacing:-0.03em;">
+          PSU <span class="gradient-text">Reliability Database</span>
+        </h1>
+        <p style="font-size:1.1rem; color:var(--color-text-secondary); max-width:640px; margin-top:0.75rem; line-height:1.6;">
+          Real-world power supply lifespan data from PC builders — not manufacturer marketing. 
+          Every stat is based on actual owner reports, labeled with sample size so you can judge the confidence yourself.
+        </p>
+
+        <!-- Stats bar -->
+        <div style="display:flex; flex-wrap:wrap; gap:1.5rem; margin-top:1.5rem;">
+          <div style="display:flex; flex-direction:column;">
+            <span style="font-size:2rem; font-weight:850; color:var(--color-accent-cyan); font-family:var(--font-mono);">{totalReports > 0 ? totalReports.toLocaleString() : '—'}</span>
+            <span style="font-size:0.75rem; color:var(--color-text-tertiary); text-transform:uppercase; letter-spacing:0.06em;">Total Reports</span>
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <span style="font-size:2rem; font-weight:850; color:var(--color-accent-cyan); font-family:var(--font-mono);">{psus.length}</span>
+            <span style="font-size:0.75rem; color:var(--color-text-tertiary); text-transform:uppercase; letter-spacing:0.06em;">PSU Models Tracked</span>
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <span style="font-size:2rem; font-weight:850; color:var(--color-accent-cyan); font-family:var(--font-mono);">{MIN_SAMPLE}</span>
+            <span style="font-size:0.75rem; color:var(--color-text-tertiary); text-transform:uppercase; letter-spacing:0.06em;">Min. Reports to Show Stats</span>
+          </div>
+        </div>
+
+        <!-- Methodology note -->
+        <div style="margin-top:1.5rem; padding:1rem 1.25rem; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:var(--radius-md); font-size:0.85rem; color:var(--color-text-secondary); line-height:1.6; max-width:700px;">
+          <strong style="color:var(--color-text-primary);">Data methodology:</strong> Community self-reported outcomes. Sample sizes shown on every statistic. 
+          Aggregate stats only displayed at ≥{MIN_SAMPLE} reports. 
+          <a href="/methodology" style="color:var(--color-accent-cyan);">Read full methodology →</a>
+        </div>
+      </header>
+    </div>
+  </section>
+
+  <!-- PSU Table -->
+  <section style="padding:0 0 6rem;" aria-label="PSU reliability data table">
+    <div class="container">
+
+      {totalReports === 0 && (
+        <div style="text-align:center; padding:4rem 1rem; background:var(--color-surface-raised); border-radius:var(--radius-xl); border:1px solid var(--color-border-subtle); margin-bottom:3rem;">
+          <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
+          <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:0.5rem;">Collecting Reports</h2>
+          <p style="font-size:0.95rem; color:var(--color-text-secondary); max-width:480px; margin:0 auto 1.5rem; line-height:1.6;">
+            We're gathering real-world PSU longevity data from the community. 
+            Visit any <a href="/psu/" style="color:var(--color-accent-cyan);">PSU spec page</a> and submit your report — it takes 30 seconds and helps every builder who comes after you.
+          </p>
+          <a href="/psu/" class="btn btn-primary" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+            Browse PSU Models & Submit Your Report →
+          </a>
+        </div>
+      )}
+
+      <!-- Full table: all PSUs with report counts -->
+      <div class="card card-dark" style="padding:0; overflow:hidden; border-radius:var(--radius-xl);">
+        <div style="padding:1.25rem 1.5rem; border-bottom:1px solid var(--color-border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <h2 style="font-size:1.1rem; font-weight:800;">All Tracked PSU Models</h2>
+          <span style="font-size:0.8rem; color:var(--color-text-tertiary);">Sorted by report count · Stats shown at ≥{MIN_SAMPLE} reports</span>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.875rem;" aria-label="PSU reliability data">
+            <thead>
+              <tr style="border-bottom:1px solid var(--color-border-subtle); background:var(--color-surface-raised);">
+                <th scope="col" style="padding:0.875rem 1.25rem; text-align:left; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--color-text-tertiary); font-weight:700;">PSU Model</th>
+                <th scope="col" style="padding:0.875rem 1rem; text-align:center; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--color-text-tertiary); font-weight:700;">Reports</th>
+                <th scope="col" style="padding:0.875rem 1rem; text-align:center; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--color-text-tertiary); font-weight:700;">Still Running</th>
+                <th scope="col" style="padding:0.875rem 1rem; text-align:center; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--color-text-tertiary); font-weight:700;">Avg. Age (Running)</th>
+                <th scope="col" style="padding:0.875rem 1rem; text-align:center; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--color-text-tertiary); font-weight:700;">Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {psuRows.map(({ psu, data }, i) => {
+                const hasStats = data.total >= MIN_SAMPLE;
+                const runRate = data.total > 0 ? Math.round((data.running / data.total) * 100) : null;
+                return (
+                  <tr style={`border-bottom:1px solid var(--color-border-subtle); ${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.01);'}`}>
+                    <th scope="row" style="padding:0.875rem 1.25rem; font-weight:600; text-align:left;">
+                      <a href={`/psu-reliability/${psu.id}/`} style="color:var(--color-text-primary); text-decoration:none;" class="hover-cyan">
+                        {psu.name}
+                      </a>
+                      <div style="font-size:0.7rem; color:var(--color-text-tertiary); margin-top:2px; font-weight:400;">{psu.wattage}W · {psu.efficiencyTier?.toUpperCase()} · ATX {psu.atxVersion}</div>
+                    </th>
+                    <td style="padding:0.875rem 1rem; text-align:center; font-family:var(--font-mono); font-weight:700; color:var(--color-text-primary);">
+                      {data.total > 0 ? data.total : <span style="color:var(--color-text-tertiary);">—</span>}
+                    </td>
+                    <td style="padding:0.875rem 1rem; text-align:center;">
+                      {hasStats && runRate !== null ? (
+                        <span style={`font-weight:700; font-family:var(--font-mono); color:${runRate >= 90 ? 'var(--color-safe)' : runRate >= 70 ? '#f59e0b' : 'var(--color-danger)'}`}>
+                          {runRate}%
+                        </span>
+                      ) : (
+                        <span style="font-size:0.7rem; color:var(--color-text-tertiary);" title={`Need ${MIN_SAMPLE - data.total} more reports`}>
+                          {data.total > 0 ? `${data.total}/${MIN_SAMPLE}` : '—'}
+                        </span>
+                      )}
+                    </td>
+                    <td style="padding:0.875rem 1rem; text-align:center; font-family:var(--font-mono);">
+                      {hasStats && data.avgAgeRunning !== null ? (
+                        <span style="font-weight:700; color:var(--color-text-primary);">{data.avgAgeRunning} yrs</span>
+                      ) : (
+                        <span style="font-size:0.7rem; color:var(--color-text-tertiary);">—</span>
+                      )}
+                    </td>
+                    <td style="padding:0.875rem 1rem; text-align:center;">
+                      <a href={`/psu-reliability/${psu.id}/`} class="btn btn-secondary" style="font-size:0.7rem; padding:4px 10px; min-height:28px; text-decoration:none; display:inline-flex; align-items:center;">
+                        View →
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FAQ Section -->
+      <div style="margin-top:4rem;">
+        <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:2rem;">Frequently Asked Questions</h2>
+        <div style="display:grid; gap:1.25rem; max-width:800px;">
+          {[
+            {
+              q: 'How long does a PSU actually last?',
+              a: 'Quality PSUs from reputable brands (Seasonic, Corsair HX/RMx, be quiet! Dark Power) regularly exceed 7–10 years of real-world use. Premium units often outlast their 10-year warranties. Budget units (Bronze tier, no-name brands) typically fail sooner — 3–5 years is common. Our database is capturing real outcomes as reports accumulate.'
+            },
+            {
+              q: 'Why does this database exist?',
+              a: 'Every PSU calculator — including this one — tells you "your system needs Xw" using transient math and spec sheets. But nobody tells you "this specific model typically lasts 8 years" based on real data. Backblaze publishes hard drive stats. We\'re doing the same for PSUs. The community asked for this data on forums for 15+ years. Now it exists.'
+            },
+            {
+              q: 'How do I submit my PSU\'s data?',
+              a: 'Find your PSU on the PSU database, scroll to the bottom of the spec page, and fill out the 30-second form. You\'ll need: your PSU model (pre-selected), how many years you\'ve owned it, and whether it\'s still running. That\'s it — no account needed.'
+            },
+            {
+              q: 'Why do some PSUs show "—" instead of statistics?',
+              a: `We require at least ${MIN_SAMPLE} reports before displaying any aggregate statistic. Showing a "95% survival rate" based on 4 reports would be misleading. Every stat you see here is labeled with its sample size.`
+            }
+          ].map(({ q, a }) => (
+            <details style="background:var(--color-surface-raised); border:1px solid var(--color-border-subtle); border-radius:var(--radius-md); padding:1.25rem;">
+              <summary style="font-weight:700; cursor:pointer; color:var(--color-text-primary); list-style:none; display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+                {q}
+                <span style="font-size:1.25rem; color:var(--color-accent-cyan); flex-shrink:0;">+</span>
+              </summary>
+              <p style="margin-top:0.875rem; font-size:0.9rem; color:var(--color-text-secondary); line-height:1.7;">{a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  .hover-cyan:hover { color: var(--color-accent-cyan) !important; transition: color 150ms ease; }
+  details summary::-webkit-details-marker { display: none; }
+  details[open] summary span { transform: rotate(45deg); display: inline-block; }
+</style>

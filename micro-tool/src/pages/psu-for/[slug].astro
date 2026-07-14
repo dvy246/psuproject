@@ -366,7 +366,9 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
                         {r.connectorMatch && r.atx31 && <span class="psu-badge badge-safe">✓ Best Match</span>}
                       </div>
                     </div>
-                    <h4 class="psu-name">{r.psu.name}</h4>
+                    <h4 class="psu-name">
+                      <a href={`/psu/${r.psu.id}/`} style="color:var(--text-primary); text-decoration:none;">{r.psu.name}</a>
+                    </h4>
                     <div class="psu-specs">
                       <span class="hw-spec">{r.psu.wattage}W</span>
                       <span class="hw-spec text-capitalize">{effLabel[r.psu.efficiencyTier] || r.psu.efficiencyTier}</span>
@@ -405,7 +407,9 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
                         {r.connectorMatch && r.atx31 && <span class="psu-badge badge-safe">✓ Compatible</span>}
                       </div>
                     </div>
-                    <h4 class="psu-name">{r.psu.name}</h4>
+                    <h4 class="psu-name">
+                      <a href={`/psu/${r.psu.id}/`} style="color:var(--text-primary); text-decoration:none;">{r.psu.name}</a>
+                    </h4>
                     <div class="psu-specs">
                       <span class="hw-spec">{r.psu.wattage}W</span>
                       <span class="hw-spec text-capitalize">{effLabel[r.psu.efficiencyTier] || r.psu.efficiencyTier}</span>
@@ -417,7 +421,7 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
                     </div>
                     <div class="psu-card-footer">
                       <span class="psu-price">${r.psu.price}</span>
-                      <a href="/psu-calculator" class="btn btn-secondary btn-sm">Full Analysis →</a>
+                      <a href={`/psu/${r.psu.id}/`} class="btn btn-secondary btn-sm">Full Specs →</a>
                     </div>
                   </div>
                 ))}
@@ -443,7 +447,9 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
                         {!r.connectorMatch && <span class="psu-badge badge-warning">⚠ Adapter</span>}
                       </div>
                     </div>
-                    <h4 class="psu-name">{r.psu.name}</h4>
+                    <h4 class="psu-name">
+                      <a href={`/psu/${r.psu.id}/`} style="color:var(--text-primary); text-decoration:none;">{r.psu.name}</a>
+                    </h4>
                     <div class="psu-specs">
                       <span class="hw-spec">{r.psu.wattage}W</span>
                       <span class="hw-spec text-capitalize">{effLabel[r.psu.efficiencyTier] || r.psu.efficiencyTier}</span>
@@ -454,7 +460,7 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
                     </div>
                     <div class="psu-card-footer">
                       <span class="psu-price">${r.psu.price}</span>
-                      <a href="/psu-calculator" class="btn btn-secondary btn-sm">Full Analysis →</a>
+                      <a href={`/psu/${r.psu.id}/`} class="btn btn-secondary btn-sm">Full Specs →</a>
                     </div>
                   </div>
                 ))}

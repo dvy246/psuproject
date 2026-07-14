@@ -1,0 +1,297 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import psuData from '../../data/index/psus.index.json';
+import type { PsuIndex } from '../../types/components';
+
+const psus = psuData.items as PsuIndex[];
+
+// Group PSUs by wattage class
+const enthusiastPsus = psus.filter(p => p.wattage >= 1000);
+const highPerformancePsus = psus.filter(p => p.wattage >= 700 && p.wattage < 1000);
+const budgetPsus = psus.filter(p => p.wattage < 700);
+
+const pageTitle = "Power Supply Unit (PSU) Specs & Compatibility Database — PSUCheck";
+const pageDescription = "Explore the complete PC power supply specs database. Check ATX 3.1 compatibility, 80 PLUS efficiency, and Cultists List quality tiers for 35+ PSUs.";
+
+const psuHubSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "PSU specs and compatibility database",
+  "url": "https://psucheck.com/psu/",
+  "description": "Comprehensive spec database comparing power supplies by modularity, quality tier, efficiency, and ATX compliance."
+};
+
+const effLabelMap: Record<string, string> = {
+  '80plus': '80 Plus White',
+  bronze: '80 Plus Bronze',
+  silver: '80 Plus Silver',
+  gold: '80 Plus Gold',
+  platinum: '80 Plus Platinum',
+  titanium: '80 Plus Titanium'
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={psuHubSchema}
+>
+  <section class="psu-database-page" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">PSU Database</span>
+      </nav>
+
+      <header class="hub-header">
+        <div class="section-eyebrow">Hardware Indices</div>
+        <h1 id="hub-heading">
+          Power Supply <span class="gradient-text">Database</span>
+        </h1>
+        <p class="hub-intro">
+          Analyze full specification sheets, ATX 3.1 compliance metrics, and independent quality tiers for 35+ flagship power supplies.
+        </p>
+      </header>
+
+      {/* Wattage Segment Loops */}
+      <div class="wattage-sections">
+        
+        {/* === Category 1: Enthusiast === */}
+        <section class="db-section" aria-labelledby="enth-heading">
+          <div class="category-header">
+            <h2 id="enth-heading">⚡ Enthusiast &amp; Extreme Power (1000W+)</h2>
+            <p>Designed for flagship rigs running RTX 5090, RTX 4090, and high-TDP processor platforms.</p>
+          </div>
+          <div class="psu-grid">
+            {enthusiastPsus.map(p => {
+              const tierColor = p.qualityTier === 'Avoid'
+                ? { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)', text: '#ef4444' }
+                : p.qualityTier === 'C'
+                ? { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.3)', text: '#f59e0b' }
+                : p.qualityTier === 'B'
+                ? { bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.3)', text: '#3b82f6' }
+                : { bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.3)', text: '#10b981' };
+
+              return (
+                <div key={p.id} class="psu-card card">
+                  <div class="card-header">
+                    <span class="psu-brand">{p.brand}</span>
+                    {p.qualityTier && (
+                      <span class="quality-badge" style={`background:${tierColor.bg}; border:1px solid ${tierColor.border}; color:${tierColor.text};`}>
+                        Tier {p.qualityTier === 'Avoid' ? 'F (Avoid)' : p.qualityTier}
+                      </span>
+                    )}
+                  </div>
+                  <h3 class="psu-name-title">{p.name}</h3>
+                  <div class="specs-row-group">
+                    <div class="spec-inline">
+                      <span class="spec-pill">{p.wattage}W</span>
+                      <span class="spec-pill text-capitalize">{effLabelMap[p.efficiencyTier] || p.efficiencyTier}</span>
+                      <span class="spec-pill">ATX {p.atxVersion}</span>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <span class="price-label">${p.price}</span>
+                    <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm">Full Specs →</a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* === Category 2: High Performance === */}
+        <section class="db-section" aria-labelledby="high-heading" style="margin-top:4rem;">
+          <div class="category-header">
+            <h2 id="high-heading">🔌 High Performance Power (700W - 850W)</h2>
+            <p>The sweet spot for high-end builds using RTX 5080, RTX 5070 Ti, or RX 9070 XT configurations.</p>
+          </div>
+          <div class="psu-grid">
+            {highPerformancePsus.map(p => {
+              const tierColor = p.qualityTier === 'Avoid'
+                ? { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)', text: '#ef4444' }
+                : p.qualityTier === 'C'
+                ? { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.3)', text: '#f59e0b' }
+                : p.qualityTier === 'B'
+                ? { bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.3)', text: '#3b82f6' }
+                : { bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.3)', text: '#10b981' };
+
+              return (
+                <div key={p.id} class="psu-card card">
+                  <div class="card-header">
+                    <span class="psu-brand">{p.brand}</span>
+                    {p.qualityTier && (
+                      <span class="quality-badge" style={`background:${tierColor.bg}; border:1px solid ${tierColor.border}; color:${tierColor.text};`}>
+                        Tier {p.qualityTier === 'Avoid' ? 'F (Avoid)' : p.qualityTier}
+                      </span>
+                    )}
+                  </div>
+                  <h3 class="psu-name-title">{p.name}</h3>
+                  <div class="specs-row-group">
+                    <div class="spec-inline">
+                      <span class="spec-pill">{p.wattage}W</span>
+                      <span class="spec-pill text-capitalize">{effLabelMap[p.efficiencyTier] || p.efficiencyTier}</span>
+                      <span class="spec-pill">ATX {p.atxVersion}</span>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <span class="price-label">${p.price}</span>
+                    <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm">Full Specs →</a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* === Category 3: Mid-Range & Budget === */}
+        <section class="db-section" aria-labelledby="budget-heading" style="margin-top:4rem;">
+          <div class="category-header">
+            <h2 id="budget-heading">🔋 Mid-Range &amp; Budget Power (Under 700W)</h2>
+            <p>Designed for mid-tier configurations running RTX 5060, RTX 4060, or Arc Battlemage cards.</p>
+          </div>
+          <div class="psu-grid">
+            {budgetPsus.map(p => {
+              const tierColor = p.qualityTier === 'Avoid'
+                ? { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)', text: '#ef4444' }
+                : p.qualityTier === 'C'
+                ? { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.3)', text: '#f59e0b' }
+                : p.qualityTier === 'B'
+                ? { bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.3)', text: '#3b82f6' }
+                : { bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.3)', text: '#10b981' };
+
+              return (
+                <div key={p.id} class="psu-card card">
+                  <div class="card-header">
+                    <span class="psu-brand">{p.brand}</span>
+                    {p.qualityTier && (
+                      <span class="quality-badge" style={`background:${tierColor.bg}; border:1px solid ${tierColor.border}; color:${tierColor.text};`}>
+                        Tier {p.qualityTier === 'Avoid' ? 'F (Avoid)' : p.qualityTier}
+                      </span>
+                    )}
+                  </div>
+                  <h3 class="psu-name-title">{p.name}</h3>
+                  <div class="specs-row-group">
+                    <div class="spec-inline">
+                      <span class="spec-pill">{p.wattage}W</span>
+                      <span class="spec-pill text-capitalize">{effLabelMap[p.efficiencyTier] || p.efficiencyTier}</span>
+                      <span class="spec-pill">ATX {p.atxVersion}</span>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <span class="price-label">${p.price}</span>
+                    <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm">Full Specs →</a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.psu-database-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 3.5rem;
+}
+.hub-header h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+.hub-intro {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 65ch;
+  line-height: 1.6;
+}
+.category-header {
+  margin-bottom: 1.5rem;
+}
+.category-header h2 {
+  font-size: 1.35rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+.category-header p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.psu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+.psu-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.psu-brand {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.quality-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.psu-name-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.35;
+}
+.spec-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.spec-pill {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+}
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.75rem;
+}
+.price-label {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--accent-primary);
+  font-family: var(--font-mono);
+}
+</style>
