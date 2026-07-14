@@ -81,7 +81,7 @@ function buildBreadcrumbSchema(pathname: string) {
     const known = breadcrumbNames[accumulated];
     const name = known || formatSlug(seg);
     if (accumulated !== pathname) {
-      items.push({ '@type': 'ListItem', position: items.length + 1, name, item: 'https://psucheck.com' + accumulated });
+      items.push({ '@type': 'ListItem', position: items.length + 1, name, item: 'https://psucheck.com' + accumulated + '/' });
     } else {
       items.push({ '@type': 'ListItem', position: items.length + 1, name });
     }
@@ -109,7 +109,51 @@ const {
 } = Astro.props;
 
 const siteTitle = title.includes('PSUCheck') ? title : `${title} | PSUCheck`;
-const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 'https://schema.org', '@graph': schema } : schema, null, 0) : null;
+
+// Dynamic TechArticle injection for guide subpages
+const isGuidePage = Astro.url.pathname.startsWith('/guides/') && Astro.url.pathname !== '/guides' && Astro.url.pathname !== '/guides/';
+const techArticleSchema = isGuidePage ? {
+  "@type": "TechArticle",
+  "headline": title,
+  "description": description,
+  "image": [Astro.url.origin + ogImage],
+  "datePublished": "2026-01-15T08:00:00Z",
+  "dateModified": new Date().toISOString(),
+  "author": {
+    "@type": "Organization",
+    "name": "PSUCheck Engineering Team",
+    "url": "https://psucheck.com/about"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PSUCheck",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://psucheck.com/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+} : null;
+
+// Combine schemas under @graph
+let finalSchemas = [];
+if (schema) {
+  if (Array.isArray(schema)) {
+    finalSchemas.push(...schema);
+  } else {
+    finalSchemas.push(schema);
+  }
+}
+if (techArticleSchema) {
+  finalSchemas.push(techArticleSchema);
+}
+
+const schemaStr = finalSchemas.length > 0
+  ? JSON.stringify(finalSchemas.length === 1 ? finalSchemas[0] : { '@context': 'https://schema.org', '@graph': finalSchemas }, null, 0)
+  : null;
 ---
 
 <!DOCTYPE html>
@@ -120,12 +164,12 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>{siteTitle}</title>
   <meta name="description" content={description} />
-  <link rel="canonical" href={canonicalUrl} />
+  {!noIndex && <link rel="canonical" href={canonicalUrl} />}
   {noIndex && <meta name="robots" content="noindex, nofollow" />}
   <meta property="og:type" content="website" />
   <meta property="og:title" content={siteTitle} />
   <meta property="og:description" content={description} />
-  <meta property="og:url" content={canonicalUrl} />
+  {!noIndex && <meta property="og:url" content={canonicalUrl} />}
   <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
   <meta property="og:site_name" content="PSUCheck" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -220,7 +264,10 @@ const schemaStr = schema ? JSON.stringify(Array.isArray(schema) ? { '@context': 
             <li><a href="/pc-builder">PC Builder & Cost</a></li>
             <li><a href="/psu-checker">PSU Upgrade Checker</a></li>
             <li><a href="/psu-replacement-calculator">PSU Replacement Calculator</a></li>
-            <li><a href="/compare/psu">PSU Comparison</a></li>
+            <li><a href="/compare">All Comparison Tools</a></li>
+            <li><a href="/compare/psu">PSU Spec Comparison</a></li>
+            <li><a href="/compare/cpu">CPU Power Comparison</a></li>
+            <li><a href="/compare/gpu">GPU Power Comparison</a></li>
             <li><a href="/compare/ups-calculator">UPS Sizer</a></li>
             <li><a href="/compare/breaker-calculator">Circuit Breaker Planner</a></li>
             <li><a href="/charger-for">USB-C Charger Sizer</a></li>

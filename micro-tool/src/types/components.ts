@@ -67,6 +67,7 @@ export interface PsuIndex {
   price: number;
   has12v2x6: boolean;
   cybeneticsRating?: string;
+  qualityTier?: "A" | "B" | "C" | "Avoid";
 }
 
 export type EfficiencyTier =

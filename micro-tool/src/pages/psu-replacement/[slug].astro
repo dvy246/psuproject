@@ -1,0 +1,405 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { calculatePsuHealthScore, generateReplacementVerdict, calculateTransientPeak, calculateRecommendedWattage, calculateBaseDraw } from '../../lib/psu';
+import type { GpuIndex, CpuIndex, PsuIndex, OcConfig } from '../../types/components';
+
+import gpuData from '../../data/index/gpus.index.json';
+import psuData from '../../data/index/psus.index.json';
+import cpuData from '../../data/index/cpus.index.json';
+
+export async function getStaticPaths() {
+  const gpus = gpuData.items as GpuIndex[];
+  const cpus = cpuData.items as CpuIndex[];
+  const psus = psuData.items as PsuIndex[];
+
+  const wattages = [550, 650, 750, 850, 1000];
+  const ageBuckets = [
+    { years: 3, label: 'age-3' },
+    { years: 5, label: 'age-5' },
+    { years: 8, label: 'age-8' },
+    { years: 10, label: 'age-10' },
+  ];
+
+  const refCpu = (cpus as CpuIndex[]).find(c => c.id === 'ryzen-7-7800x3d') || (cpus as CpuIndex[])[0];
+
+  const paths = [];
+
+  for (const gpu of gpus as GpuIndex[]) {
+    for (const wattage of wattages) {
+      if (wattage < gpu.minPsuWattage) continue;
+
+      for (const bucket of ageBuckets) {
+        paths.push({
+          params: { slug: `should-i-replace-my-${wattage}w-psu-for-${gpu.id}-${bucket.label}` },
+          props: { gpu, refCpu, wattage, psuAgeYears: bucket.years, psus }
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { gpu, refCpu, wattage, psuAgeYears, psus: allPsus } = Astro.props as {
+  gpu: GpuIndex;
+  refCpu: CpuIndex;
+  wattage: number;
+  psuAgeYears: number;
+  psus: PsuIndex[];
+};
+
+const components = {
+  cpu: refCpu,
+  gpu,
+  ram: { capacity: 32, speed: 6000, type: 'DDR5' as const, sticks: 2, price: 99, typicalWatts: 10 },
+  storage: [{ type: 'NVMe' as const, capacity: 1000, price: 69, typicalWatts: 7 }],
+  cooling: { type: 'aio-240' as const, price: 89, typicalWatts: 10 },
+  fans: 3
+};
+
+const baseDraw = calculateBaseDraw(components);
+const transientPeak = calculateTransientPeak(components.cpu, components.gpu, baseDraw);
+const recommendedWattage = calculateRecommendedWattage(transientPeak, '2.x');
+
+const hasNative12v2x6 = wattage >= 750 && psuAgeYears <= 5;
+const connectorSafe = gpu.connectorType !== '8pin-x3' && gpu.connectorType !== '8pin-x4';
+
+const health = calculatePsuHealthScore(psuAgeYears, wattage, transientPeak, hasNative12v2x6, connectorSafe);
+const verdict = generateReplacementVerdict(health.score, wattage, health.effectiveCapacity, transientPeak, psuAgeYears, recommendedWattage, allPsus as PsuIndex[]);
+
+const healthColor = health.rating === 'good' ? 'safe' : health.rating === 'warning' ? 'warning' : 'danger';
+const healthLabel = health.rating === 'good' ? '✓ HEALTHY' : health.rating === 'warning' ? '⚠ WARNING' : '✕ CRITICAL';
+
+const actionLabel = verdict.action === 'keep' ? 'Keep Your PSU' : verdict.action === 'plan' ? 'Plan Replacement' : 'Replace Now';
+const actionColor = verdict.action === 'keep' ? 'safe' : verdict.action === 'plan' ? 'warning' : 'danger';
+
+const ageLabel = psuAgeYears === 3 ? '3-year-old' : psuAgeYears === 5 ? '5-year-old' : psuAgeYears === 8 ? '8-year-old' : '10-year-old';
+
+const relatedLinks: { name: string; href: string; desc: string }[] = [];
+
+relatedLinks.push({ name: 'PSU Replacement Calculator', href: '/psu-replacement-calculator', desc: 'Interactive tool to check your PSU health' });
+relatedLinks.push({ name: 'PSU Aging Guide', href: '/guides/psu-degradation', desc: 'How capacitor aging affects PSU performance' });
+if (gpu.connectorType === '12v-2x6') {
+  relatedLinks.push({ name: 'ATX 3.1 Guide', href: '/guides/atx-3-1-guide', desc: 'Why ATX 3.1 matters for modern GPUs' });
+}
+if (psuAgeYears >= 5) {
+  relatedLinks.push({ name: 'PSU Lifespan Guide', href: '/guides/psu-lifespan', desc: 'How long should a PSU last?' });
+}
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Should I replace my ${wattage}W PSU for ${gpu.name} if it's ${psuAgeYears} years old?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${verdict.action === 'replace' ? 'Yes, immediately.' : verdict.action === 'plan' ? 'Not urgently, but plan to.' : 'No, your PSU is still healthy.'} Your ${wattage}W PSU has a health score of ${health.score}/100 with ${health.degradationPercent}% capacity degradation. The effective capacity is ${health.effectiveCapacity}W, and your system demands ${transientPeak}W peak. ${verdict.reason}`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does a PSU lose wattage as it ages?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, electrolytic capacitors dry out over years of thermal stress, reducing the PSU's effective power output. After year 3, most PSUs lose approximately 5% capacity annually. A 10-year-old 850W PSU may only deliver ~650W safely."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title={`Should I Replace My ${wattage}W PSU for ${gpu.name}? (${ageLabel} PSU Analysis)`}
+  description={`PSU health check: Is your ${ageLabel} ${wattage}W power supply still safe for ${gpu.name}? Health score: ${health.score}/100 — ${health.degradationPercent}% capacity lost to aging. ${verdict.action === 'keep' ? 'No replacement needed.' : verdict.action === 'plan' ? 'Plan replacement within 12 months.' : 'Replace your PSU now.'}`}
+  schema={[schema]}
+>
+  <section class="oracle-page" aria-labelledby="replacement-heading">
+    <div class="container">
+      <div class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/psu-replacement-calculator">PSU Health</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{wattage}W for {gpu.name}</span>
+      </div>
+
+      <header class="oracle-header">
+        <h1 id="replacement-heading">
+          Should I Replace My <span class="gradient-text">{wattage}W PSU</span> for <span class="gradient-text">{gpu.name}</span>?
+        </h1>
+        <p class="oracle-intro">
+          This page analyzes your PSU's capacitor aging degradation and whether it can safely power your GPU.
+          Your {ageLabel} PSU is modeled with {health.degradationPercent}% capacity loss.
+        </p>
+      </header>
+
+      <div class="verdict-panel verdict-panel--{actionColor}" role="region" aria-label="Replacement verdict">
+        <div class="verdict-header-row">
+          <span class="verdict-label">Replacement Verdict</span>
+          <span class={`badge badge-${actionColor}`}>{actionLabel}</span>
+        </div>
+        <div class="verdict-description">
+          <p>{verdict.reason}</p>
+          {verdict.action !== 'keep' && (
+            <p style="margin-top:1rem;font-size:0.9375rem;color:var(--color-text-secondary);">{verdict.costBenefit}</p>
+          )}
+        </div>
+      </div>
+
+      <div class="oracle-grid">
+        <div class="card card-dark">
+          <h2>PSU Health Score</h2>
+          <div class="health-score-ring" style="margin:1.5rem auto;width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--color-{healthColor}) 0% {health.score}%, var(--color-border-subtle) {health.score}% 100%);display:flex;align-items:center;justify-content:center;">
+            <div style="width:110px;height:110px;border-radius:50%;background:var(--color-surface);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <span style="font-size:2rem;font-weight:850;font-family:var(--font-mono);color:var(--text-primary);">{health.score}</span>
+              <span style="font-size:0.6875rem;text-transform:uppercase;color:var(--text-tertiary);letter-spacing:0.06em;">/ 100</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;">
+            <div class="stat-row">
+              <span class="stat-label">Rated Wattage</span>
+              <span class="stat-val">{wattage}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Effective Capacity</span>
+              <span class="stat-val" style="color:var(--color-{healthColor});">{health.effectiveCapacity}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Degradation</span>
+              <span class="stat-val">-{health.degradationPercent}%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">System Peak Draw</span>
+              <span class="stat-val">{transientPeak}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Recommended Replacement</span>
+              <span class="stat-val" style="color:var(--color-accent-cyan);font-weight:800;">{recommendedWattage}W</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-dark">
+          <h2>Capacity Degradation Timeline</h2>
+          <p style="font-size:0.75rem;color:var(--color-text-tertiary);margin-top:0.25rem;margin-bottom:1.5rem;">
+            Capacitor aging reduces effective capacity ~5%/yr after year 3:
+          </p>
+          <div style="display:flex;flex-direction:column;gap:0.625rem;">
+            {health.timeline.map(pt => {
+              const isCurrentYear = pt.year === (psuAgeYears <= 3 ? 0 : psuAgeYears >= 15 ? 15 : psuAgeYears);
+              return (
+                <div key={pt.year} class="stat-row" style={isCurrentYear ? 'border-left:3px solid var(--color-accent-cyan);padding-left:0.75rem;' : ''}>
+                  <span class="stat-label">
+                    {pt.label}
+                    <span style="font-size:0.75rem;color:var(--text-tertiary);margin-left:0.25rem;">(yr {pt.year})</span>
+                  </span>
+                  <span style="display:flex;gap:0.75rem;align-items:center;">
+                    <span class="stat-val">{pt.effectiveWatts}W</span>
+                    <span class="stat-val" style="font-size:0.8rem;">{pt.score}/100</span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {verdict.recommendedPsus.length > 0 && (
+        <section class="rec-section" aria-labelledby="recs-heading" style="margin-top:3rem;">
+          <h2 id="recs-heading">Recommended PSU Upgrades</h2>
+          <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-bottom:1.5rem;">
+            {verdict.action === 'replace' ? 'These power supplies are recommended as replacements:' : 'Consider these if upgrading:'}
+          </p>
+          <div class="related-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+            {verdict.recommendedPsus.map(p => {
+              const tierColor = p.qualityTier === 'Avoid'
+                ? { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)', text: '#ef4444' }
+                : p.qualityTier === 'C'
+                ? { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.3)', text: '#f59e0b' }
+                : p.qualityTier === 'B'
+                ? { bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.3)', text: '#3b82f6' }
+                : { bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.3)', text: '#10b981' };
+
+              return (
+                <div key={p.id} class="card card-accent" style="padding:1.25rem;display:flex;flex-direction:column;justify-content:space-between;">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                      <span style="font-size:0.75rem;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;">{p.brand}</span>
+                      {p.qualityTier && (
+                        <span style={`font-size:0.6875rem;font-weight:700;padding:2px 6px;border-radius:4px;background:${tierColor.bg};border:1px solid ${tierColor.border};color:${tierColor.text};`}>
+                          {p.qualityTier === 'Avoid' ? 'Tier F (Avoid)' : `Tier ${p.qualityTier}`}
+                        </span>
+                      )}
+                    </div>
+                    <h3 style="font-size:1.1rem;margin-top:0.25rem;color:var(--text-primary);">{p.name}</h3>
+                    <div style="display:flex;gap:4px;margin-top:0.5rem;">
+                      <span class="hw-spec">{p.wattage}W</span>
+                      <span class="hw-spec text-capitalize">{p.efficiencyTier}</span>
+                      <span class="hw-spec">ATX {p.atxVersion}</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;">
+                    <span style="font-weight:800;color:var(--color-accent-cyan);font-family:var(--font-mono);">${p.price}</span>
+                    <a href="/psu-calculator" class="btn btn-secondary" style="font-size:0.75rem;padding:6px 12px;min-height:36px;">Configure →</a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <div class="verdict-panel verdict-panel--{healthColor}" style="margin-top:2.5rem;" role="region" aria-label="Health assessment">
+        <div class="verdict-header-row">
+          <span class="verdict-label">Health Assessment</span>
+          <span class={`badge badge-${healthColor}`}>{healthLabel}</span>
+        </div>
+        <div class="verdict-description">
+          <p>{health.narrative}</p>
+          {health.rating !== 'good' && (
+            <p style="margin-top:0.75rem;font-size:0.9375rem;color:var(--color-text-secondary);">
+              ⚠ An upgrade to a modern ATX 3.1 PSU would restore full capacity and add native 12V-2x6 connector support.
+            </p>
+          )}
+        </div>
+      </div>
+
+      <section aria-labelledby="related-guides-heading" style="margin-top:3rem;">
+        <h2 id="related-guides-heading" style="font-size:1.25rem;font-weight:700;margin-bottom:1rem;">Related Guides</h2>
+        <div class="related-grid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));">
+          {relatedLinks.map(link => (
+            <a
+              href={link.href}
+              class="related-card card"
+              key={link.href}
+              style="display:block;padding:1.25rem;text-decoration:none;"
+            >
+              <h3 style="font-size:1rem;font-weight:700;color:var(--color-text-primary);margin-bottom:0.35rem;">{link.name}</h3>
+              <p style="font-size:0.8125rem;color:var(--color-text-secondary);margin:0;">{link.desc}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <div style="margin-top:2.5rem;">
+        <a
+          href={`/oracle/is-${wattage}w-enough-for-${gpu.id}`}
+          class="card"
+          style="display:flex;justify-content:space-between;align-items:center;padding:1.25rem;text-decoration:none;border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);transition:border-color 0.15s;"
+        >
+          <div>
+            <div style="font-size:0.6875rem;font-weight:700;color:var(--color-accent-cyan);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">Oracle Analysis</div>
+            <span style="font-size:1rem;font-weight:700;color:var(--text-primary);">Is {wattage}W enough for {gpu.name}? →</span>
+          </div>
+          <span style="font-size:1.25rem;color:var(--color-accent-cyan);">⚡</span>
+        </a>
+      </div>
+
+      <div style="margin-top:1.5rem;text-align:center;">
+        <a href="/psu-replacement-calculator" class="btn btn-primary">Run full PSU health audit on your build →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.oracle-page {
+  padding: 3rem 0 6rem;
+}
+.oracle-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.oracle-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  max-width: 25ch;
+}
+.oracle-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.verdict-panel {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  margin-bottom: 2.5rem;
+}
+.verdict-panel--safe {
+  border-color: var(--color-safe-border);
+  background: var(--color-safe-bg);
+}
+.verdict-panel--warning {
+  border-color: var(--color-warning-border);
+  background: var(--color-warning-bg);
+}
+.verdict-panel--danger {
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
+}
+.verdict-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.verdict-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+}
+.verdict-description p {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.verdict-description strong {
+  color: var(--text-primary);
+}
+.oracle-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .oracle-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.card-dark {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1.5rem;
+}
+.card-dark h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.stat-row:last-child {
+  border-bottom: none;
+}
+.stat-label {
+  color: var(--text-secondary);
+}
+.stat-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+</style>

@@ -1,0 +1,112 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { GpuIndex } from '../../types/components';
+import gpuData from '../../data/index/gpus.index.json';
+
+// Compute the exact same GPU comparison pairs as in compare/gpu/[slug].astro
+const gpus = gpuData.items as GpuIndex[];
+const pairs: { a: GpuIndex; b: GpuIndex; slug: string }[] = [];
+
+const tierRank: Record<string, number> = { budget: 0, mid: 1, high: 2, ultra: 3, halo: 4 };
+
+for (let i = 0; i < gpus.length; i++) {
+  for (let j = i + 1; j < gpus.length; j++) {
+    const a = gpus[i];
+    const b = gpus[j];
+    const tierDiff = Math.abs(tierRank[a.tier] - tierRank[b.tier]);
+    const priceDiff = Math.abs(a.price - b.price);
+
+    // Only pair: same or adjacent tier + within $300 price difference
+    if (tierDiff <= 1 && priceDiff <= 300) {
+      pairs.push({ a, b, slug: `${a.id}-vs-${b.id}` });
+    }
+  }
+}
+
+// Sort pairs for nice list presentation
+pairs.sort((x, y) => `${x.a.name} vs ${x.b.name}`.localeCompare(`${y.a.name} vs ${y.b.name}`));
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "PC GPU Power & Spec Comparisons",
+  "url": "https://psucheck.com/compare/gpu",
+  "description": "Browse side-by-side power draw and spec comparisons for popular NVIDIA GeForce, AMD Radeon, and Intel Arc graphics cards.",
+  "itemListElement": pairs.map((pair, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "url": `https://psucheck.com/compare/gpu/${pair.slug}/`,
+    "name": `${pair.a.name} vs ${pair.b.name} Spec Comparison`
+  }))
+};
+---
+
+<Layout
+  title="Compare PC Graphics Cards: GPU Power & Spec Comparison Hub — PSUCheck"
+  description="Compare power draw, sustained TBP, transient spikes, and connector types of popular NVIDIA GeForce, AMD Radeon, and Intel Arc GPUs side-by-side."
+  schema={schema}
+>
+  <section class="calc-hero" aria-labelledby="compare-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">›</span>
+            <span>Compare</span>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">GPUs</span>
+          </div>
+          <h1 id="compare-hero-heading" class="calc-h1">
+            GPU Comparisons
+          </h1>
+          <p class="calc-subtitle">
+            Compare GPU power ratings, transient spikes, connector types, and PSU wattage recommendations side-by-side. Select a matchup below to view the detailed breakdown.
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Comparer features">
+          <span class="badge badge-safe">⚡ TBP & Cable Audit</span>
+          <span class="badge badge-safe">⚡ ATX 3.1 & 12V-2x6 Check</span>
+          <span class="badge badge-safe">⚖ Spec Headroom</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="compare-list-section" style="padding: 4rem 0 6rem; background: var(--bg-primary);">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;">
+        {pairs.map((pair) => (
+          <a
+            href={`/compare/gpu/${pair.slug}/`}
+            class="card card-accent"
+            style="padding: 1.5rem; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 150ms ease, border-color 150ms ease; border: 1px solid var(--border-subtle);"
+            onmouseenter="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--color-accent-violet)';"
+            onmouseleave="this.style.transform='none'; this.style.borderColor='var(--border-subtle)';"
+          >
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span class="badge" style="background: var(--bg-tertiary); color: var(--text-secondary); font-size: 0.75rem; border: 1px solid var(--border-default); text-transform: capitalize;">
+                  {pair.a.tier} Tier
+                </span>
+                <span style="font-size: 0.8125rem; color: var(--text-tertiary);">
+                  Price Diff: ${Math.abs(pair.a.price - pair.b.price)}
+                </span>
+              </div>
+              <h2 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0; line-height: 1.4;">
+                {pair.a.name} <span style="color: var(--text-tertiary); font-weight: 400; font-size: 0.9rem;">vs</span> {pair.b.name}
+              </h2>
+              <p style="font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+                Compare {pair.a.tbp}W TBP vs {pair.b.tbp}W TBP power draws, native {pair.a.connectorType === '12v-2x6' ? '12V-2x6 / 12VHPWR' : 'PCIe'} connector safety, and transient spike curves.
+              </p>
+            </div>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 0.375rem; font-size: 0.8125rem; font-weight: 700; color: var(--color-accent-violet);">
+              View Comparison
+              <span aria-hidden="true">→</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

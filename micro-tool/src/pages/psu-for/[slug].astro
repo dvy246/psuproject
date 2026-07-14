@@ -355,9 +355,16 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
               <div class="psu-cards-grid">
                 {tiered.premium.map(r => (
                   <div class="psu-match-card" key={r.psu.id}>
-                    <div class="psu-card-header">
+                    <div class="psu-card-header" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                       <span class="psu-brand">{r.psu.brand}</span>
-                      {r.connectorMatch && r.atx31 && <span class="psu-badge badge-safe">✓ Best Match</span>}
+                      <div style="display:flex; gap:4px; align-items:center;">
+                        {r.psu.qualityTier && (
+                          <span class={`badge ${r.psu.qualityTier === 'Avoid' ? 'badge-danger' : r.psu.qualityTier === 'C' ? 'badge-warning' : r.psu.qualityTier === 'B' ? 'badge-accent' : 'badge-safe'}`} style="font-size:0.625rem; padding:1px 5px; border-radius:3px;">
+                            {r.psu.qualityTier === 'Avoid' ? 'Avoid' : `Tier ${r.psu.qualityTier}`}
+                          </span>
+                        )}
+                        {r.connectorMatch && r.atx31 && <span class="psu-badge badge-safe">✓ Best Match</span>}
+                      </div>
                     </div>
                     <h4 class="psu-name">{r.psu.name}</h4>
                     <div class="psu-specs">
@@ -387,9 +394,16 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
               <div class="psu-cards-grid">
                 {tiered.mid.map(r => (
                   <div class="psu-match-card" key={r.psu.id}>
-                    <div class="psu-card-header">
+                    <div class="psu-card-header" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                       <span class="psu-brand">{r.psu.brand}</span>
-                      {r.connectorMatch && r.atx31 && <span class="psu-badge badge-safe">✓ Compatible</span>}
+                      <div style="display:flex; gap:4px; align-items:center;">
+                        {r.psu.qualityTier && (
+                          <span class={`badge ${r.psu.qualityTier === 'Avoid' ? 'badge-danger' : r.psu.qualityTier === 'C' ? 'badge-warning' : r.psu.qualityTier === 'B' ? 'badge-accent' : 'badge-safe'}`} style="font-size:0.625rem; padding:1px 5px; border-radius:3px;">
+                            {r.psu.qualityTier === 'Avoid' ? 'Avoid' : `Tier ${r.psu.qualityTier}`}
+                          </span>
+                        )}
+                        {r.connectorMatch && r.atx31 && <span class="psu-badge badge-safe">✓ Compatible</span>}
+                      </div>
                     </div>
                     <h4 class="psu-name">{r.psu.name}</h4>
                     <div class="psu-specs">
@@ -418,9 +432,16 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
               <div class="psu-cards-grid">
                 {tiered.budget.map(r => (
                   <div class="psu-match-card" key={r.psu.id}>
-                    <div class="psu-card-header">
+                    <div class="psu-card-header" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                       <span class="psu-brand">{r.psu.brand}</span>
-                      {!r.connectorMatch && <span class="psu-badge badge-warning">⚠ Adapter Needed</span>}
+                      <div style="display:flex; gap:4px; align-items:center;">
+                        {r.psu.qualityTier && (
+                          <span class={`badge ${r.psu.qualityTier === 'Avoid' ? 'badge-danger' : r.psu.qualityTier === 'C' ? 'badge-warning' : r.psu.qualityTier === 'B' ? 'badge-accent' : 'badge-safe'}`} style="font-size:0.625rem; padding:1px 5px; border-radius:3px;">
+                            {r.psu.qualityTier === 'Avoid' ? 'Avoid' : `Tier ${r.psu.qualityTier}`}
+                          </span>
+                        )}
+                        {!r.connectorMatch && <span class="psu-badge badge-warning">⚠ Adapter</span>}
+                      </div>
                     </div>
                     <h4 class="psu-name">{r.psu.name}</h4>
                     <div class="psu-specs">

@@ -1,0 +1,127 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { CpuIndex } from '../../types/components';
+import cpuData from '../../data/index/cpus.index.json';
+
+// Compute the exact same CPU comparison pairs as in compare/cpu/[slug].astro
+const cpus = cpuData.items as CpuIndex[];
+const pairs: { a: CpuIndex; b: CpuIndex; slug: string }[] = [];
+
+// Pair logic 1: Same socket family, within $250 price difference, different brand
+for (let i = 0; i < cpus.length; i++) {
+  for (let j = i + 1; j < cpus.length; j++) {
+    const a = cpus[i];
+    const b = cpus[j];
+    const priceDiff = Math.abs(a.price - b.price);
+    const sameSocket = a.socket === b.socket;
+    const sameBrand = a.brand === b.brand;
+
+    if (sameSocket && priceDiff <= 250 && a.id !== b.id && !sameBrand) {
+      pairs.push({ a, b, slug: `${a.id}-vs-${b.id}` });
+    }
+  }
+}
+
+// Pair logic 2: Same brand, same socket, different tier (different core count), within $200
+for (let i = 0; i < cpus.length; i++) {
+  for (let j = i + 1; j < cpus.length; j++) {
+    const a = cpus[i];
+    const b = cpus[j];
+    const priceDiff = Math.abs(a.price - b.price);
+    const sameSocket = a.socket === b.socket;
+    const sameBrand = a.brand === b.brand;
+    const diffCores = a.cores !== b.cores;
+
+    if (sameSocket && sameBrand && diffCores && priceDiff <= 200) {
+      pairs.push({ a, b, slug: `${a.id}-vs-${b.id}` });
+    }
+  }
+}
+
+// Sort pairs for nice list presentation
+pairs.sort((x, y) => `${x.a.name} vs ${x.b.name}`.localeCompare(`${y.a.name} vs ${y.b.name}`));
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "PC CPU Power & Spec Comparisons",
+  "url": "https://psucheck.com/compare/cpu",
+  "description": "Browse side-by-side power draw and spec comparisons for popular AMD Ryzen and Intel Core processors.",
+  "itemListElement": pairs.map((pair, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "url": `https://psucheck.com/compare/cpu/${pair.slug}/`,
+    "name": `${pair.a.name} vs ${pair.b.name} Spec Comparison`
+  }))
+};
+---
+
+<Layout
+  title="Compare PC Processors: CPU Power & Spec Comparison Hub — PSUCheck"
+  description="Compare power draw, sustained TDP, transient spikes, and core specs of popular AMD Ryzen and Intel Core CPUs side-by-side."
+  schema={schema}
+>
+  <section class="calc-hero" aria-labelledby="compare-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">›</span>
+            <span>Compare</span>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">CPUs</span>
+          </div>
+          <h1 id="compare-hero-heading" class="calc-h1">
+            CPU Comparisons
+          </h1>
+          <p class="calc-subtitle">
+            Compare CPU power specs, TDP ratings, and estimated transient peak draws side-by-side. Select a matchup below to view the detailed breakdown.
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Comparer features">
+          <span class="badge badge-safe">⚡ TDP & PL2 Audit</span>
+          <span class="badge badge-safe">⚡ Transient Calculations</span>
+          <span class="badge badge-safe">⚙ Socket Families</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="compare-list-section" style="padding: 4rem 0 6rem; background: var(--bg-primary);">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;">
+        {pairs.map((pair) => (
+          <a
+            href={`/compare/cpu/${pair.slug}/`}
+            class="card card-accent"
+            style="padding: 1.5rem; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; transition: transform 150ms ease, border-color 150ms ease; border: 1px solid var(--border-subtle);"
+            onmouseenter="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--color-accent-violet)';"
+            onmouseleave="this.style.transform='none'; this.style.borderColor='var(--border-subtle)';"
+          >
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span class="badge" style="background: var(--bg-tertiary); color: var(--text-secondary); font-size: 0.75rem; border: 1px solid var(--border-default);">
+                  {pair.a.socket} Socket
+                </span>
+                <span style="font-size: 0.8125rem; color: var(--text-tertiary);">
+                  Price Diff: ${Math.abs(pair.a.price - pair.b.price)}
+                </span>
+              </div>
+              <h2 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0; line-height: 1.4;">
+                {pair.a.name} <span style="color: var(--text-tertiary); font-weight: 400; font-size: 0.9rem;">vs</span> {pair.b.name}
+              </h2>
+              <p style="font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+                Compare {pair.a.tdpSustained}W PL2 vs {pair.b.tdpSustained}W PL2 power scaling, overclocking limits, and PSU sizing headroom.
+              </p>
+            </div>
+            <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 0.375rem; font-size: 0.8125rem; font-weight: 700; color: var(--color-accent-violet);">
+              View Comparison
+              <span aria-hidden="true">→</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

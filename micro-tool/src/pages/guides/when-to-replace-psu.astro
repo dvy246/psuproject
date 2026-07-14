@@ -1,0 +1,151 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-14",
+  "dateModified": "2026-07-14",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "When should I replace my PSU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Replace your PSU if it is older than 8 years, if you experience random shutdowns under gaming loads, if it lacks native 12V-2x6 connector support for modern GPUs, or if its rated wattage is below the recommended minimum for your graphics card."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can a failing PSU damage other components?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. A failing PSU with excessive voltage ripple can damage GPU VRMs, motherboard capacitors, and storage drives. In severe cases, a catastrophic PSU failure can send voltage spikes through your entire system."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to replace just the PSU in an old PC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, replacing only the PSU is one of the safest upgrades you can make, provided the new PSU's form factor (ATX/SFX) matches your case and its wattage covers your component power needs."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="When to Replace Your PSU — Signs, Timeline & Replacement Guide — PSUCheck"
+  description="Learn when to replace your PC power supply: warning signs, lifespan by tier, capacitor degradation thresholds, and upgrade checklists for modern GPU compatibility."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 14, 2026</span>
+        </div>
+        <h1>When to Replace Your PSU</h1>
+        <p class="guide-lead">
+          Replacing a power supply at the right time protects your entire system. This guide outlines
+          the warning signs, age-based thresholds, and hardware upgrade triggers that signal it is time to retire your PSU.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Age-Based Replacement Thresholds</h2>
+          <p>
+            A PSU does not fail suddenly in most cases. Instead, its electrolytic capacitors degrade gradually,
+            reducing effective capacity and increasing voltage ripple. The safe usable life depends on build quality:
+          </p>
+          <div style="background:var(--bg-secondary); padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border-subtle); margin:1.5rem 0;">
+            <h3 style="font-size:0.95rem; text-transform:uppercase; color:var(--color-accent-cyan); margin:0 0 1rem; font-weight:700;">PSU Replacement Timeline by Tier</h3>
+            <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.875rem;">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>Tier A (Platinum/Titanium, Japanese Caps, 10yr Warranty)</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-safe);">8-12 Years</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>Tier B (Gold, Mixed Caps, 7yr Warranty)</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-warning);">5-8 Years</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>Tier C (Bronze/White, Budget Caps, 3yr Warranty)</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-danger);">3-5 Years</strong>
+              </div>
+            </div>
+          </div>
+
+          <h2>Symptoms That Signal Imminent Failure</h2>
+          <p>
+            If your PSU exhibits any of the following behaviors, the capacitors have likely entered an advanced degradation phase:
+          </p>
+          <ul>
+            <li><strong>Random Shutdowns Under Gaming Load:</strong> The most common sign. The PSU's OCP (Over-Current Protection) triggers because degraded capacitors can not buffer GPU transient spikes.</li>
+            <li><strong>Failed Cold Boots:</strong> The PSU struggles to deliver inrush current when capacitors have high ESR, especially on cold mornings.</li>
+            <li><strong>Audible Coil Whine or Clicking:</strong> Worsening coil whine indicates failing filter components under load stress.</li>
+            <li><strong>Burning Smell or Visible Bulging:</strong> Immediate replacement required. Do not power on the system until replaced.</li>
+          </ul>
+
+          <h2>Upgrade-Triggered Replacement</h2>
+          <p>
+            Sometimes the PSU itself is healthy, but your hardware upgrade makes it obsolete. Consider replacement when:
+          </p>
+          <ul>
+            <li><strong>GPU Upgrade:</strong> A new graphics card may require 50-200W more power or a native 12V-2x6 connector that your old PSU lacks.</li>
+            <li><strong>ATX Standard Change:</strong> Moving from ATX 2.x to ATX 3.1 provides better transient handling and 12V-2x6 support.</li>
+            <li><strong>Efficiency Upgrade:</strong> Replacing an old Bronze unit with Platinum saves $30-60/yr in electricity at 6+ hours daily gaming.</li>
+          </ul>
+
+          <div class="important-warning">
+            <strong>⚠ Critical:</strong> Do not use adapter cables for 12V-2x6 on older PSUs lacking a native port. The adapter can overheat and melt. Replace the PSU instead.
+          </div>
+
+          <div style="margin-top:2.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+            <a href="/psu-replacement-calculator" class="btn btn-primary">Check Your PSU Now</a>
+            <a href="/psu-calculator" class="btn btn-secondary">Size a New PSU</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Interactive Tools</h3>
+            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
+              <li><a href="/psu-replacement-calculator">🔋 PSU Health Check</a></li>
+              <li><a href="/psu-calculator">⚡ PSU Sizing Tool</a></li>
+              <li><a href="/compare/breaker-calculator">🔌 Breaker Auditor</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Related Guides</h3>
+            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
+              <li><a href="/guides/psu-degradation">PSU Degradation Science</a></li>
+              <li><a href="/guides/psu-lifespan">PSU Lifespan Guide</a></li>
+              <li><a href="/guides/how-to-test-a-psu">How to Test a PSU</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--color-surface-raised); border-left: 4px solid var(--color-accent-orange); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

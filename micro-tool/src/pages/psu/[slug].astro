@@ -181,6 +181,16 @@ const effLabelMap: Record<string, string> = {
                 <span class="stat-val">{psu.cybeneticsRating}</span>
               </div>
             )}
+            {psu.qualityTier && (
+              <div class="stat-row">
+                <span class="stat-label">PSU Quality Tier (Cultists List)</span>
+                <span class="stat-val" style={`font-weight:700; color:${
+                  psu.qualityTier === 'Avoid' ? '#ef4444' : psu.qualityTier === 'C' ? '#f59e0b' : psu.qualityTier === 'B' ? '#3b82f6' : '#10b981'
+                };`}>
+                  Tier {psu.qualityTier === 'Avoid' ? 'F (Avoid)' : psu.qualityTier}
+                </span>
+              </div>
+            )}
             <div class="stat-row">
               <span class="stat-label">Retail Price</span>
               <span class="stat-val tabular" style="color:var(--color-accent-cyan); font-weight: 800;">${psu.price}</span>

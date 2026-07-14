@@ -1,0 +1,180 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-14",
+  "dateModified": "2026-07-14",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I use an old power supply with a new graphics card?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, but only if the PSU has sufficient wattage headroom to handle the GPU's transient power spikes (not just TBP), supports the required native connector (12V-2x6 for RTX 40/50 series), and is less than 5-7 years old depending on build quality."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will an old PSU damage a new GPU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An old PSU with degraded capacitors can damage a new GPU by delivering excessive voltage ripple on the 12V rail, stressing the card's VRM circuitry. Additionally, OCP trips from transient spikes can cause hard shutdowns that corrupt data."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need a new PSU for RTX 50 series?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "If you already own an ATX 3.1 PSU with a native 12V-2x6 cable, you do not need to replace it for RTX 50 series. If your PSU is ATX 2.x, you should upgrade to ATX 3.1 for proper transient handling and connector safety."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Using an Old PSU With a New GPU — Risks & Compatibility Guide — PSUCheck"
+  description="Can you reuse your old power supply with a modern graphics card? Learn about transient spike risks, connector compatibility, capacitor aging derating, and when you must upgrade."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <span>Updated: July 14, 2026</span>
+        </div>
+        <h1>Can You Use an Old PSU With a New GPU?</h1>
+        <p class="guide-lead">
+          Upgrading your graphics card is exciting, but reusing your old power supply carries real risks.
+          This guide explains the three compatibility checks every builder must perform before pairing a legacy PSU with a modern GPU.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>Check 1: Connector Compatibility</h2>
+          <p>
+            Modern high-end GPUs (RTX 4070 and above, RX 7900 XT and above) increasingly use the 12V-2x6 connector.
+            This connector requires a native port on an ATX 3.1 PSU. Using the included adapter on an older PSU is risky:
+          </p>
+          <ul>
+            <li><strong>12V-2x6 (Native):</strong> Safe. The PSU has a dedicated port with proper sense pins for load balancing.</li>
+            <li><strong>12VHPWR Adapter (3× 8-pin to 12V-2x6):</strong> Marginal. Works at stock settings but the adapter is a known failure point under sustained high loads or if not fully seated.</li>
+            <li><strong>2× 8-pin to 12V-2x6:</strong> Unsafe for cards drawing over 300W. Risk of connector melting.</li>
+          </ul>
+
+          <h2>Check 2: Transient Headroom</h2>
+          <p>
+            A new GPU does not draw a constant wattage. It pulls microsecond-duration power spikes (transients)
+            that can reach 1.35x to 1.57x of its rated TBP. An older, degraded PSU has less buffer capacity:
+          </p>
+          <div style="background:var(--bg-secondary); padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border-subtle); margin:1.5rem 0;">
+            <h3 style="font-size:0.95rem; text-transform:uppercase; color:var(--color-accent-cyan); margin:0 0 1rem; font-weight:700;">Real-World Transient Examples</h3>
+            <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.875rem;">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>RTX 5090 (575W TBP, 1.57× transient)</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-danger);">~900W peak</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>RTX 5080 (360W TBP, 1.50× transient)</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-warning);">~540W peak</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>RTX 5070 Ti (300W TBP, 1.50× transient)</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-warning);">~450W peak</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>RX 9070 XT (300W TBP, 1.50× transient)</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-warning);">~450W peak</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding-bottom:0.4rem;">
+                <span>RTX 4060 (115W TBP, 1.35× transient)</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-safe);">~155W peak</strong>
+              </div>
+            </div>
+          </div>
+          <p>
+            A healthy 650W PSU can handle a 450W transient peak. But a 5-year-old 650W PSU (degraded to ~600W effective)
+            with only 150W room above the peak may trip OCP under extended gaming.
+          </p>
+
+          <h2>Check 3: Capacitor Age Derating</h2>
+          <p>
+            If your PSU is over 3 years old, its effective capacity has begun to decline. Our capacitor aging model estimates
+            <strong>5% capacity loss per year after year 3</strong>. An 850W PSU at age 8 delivers approximately 637W of safe capacity.
+          </p>
+          <p>
+            Use our <a href="/psu-replacement-calculator">PSU Replacement Calculator</a> to compute your exact effective wattage.
+          </p>
+
+          <h2>When to Keep vs. Replace</h2>
+          <div style="background:var(--bg-secondary); padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border-subtle); margin:1.5rem 0;">
+            <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.875rem;">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>PSU ≤ 3 years old, ATX 3.1, adequate wattage</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-safe);">Keep</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>PSU 3-5 years, ATX 3.0, borderline wattage</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-warning);">Plan Upgrade</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
+                <span>PSU &gt; 5 years, ATX 2.x, any connector mismatch</span>
+                <strong style="font-family:var(--font-mono); color:var(--status-danger);">Replace Now</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="important-warning">
+            <strong>⚠ Safety Note:</strong> Never reuse PSU cables from an old unit with a new PSU, even if the connectors physically match. Pinouts vary by manufacturer and can destroy your GPU instantly.
+          </div>
+
+          <div style="margin-top:2.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+            <a href="/psu-replacement-calculator" class="btn btn-primary">Check Your PSU-GPU Combo</a>
+            <a href="/psu-calculator" class="btn btn-secondary">Size a New PSU</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <div class="card">
+            <h3>Interactive Tools</h3>
+            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
+              <li><a href="/psu-replacement-calculator">🔋 PSU Health Check</a></li>
+              <li><a href="/psu-calculator">⚡ PSU Sizing Tool</a></li>
+              <li><a href="/psu-for">🔍 PSU Matchmaker</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Related Guides</h3>
+            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
+              <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide</a></li>
+              <li><a href="/guides/gpu-power-connectors">GPU Power Connectors</a></li>
+              <li><a href="/guides/psu-degradation">PSU Degradation Science</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--color-surface-raised); border-left: 4px solid var(--color-accent-orange); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

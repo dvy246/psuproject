@@ -122,6 +122,11 @@ const schemas = [breadcrumbSchema, faqSchema];
                     <span class="hw-spec">ATX {item.psu.atxVersion}</span>
                     <span class="hw-spec text-capitalize">{item.psu.modular} Modular</span>
                     {item.psu.has12v2x6 && <span class="hw-spec spec-accent">✓ ATX 3.1 12V-2x6</span>}
+                    {item.psu.qualityTier && (
+                      <span class={`badge ${item.psu.qualityTier === 'Avoid' ? 'badge-danger' : item.psu.qualityTier === 'C' ? 'badge-warning' : item.psu.qualityTier === 'B' ? 'badge-accent' : 'badge-safe'}`} style="font-size:0.6875rem; padding:2px 6px; border-radius:3px;">
+                        {item.psu.qualityTier === 'Avoid' ? 'Avoid' : `Tier ${item.psu.qualityTier}`}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

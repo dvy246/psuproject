@@ -318,27 +318,46 @@ export default function PsuReplacementCalc({ cpus, gpus, psus }: Props) {
               Recommended Replacement Power Supplies
             </h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-              {verdict.recommendedPsus.map(p => (
-                <div class="card" style="padding: 1rem; background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 0.5rem;">
-                  <strong style="font-size:0.9rem; color:var(--text-primary);">{p.name}</strong>
-                  <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary);">
-                    <span>Wattage: {p.wattage}W</span>
-                    <span>ATX {p.atxVersion}</span>
+              {verdict.recommendedPsus.map(p => {
+                const tierColor = p.qualityTier === 'Avoid'
+                  ? { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)', text: '#ef4444' }
+                  : p.qualityTier === 'C'
+                  ? { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.3)', text: '#f59e0b' }
+                  : p.qualityTier === 'B'
+                  ? { bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.3)', text: '#3b82f6' }
+                  : { bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.3)', text: '#10b981' };
+
+                return (
+                  <div class="card" key={p.id} style="padding: 1rem; background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 0.5rem; justify-content: space-between;">
+                    <div>
+                      <div style="display:flex; justify-content:space-between; align-items:start; gap:8px; margin-bottom: 0.25rem;">
+                        <strong style="font-size:0.9rem; color:var(--text-primary);">{p.name}</strong>
+                        {p.qualityTier && (
+                          <span style={`font-size:0.625rem; font-weight:700; padding:1px 5px; border-radius:3px; white-space:nowrap; background:${tierColor.bg}; border:1px solid ${tierColor.border}; color:${tierColor.text};`}>
+                            {p.qualityTier === 'Avoid' ? 'Avoid' : `Tier ${p.qualityTier}`}
+                          </span>
+                        )}
+                      </div>
+                      <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary); margin-bottom: 0.25rem;">
+                        <span>Wattage: {p.wattage}W</span>
+                        <span>ATX {p.atxVersion}</span>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary);">
+                        <span style="text-transform:uppercase; font-weight:700; color:var(--color-accent-cyan);">{p.efficiencyTier}</span>
+                        <strong style="color:var(--text-primary);">${p.price}</strong>
+                      </div>
+                    </div>
+                    <a
+                      href={`https://www.amazon.com/s?k=${encodeURIComponent(p.name)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style="margin-top:0.75rem; text-align:center; padding:6px 12px; font-size:0.7rem; font-weight:700; background:rgba(0, 229, 255, 0.08); border:1px solid var(--border-accent); color:var(--color-accent-cyan); border-radius:4px; text-decoration:none; display:block;"
+                    >
+                      View on Amazon
+                    </a>
                   </div>
-                  <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary);">
-                    <span style="text-transform:uppercase; font-weight:700; color:var(--color-accent-cyan);">{p.efficiencyTier}</span>
-                    <strong style="color:var(--text-primary);">${p.price}</strong>
-                  </div>
-                  <a
-                    href={`https://www.amazon.com/s?k=${encodeURIComponent(p.name)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style="margin-top:0.5rem; text-align:center; padding:6px 12px; font-size:0.7rem; font-weight:700; background:rgba(0, 229, 255, 0.08); border:1px solid var(--border-accent); color:var(--color-accent-cyan); border-radius:4px; text-decoration:none; display:block;"
-                  >
-                    View on Amazon
-                  </a>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
