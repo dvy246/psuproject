@@ -53,8 +53,8 @@ export function DiagnosticsHUD({ cpu, gpu, ram, storage, cooling, psu, fans, psu
     : null;
 
   const verdict = analysis?.verdict ?? null;
-  const verdictColor = verdict === 'yes' ? 'safe' : verdict === 'borderline' ? 'warning' : 'danger';
-  const verdictLabel = verdict === 'yes' ? '✓ SAFE' : verdict === 'borderline' ? '⚠ BORDERLINE' : verdict === 'no' ? '✕ DANGER' : '—';
+  const verdictColor = !hasBuild ? 'empty' : verdict === 'yes' ? 'safe' : verdict === 'borderline' ? 'warning' : 'danger';
+  const verdictLabel = !hasBuild ? '' : verdict === 'yes' ? '✓ SAFE' : verdict === 'borderline' ? '⚠ BORDERLINE' : '✕ DANGER';
 
   return (
     <div class="hud-panel" role="region" aria-label="PSU Diagnostics">
@@ -69,20 +69,25 @@ export function DiagnosticsHUD({ cpu, gpu, ram, storage, cooling, psu, fans, psu
           aria-labelledby="hud-verdict-label"
           aria-atomic="true"
         >
-          <span class={`verdict-badge badge-${verdictColor}`}>
-            {verdictLabel}
-          </span>
-          {ocActive && (
-            <span class="badge-warning" style="font-size:9px;margin-left:4px;padding:1px 5px;">
-              ⚡ OC: {cpuOcPercent > 0 ? `CPU+${cpuOcPercent}%` : ''}{cpuOcPercent > 0 && gpuOcPercent > 0 ? ' ' : ''}{gpuOcPercent > 0 ? `GPU+${gpuOcPercent}%` : ''}
-            </span>
-          )}
-          {analysis && (
-            <span class="verdict-confidence tabular" aria-label={`Confidence: ${analysis.confidenceScore}%`}>
-              {analysis.confidenceScore}% confidence
-            </span>
-          )}
-          {!analysis && (
+          {hasBuild ? (
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; width:100%;">
+              <span class={`verdict-badge badge-${verdictColor}`}>
+                {verdictLabel}
+              </span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                {ocActive && (
+                  <span class="badge-warning" style="font-size:9px; padding:1px 5px; border-radius:3px;">
+                    ⚡ OC: {cpuOcPercent > 0 ? `CPU+${cpuOcPercent}%` : ''}{cpuOcPercent > 0 && gpuOcPercent > 0 ? ' ' : ''}{gpuOcPercent > 0 ? `GPU+${gpuOcPercent}%` : ''}
+                  </span>
+                )}
+                {analysis && (
+                  <span class="verdict-confidence tabular" aria-label={`Confidence: ${analysis.confidenceScore}%`}>
+                    {analysis.confidenceScore}% confidence
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
             <span class="verdict-empty">Select components to analyze</span>
           )}
         </div>
@@ -188,7 +193,7 @@ export function DiagnosticsHUD({ cpu, gpu, ram, storage, cooling, psu, fans, psu
           <>
             <div class="cable-alert-header">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L1 21h22L12 2zm0 4l7.5 13h-15L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
-              <strong>⚠ CABLE SAFETY ALERT</strong>
+              <strong>CABLE SAFETY ALERT</strong>
             </div>
             <p class="cable-alert-msg">{analysis?.cableAudit.message}</p>
             {!analysis?.cableAudit.daisyChainSafe && (

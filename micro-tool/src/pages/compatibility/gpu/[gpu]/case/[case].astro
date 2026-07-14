@@ -1,0 +1,115 @@
+---
+import Layout from '../../../../../layouts/Layout.astro';
+import { checkGpuCase } from '../../../../../lib/compatibility/check-gpu-case';
+
+import gpuData from '../../../../../data/index/gpus.index.json';
+import caseData from '../../../../../data/index/cases.index.json';
+
+export async function getStaticPaths() {
+  const gpus = gpuData.items;
+  const cases = caseData.items;
+  const paths = [];
+
+  for (const gpu of gpus) {
+    for (const pcCase of cases) {
+      paths.push({
+        params: { gpu: gpu.id, case: pcCase.id },
+        props: { gpu, pcCase }
+      });
+    }
+  }
+  return paths;
+}
+
+const { gpu, pcCase } = Astro.props;
+const result = checkGpuCase(gpu as any, pcCase as any);
+
+const pageTitle = `Will the ${gpu.name} Fit in the ${pcCase.name}? — PSUCheck`;
+const pageDescription = `Audit length and width clearances for installing the ${gpu.name} in the ${pcCase.name} PC case.`;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <section class="compat-page" style="padding: 3rem 0 6rem;">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compatibility/">Compatibility</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{gpu.name} to {pcCase.name}</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; margin-top: 1.5rem;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;">GPU to Case Clearances</span>
+        <h1 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; margin: 0 0 1rem; line-height: 1.15;">
+          Clearance Check: <span class="gradient-text">{gpu.name}</span> in <span class="gradient-text">{pcCase.name}</span>
+        </h1>
+      </header>
+
+      {/* Verdict Panel */}
+      <div class="card" style={`padding: 1.5rem; border-left: 4px solid ${result.verdict === 'PASS' ? 'var(--color-safe)' : result.verdict === 'WARN' ? 'var(--color-warning)' : 'var(--color-danger)'}; margin-bottom: 2.5rem;`}>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <span class={`badge ${result.verdict === 'PASS' ? 'badge-safe' : result.verdict === 'WARN' ? 'badge-warning' : 'badge-danger'}`} style="font-size: 0.85rem; padding: 4px 10px;">
+            {result.verdict === 'PASS' ? 'Compatible Fit' : result.verdict === 'WARN' ? 'Caution' : 'Incompatible'}
+          </span>
+        </div>
+        <p style="font-size: 1rem; line-height: 1.6; color: var(--color-text-primary);">
+          {result.verdict === 'PASS' ? (
+            <span>Yes! The <strong>{gpu.name}</strong> fits comfortably in the <strong>{pcCase.name}</strong>. Maximum GPU length allowed is <strong>{result.details.allowedLength}mm</strong> and the GPU measures <strong>{gpu.dimensions.length}mm</strong>.</span>
+          ) : result.verdict === 'WARN' ? (
+            <span>The fit is <strong>tight</strong>. Dual check modular cables bending space and front AIO installation clearances.</span>
+          ) : (
+            <span>No. The <strong>{gpu.name}</strong> is too large for the <strong>{pcCase.name}</strong>, violating length or width limits.</span>
+          )}
+        </p>
+
+        {result.warnings.map(w => (
+          <div style="margin-top: 0.75rem; color: var(--color-warning-text); font-size: 0.875rem;">⚠️ {w}</div>
+        ))}
+        {result.failures.map(f => (
+          <div style="margin-top: 0.75rem; color: var(--color-danger-text); font-size: 0.875rem;">❌ {f}</div>
+        ))}
+      </div>
+
+      {/* Details Table */}
+      <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); margin-bottom: 3rem;">
+        <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0 0 1.25rem; text-transform: uppercase; letter-spacing: 0.05em;">Clearance Checklist</h2>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary);">
+                <th style="padding: 0.5rem 0.75rem;">Metric</th>
+                <th style="padding: 0.5rem 0.75rem;">GPU Dimension</th>
+                <th style="padding: 0.5rem 0.75rem;">Max Case Clearance</th>
+                <th style="padding: 0.5rem 0.75rem;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">GPU Length</td>
+                <td style="padding: 0.75rem;">{gpu.dimensions.length}mm</td>
+                <td style="padding: 0.75rem;">{result.details.allowedLength}mm</td>
+                <td style="padding: 0.75rem;">{gpu.dimensions.length <= result.details.allowedLength ? '✅ Fits' : '❌ Too Long'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">GPU Width (Height)</td>
+                <td style="padding: 0.75rem;">{gpu.dimensions.width}mm</td>
+                <td style="padding: 0.75rem;">{result.details.allowedWidth}mm</td>
+                <td style="padding: 0.75rem;">{gpu.dimensions.width <= result.details.allowedWidth ? '✅ Fits' : '❌ Too Wide'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">PCIe Slots Occupied</td>
+                <td style="padding: 0.75rem;">{gpu.dimensions.slotsOccupied} slots</td>
+                <td style="padding: 0.75rem;">—</td>
+                <td style="padding: 0.75rem;">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

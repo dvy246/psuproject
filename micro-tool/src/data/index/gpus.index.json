@@ -6,40 +6,880 @@
     "intel": "Intel ARK + TechPowerUp GPU database"
   },
   "items": [
-    { "id": "rtx-5090", "name": "NVIDIA GeForce RTX 5090", "brand": "NVIDIA", "tbp": 575, "tier": "halo", "transientMultiplier": 1.57, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 1000, "price": 1999, "confirmed": true, "pcieLanes": 16, "generation": "Blackwell" },
-    { "id": "rtx-5080", "name": "NVIDIA GeForce RTX 5080", "brand": "NVIDIA", "tbp": 360, "tier": "ultra", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 850, "price": 999, "confirmed": true, "pcieLanes": 16, "generation": "Blackwell" },
-    { "id": "rtx-5070-ti", "name": "NVIDIA GeForce RTX 5070 Ti", "brand": "NVIDIA", "tbp": 300, "tier": "high", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 750, "price": 749, "confirmed": true, "pcieLanes": 16, "generation": "Blackwell" },
-    { "id": "rtx-5070", "name": "NVIDIA GeForce RTX 5070", "brand": "NVIDIA", "tbp": 250, "tier": "high", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 650, "price": 549, "confirmed": true, "pcieLanes": 16, "generation": "Blackwell" },
-    { "id": "rtx-5060-ti", "name": "NVIDIA GeForce RTX 5060 Ti", "brand": "NVIDIA", "tbp": 180, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x1", "connectorCount": 1, "minPsuWattage": 550, "price": 399, "confirmed": true, "pcieLanes": 8, "generation": "Blackwell" },
-    { "id": "rtx-5060", "name": "NVIDIA GeForce RTX 5060", "brand": "NVIDIA", "tbp": 150, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x1", "connectorCount": 1, "minPsuWattage": 550, "price": 299, "confirmed": true, "pcieLanes": 8, "generation": "Blackwell" },
-    { "id": "rtx-4090", "name": "NVIDIA GeForce RTX 4090", "brand": "NVIDIA", "tbp": 450, "tier": "halo", "transientMultiplier": 1.57, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 850, "price": 1599, "confirmed": true, "pcieLanes": 16, "generation": "Ada Lovelace" },
-    { "id": "rtx-4080-super", "name": "NVIDIA GeForce RTX 4080 SUPER", "brand": "NVIDIA", "tbp": 320, "tier": "ultra", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 750, "price": 999, "confirmed": true, "pcieLanes": 16, "generation": "Ada Lovelace" },
-    { "id": "rtx-4070-ti-super", "name": "NVIDIA GeForce RTX 4070 Ti SUPER", "brand": "NVIDIA", "tbp": 285, "tier": "high", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 700, "price": 799, "confirmed": true, "pcieLanes": 16, "generation": "Ada Lovelace" },
-    { "id": "rtx-4070-super", "name": "NVIDIA GeForce RTX 4070 SUPER", "brand": "NVIDIA", "tbp": 220, "tier": "high", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 650, "price": 599, "confirmed": true, "pcieLanes": 16, "generation": "Ada Lovelace" },
-    { "id": "rtx-4070", "name": "NVIDIA GeForce RTX 4070", "brand": "NVIDIA", "tbp": 200, "tier": "high", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 650, "price": 499, "confirmed": true, "pcieLanes": 16, "generation": "Ada Lovelace" },
-    { "id": "rtx-4060-ti", "name": "NVIDIA GeForce RTX 4060 Ti", "brand": "NVIDIA", "tbp": 160, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x1", "connectorCount": 1, "minPsuWattage": 550, "price": 399, "confirmed": true, "pcieLanes": 8, "generation": "Ada Lovelace" },
-    { "id": "rtx-4060", "name": "NVIDIA GeForce RTX 4060", "brand": "NVIDIA", "tbp": 115, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x1", "connectorCount": 1, "minPsuWattage": 550, "price": 299, "confirmed": true, "pcieLanes": 8, "generation": "Ada Lovelace" },
-    { "id": "rx-9070-xt", "name": "AMD Radeon RX 9070 XT", "brand": "AMD", "tbp": 300, "tier": "high", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 750, "price": 549, "confirmed": true, "pcieLanes": 16, "generation": "RDNA 4" },
-    { "id": "rx-9070", "name": "AMD Radeon RX 9070", "brand": "AMD", "tbp": 250, "tier": "high", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 650, "price": 449, "confirmed": true, "pcieLanes": 16, "generation": "RDNA 4" },
-    { "id": "rx-7900-xtx", "name": "AMD Radeon RX 7900 XTX", "brand": "AMD", "tbp": 355, "tier": "ultra", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 800, "price": 799, "confirmed": true, "pcieLanes": 16, "generation": "RDNA 3" },
-    { "id": "rx-7900-xt", "name": "AMD Radeon RX 7900 XT", "brand": "AMD", "tbp": 315, "tier": "high", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 750, "price": 649, "confirmed": true, "pcieLanes": 16, "generation": "RDNA 3" },
-    { "id": "rx-7800-xt", "name": "AMD Radeon RX 7800 XT", "brand": "AMD", "tbp": 263, "tier": "high", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 700, "price": 449, "confirmed": true, "pcieLanes": 16, "generation": "RDNA 3" },
-    { "id": "rx-7700-xt", "name": "AMD Radeon RX 7700 XT", "brand": "AMD", "tbp": 245, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 650, "price": 369, "confirmed": true, "pcieLanes": 16, "generation": "RDNA 3" },
-    { "id": "rx-7600", "name": "AMD Radeon RX 7600", "brand": "AMD", "tbp": 165, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x1", "connectorCount": 1, "minPsuWattage": 550, "price": 249, "confirmed": true, "pcieLanes": 8, "generation": "RDNA 3" },
-    { "id": "arc-b580", "name": "Intel Arc B580", "brand": "Intel", "tbp": 190, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x1", "connectorCount": 1, "minPsuWattage": 550, "price": 249, "confirmed": true, "pcieLanes": 8, "generation": "Battlemage" },
-    { "id": "arc-b570", "name": "Intel Arc B570", "brand": "Intel", "tbp": 150, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x1", "connectorCount": 1, "minPsuWattage": 550, "price": 219, "confirmed": true, "pcieLanes": 8, "generation": "Battlemage" },
-    { "id": "rtx-5080-super", "name": "NVIDIA GeForce RTX 5080 SUPER", "brand": "NVIDIA", "tbp": 415, "tier": "ultra", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 900, "price": 1099, "confirmed": false, "pcieLanes": 16, "generation": "Blackwell" },
-    { "id": "rtx-5070-ti-super", "name": "NVIDIA GeForce RTX 5070 Ti SUPER", "brand": "NVIDIA", "tbp": 350, "tier": "high", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 800, "price": 849, "confirmed": false, "pcieLanes": 16, "generation": "Blackwell" },
-    { "id": "rtx-5070-super", "name": "NVIDIA GeForce RTX 5070 SUPER", "brand": "NVIDIA", "tbp": 275, "tier": "high", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 700, "price": 649, "confirmed": false, "pcieLanes": 16, "generation": "Blackwell" },
-    { "id": "rtx-4080", "name": "NVIDIA GeForce RTX 4080", "brand": "NVIDIA", "tbp": 320, "tier": "ultra", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 750, "price": 1199, "confirmed": true, "pcieLanes": 16, "generation": "Ada Lovelace" },
-    { "id": "rtx-4070-ti", "name": "NVIDIA GeForce RTX 4070 Ti", "brand": "NVIDIA", "tbp": 285, "tier": "high", "transientMultiplier": 1.50, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 700, "price": 799, "confirmed": true, "pcieLanes": 16, "generation": "Ada Lovelace" },
-    { "id": "rx-7900-gre", "name": "AMD Radeon RX 7900 GRE", "brand": "AMD", "tbp": 260, "tier": "high", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 700, "price": 549, "confirmed": true, "pcieLanes": 16, "generation": "RDNA 3" },
-    { "id": "rx-7600-xt", "name": "AMD Radeon RX 7600 XT", "brand": "AMD", "tbp": 190, "tier": "mid", "transientMultiplier": 1.35, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 600, "price": 329, "confirmed": true, "pcieLanes": 8, "generation": "RDNA 3" },
-    { "id": "rtx-3090-ti", "name": "NVIDIA GeForce RTX 3090 Ti", "brand": "NVIDIA", "tbp": 450, "tier": "halo", "transientMultiplier": 1.57, "connectorType": "12v-2x6", "connectorCount": 1, "minPsuWattage": 850, "price": 1999, "confirmed": true, "pcieLanes": 16, "generation": "Ampere" },
-    { "id": "rtx-3090", "name": "NVIDIA GeForce RTX 3090", "brand": "NVIDIA", "tbp": 350, "tier": "ultra", "transientMultiplier": 1.50, "connectorType": "8pin-x3", "connectorCount": 3, "minPsuWattage": 750, "price": 1499, "confirmed": true, "pcieLanes": 16, "generation": "Ampere" },
-    { "id": "rtx-3080-ti", "name": "NVIDIA GeForce RTX 3080 Ti", "brand": "NVIDIA", "tbp": 350, "tier": "ultra", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 750, "price": 1199, "confirmed": true, "pcieLanes": 16, "generation": "Ampere" },
-    { "id": "rtx-3080", "name": "NVIDIA GeForce RTX 3080", "brand": "NVIDIA", "tbp": 320, "tier": "ultra", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 750, "price": 699, "confirmed": true, "pcieLanes": 16, "generation": "Ampere" },
-    { "id": "rtx-3070-ti", "name": "NVIDIA GeForce RTX 3070 Ti", "brand": "NVIDIA", "tbp": 290, "tier": "high", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 650, "price": 599, "confirmed": true, "pcieLanes": 16, "generation": "Ampere" },
-    { "id": "rtx-3070", "name": "NVIDIA GeForce RTX 3070", "brand": "NVIDIA", "tbp": 220, "tier": "high", "transientMultiplier": 1.50, "connectorType": "8pin-x2", "connectorCount": 2, "minPsuWattage": 650, "price": 499, "confirmed": true, "pcieLanes": 16, "generation": "Ampere" }
+    {
+      "id": "rtx-5090",
+      "name": "NVIDIA GeForce RTX 5090",
+      "brand": "NVIDIA",
+      "tbp": 575,
+      "tier": "halo",
+      "transientMultiplier": 1.57,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 1000,
+      "price": 1999,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 336,
+        "width": 140,
+        "slotsOccupied": 3.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-5080",
+      "name": "NVIDIA GeForce RTX 5080",
+      "brand": "NVIDIA",
+      "tbp": 360,
+      "tier": "ultra",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 850,
+      "price": 999,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 310,
+        "width": 120,
+        "slotsOccupied": 3,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-5070-ti",
+      "name": "NVIDIA GeForce RTX 5070 Ti",
+      "brand": "NVIDIA",
+      "tbp": 300,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 750,
+      "price": 749,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-5070",
+      "name": "NVIDIA GeForce RTX 5070",
+      "brand": "NVIDIA",
+      "tbp": 250,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 650,
+      "price": 549,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-5060-ti",
+      "name": "NVIDIA GeForce RTX 5060 Ti",
+      "brand": "NVIDIA",
+      "tbp": 180,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x1",
+      "connectorCount": 1,
+      "minPsuWattage": 550,
+      "price": 399,
+      "confirmed": true,
+      "pcieLanes": 8,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 240,
+        "width": 110,
+        "slotsOccupied": 2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-5060",
+      "name": "NVIDIA GeForce RTX 5060",
+      "brand": "NVIDIA",
+      "tbp": 150,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x1",
+      "connectorCount": 1,
+      "minPsuWattage": 550,
+      "price": 299,
+      "confirmed": true,
+      "pcieLanes": 8,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 240,
+        "width": 110,
+        "slotsOccupied": 2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4090",
+      "name": "NVIDIA GeForce RTX 4090",
+      "brand": "NVIDIA",
+      "tbp": 450,
+      "tier": "halo",
+      "transientMultiplier": 1.57,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 850,
+      "price": 1599,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 336,
+        "width": 140,
+        "slotsOccupied": 3.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4080-super",
+      "name": "NVIDIA GeForce RTX 4080 SUPER",
+      "brand": "NVIDIA",
+      "tbp": 320,
+      "tier": "ultra",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 750,
+      "price": 999,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 310,
+        "width": 120,
+        "slotsOccupied": 3,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4070-ti-super",
+      "name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "brand": "NVIDIA",
+      "tbp": 285,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 700,
+      "price": 799,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4070-super",
+      "name": "NVIDIA GeForce RTX 4070 SUPER",
+      "brand": "NVIDIA",
+      "tbp": 220,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 650,
+      "price": 599,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4070",
+      "name": "NVIDIA GeForce RTX 4070",
+      "brand": "NVIDIA",
+      "tbp": 200,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 650,
+      "price": 499,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4060-ti",
+      "name": "NVIDIA GeForce RTX 4060 Ti",
+      "brand": "NVIDIA",
+      "tbp": 160,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x1",
+      "connectorCount": 1,
+      "minPsuWattage": 550,
+      "price": 399,
+      "confirmed": true,
+      "pcieLanes": 8,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 240,
+        "width": 110,
+        "slotsOccupied": 2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4060",
+      "name": "NVIDIA GeForce RTX 4060",
+      "brand": "NVIDIA",
+      "tbp": 115,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x1",
+      "connectorCount": 1,
+      "minPsuWattage": 550,
+      "price": 299,
+      "confirmed": true,
+      "pcieLanes": 8,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 240,
+        "width": 110,
+        "slotsOccupied": 2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 1
+      }
+    },
+    {
+      "id": "rx-9070-xt",
+      "name": "AMD Radeon RX 9070 XT",
+      "brand": "AMD",
+      "tbp": 300,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 750,
+      "price": 549,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "RDNA 4",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rx-9070",
+      "name": "AMD Radeon RX 9070",
+      "brand": "AMD",
+      "tbp": 250,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 650,
+      "price": 449,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "RDNA 4",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rx-7900-xtx",
+      "name": "AMD Radeon RX 7900 XTX",
+      "brand": "AMD",
+      "tbp": 355,
+      "tier": "ultra",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 800,
+      "price": 799,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "RDNA 3",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rx-7900-xt",
+      "name": "AMD Radeon RX 7900 XT",
+      "brand": "AMD",
+      "tbp": 315,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 750,
+      "price": 649,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "RDNA 3",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rx-7800-xt",
+      "name": "AMD Radeon RX 7800 XT",
+      "brand": "AMD",
+      "tbp": 263,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 700,
+      "price": 449,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "RDNA 3",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rx-7700-xt",
+      "name": "AMD Radeon RX 7700 XT",
+      "brand": "AMD",
+      "tbp": 245,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 650,
+      "price": 369,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "RDNA 3",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rx-7600",
+      "name": "AMD Radeon RX 7600",
+      "brand": "AMD",
+      "tbp": 165,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x1",
+      "connectorCount": 1,
+      "minPsuWattage": 550,
+      "price": 249,
+      "confirmed": true,
+      "pcieLanes": 8,
+      "generation": "RDNA 3",
+      "dimensions": {
+        "length": 240,
+        "width": 110,
+        "slotsOccupied": 2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 1
+      }
+    },
+    {
+      "id": "arc-b580",
+      "name": "Intel Arc B580",
+      "brand": "Intel",
+      "tbp": 190,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x1",
+      "connectorCount": 1,
+      "minPsuWattage": 550,
+      "price": 249,
+      "confirmed": true,
+      "pcieLanes": 8,
+      "generation": "Battlemage",
+      "dimensions": {
+        "length": 240,
+        "width": 110,
+        "slotsOccupied": 2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 1
+      }
+    },
+    {
+      "id": "arc-b570",
+      "name": "Intel Arc B570",
+      "brand": "Intel",
+      "tbp": 150,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x1",
+      "connectorCount": 1,
+      "minPsuWattage": 550,
+      "price": 219,
+      "confirmed": true,
+      "pcieLanes": 8,
+      "generation": "Battlemage",
+      "dimensions": {
+        "length": 240,
+        "width": 110,
+        "slotsOccupied": 2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-5080-super",
+      "name": "NVIDIA GeForce RTX 5080 SUPER",
+      "brand": "NVIDIA",
+      "tbp": 415,
+      "tier": "ultra",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 900,
+      "price": 1099,
+      "confirmed": false,
+      "pcieLanes": 16,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 310,
+        "width": 120,
+        "slotsOccupied": 3,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-5070-ti-super",
+      "name": "NVIDIA GeForce RTX 5070 Ti SUPER",
+      "brand": "NVIDIA",
+      "tbp": 350,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 800,
+      "price": 849,
+      "confirmed": false,
+      "pcieLanes": 16,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-5070-super",
+      "name": "NVIDIA GeForce RTX 5070 SUPER",
+      "brand": "NVIDIA",
+      "tbp": 275,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 700,
+      "price": 649,
+      "confirmed": false,
+      "pcieLanes": 16,
+      "generation": "Blackwell",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4080",
+      "name": "NVIDIA GeForce RTX 4080",
+      "brand": "NVIDIA",
+      "tbp": 320,
+      "tier": "ultra",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 750,
+      "price": 1199,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 310,
+        "width": 120,
+        "slotsOccupied": 3,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-4070-ti",
+      "name": "NVIDIA GeForce RTX 4070 Ti",
+      "brand": "NVIDIA",
+      "tbp": 285,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 700,
+      "price": 799,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ada Lovelace",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rx-7900-gre",
+      "name": "AMD Radeon RX 7900 GRE",
+      "brand": "AMD",
+      "tbp": 260,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 700,
+      "price": 549,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "RDNA 3",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rx-7600-xt",
+      "name": "AMD Radeon RX 7600 XT",
+      "brand": "AMD",
+      "tbp": 190,
+      "tier": "mid",
+      "transientMultiplier": 1.35,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 600,
+      "price": 329,
+      "confirmed": true,
+      "pcieLanes": 8,
+      "generation": "RDNA 3",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rtx-3090-ti",
+      "name": "NVIDIA GeForce RTX 3090 Ti",
+      "brand": "NVIDIA",
+      "tbp": 450,
+      "tier": "halo",
+      "transientMultiplier": 1.57,
+      "connectorType": "12v-2x6",
+      "connectorCount": 1,
+      "minPsuWattage": 850,
+      "price": 1999,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ampere",
+      "dimensions": {
+        "length": 290,
+        "width": 115,
+        "slotsOccupied": 2.5,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "12v-2x6",
+        "count": 1
+      }
+    },
+    {
+      "id": "rtx-3090",
+      "name": "NVIDIA GeForce RTX 3090",
+      "brand": "NVIDIA",
+      "tbp": 350,
+      "tier": "ultra",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x3",
+      "connectorCount": 3,
+      "minPsuWattage": 750,
+      "price": 1499,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ampere",
+      "dimensions": {
+        "length": 315,
+        "width": 130,
+        "slotsOccupied": 3,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 3
+      }
+    },
+    {
+      "id": "rtx-3080-ti",
+      "name": "NVIDIA GeForce RTX 3080 Ti",
+      "brand": "NVIDIA",
+      "tbp": 350,
+      "tier": "ultra",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 750,
+      "price": 1199,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ampere",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rtx-3080",
+      "name": "NVIDIA GeForce RTX 3080",
+      "brand": "NVIDIA",
+      "tbp": 320,
+      "tier": "ultra",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 750,
+      "price": 699,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ampere",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rtx-3070-ti",
+      "name": "NVIDIA GeForce RTX 3070 Ti",
+      "brand": "NVIDIA",
+      "tbp": 290,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 650,
+      "price": 599,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ampere",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    },
+    {
+      "id": "rtx-3070",
+      "name": "NVIDIA GeForce RTX 3070",
+      "brand": "NVIDIA",
+      "tbp": 220,
+      "tier": "high",
+      "transientMultiplier": 1.5,
+      "connectorType": "8pin-x2",
+      "connectorCount": 2,
+      "minPsuWattage": 650,
+      "price": 499,
+      "confirmed": true,
+      "pcieLanes": 16,
+      "generation": "Ampere",
+      "dimensions": {
+        "length": 280,
+        "width": 120,
+        "slotsOccupied": 2.2,
+        "pciePowerConnectorPosition": "edge"
+      },
+      "powerConnectors": {
+        "type": "8-pin",
+        "count": 2
+      }
+    }
   ]
 }

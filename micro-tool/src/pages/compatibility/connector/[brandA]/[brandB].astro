@@ -1,0 +1,88 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { checkCables } from '../../../../lib/compatibility/check-cables';
+import cableRules from '../../../../data/compatibility/cross-brand-cables.json';
+
+export async function getStaticPaths() {
+  const brands = cableRules.brands;
+  const paths = [];
+
+  for (const bA of brands) {
+    for (const bB of brands) {
+      if (bA !== bB) {
+        paths.push({
+          params: { brandA: bA.toLowerCase(), brandB: bB.toLowerCase() },
+          props: { brandA: bA, brandB: bB }
+        });
+      }
+    }
+  }
+  return paths;
+}
+
+const { brandA, brandB } = Astro.props;
+const result = checkCables(brandA, brandB);
+
+const pageTitle = `Are ${brandA} and ${brandB} PSU Cables Compatible? — PSUCheck`;
+const pageDescription = `Check modular cable compatibility and pinout safety rules between ${brandA} and ${brandB} power supplies.`;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <section class="compat-page" style="padding: 3rem 0 6rem;">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compatibility/">Compatibility</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{brandA} to {brandB} Cables</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; margin-top: 1.5rem;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;">Modular Cable Pinouts</span>
+        <h1 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; margin: 0 0 1rem; line-height: 1.15;">
+          Cable Compatibility: <span class="gradient-text">{brandA}</span> &amp; <span class="gradient-text">{brandB}</span>
+        </h1>
+      </header>
+
+      {/* Verdict Panel */}
+      <div class="card" style={`padding: 1.5rem; border-left: 4px solid ${result.verdict === 'PASS' ? 'var(--color-safe)' : result.verdict === 'WARN' ? 'var(--color-warning)' : 'var(--color-danger)'}; margin-bottom: 2.5rem;`}>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <span class={`badge ${result.verdict === 'PASS' ? 'badge-safe' : result.verdict === 'WARN' ? 'badge-warning' : 'badge-danger'}`} style="font-size: 0.85rem; padding: 4px 10px;">
+            {result.verdict === 'PASS' ? 'Safe to Mix' : result.verdict === 'WARN' ? 'Warning / Unknown' : 'DANGEROUS — INCOMPATIBLE'}
+          </span>
+        </div>
+        <p style="font-size: 1rem; line-height: 1.6; color: var(--color-text-primary);">
+          {result.verdict === 'PASS' ? (
+            <span>Both brands share modular pinout standards. Mixing modular cables is safe.</span>
+          ) : result.verdict === 'WARN' ? (
+            <span>Caution. No confirmed compatibility standard exists. Mixing cables between {brandA} and {brandB} is not recommended.</span>
+          ) : (
+            <span><strong>DANGER!</strong> Mixing cables between {brandA} and {brandB} modular power supplies will cause immediate short circuiting and hardware failure.</span>
+          )}
+        </p>
+
+        {result.warnings.map(w => (
+          <div style="margin-top: 0.75rem; color: var(--color-warning-text); font-size: 0.875rem;">⚠️ {w}</div>
+        ))}
+        {result.failures.map(f => (
+          <div style="margin-top: 0.75rem; color: var(--color-danger-text); font-size: 0.875rem;">❌ {f}</div>
+        ))}
+      </div>
+
+      <section style="margin-top: 3rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem;">Why Mixing modular cables is dangerous</h2>
+        <p style="font-size: 0.9375rem; color: var(--color-text-secondary); line-height: 1.6; max-width: 75ch;">
+          Unlike the component-facing side of modular cables (which are standardized ATX connections), the connector slots 
+          on the physical power supply housing vary widely across brands and individual PSU generations. Manufacturers like 
+          Corsair and Seasonic route ground, 12V, 5V, and 3.3V power rails to different pins on the PSU ports. If you plug a 
+          cable wired for Seasonic into a Corsair power supply, it can send 12V down a ground wire, instantly destroying 
+          connected RAM, motherboard components, or GPUs.
+        </p>
+      </section>
+    </div>
+  </section>
+</Layout>

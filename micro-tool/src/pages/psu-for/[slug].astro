@@ -86,6 +86,14 @@ const oracleLinks = oracleWattages.map(w => ({
   active: type === 'upgrade-check' && psuWattage === w,
 }));
 
+// Related PSU replacement links (at 5-year capacitor age)
+const replacementLinks = oracleWattages
+  .filter(w => w >= gpu.minPsuWattage)
+  .map(w => ({
+    href: `/psu-replacement/should-i-replace-my-${w}w-psu-for-${gpu.id}-age-5`,
+    label: `Should I replace my ${w}W PSU for ${gpu.name} (5yr old)?`,
+  }));
+
 // Related GPU comparisons — same tier GPUs
 const relatedGpus = gpus
   .filter(g => g.id !== gpu.id && g.tier === gpu.tier)
@@ -136,6 +144,13 @@ if (type === 'gpu-hub') {
     { q: `Is ATX 3.1 required for ${gpu.name}?`, a: gpu.connectorType === '12v-2x6' ? `Yes. The ${gpu.name} uses a 12V-2x6 connector which requires an ATX 3.1 PSU with a native cable.` : `Not strictly required, but ATX 3.1 PSUs handle transient spikes better. The ${gpu.name} uses ${gpu.connectorType} connectors.` },
     { q: `What happens if my PSU is too weak for ${gpu.name}?`, a: `An underpowered PSU may trigger Over Current Protection (OCP) during transient power spikes, causing sudden shutdowns. Sustained operation near capacity also accelerates capacitor aging.` },
     { q: `How much headroom should I have for ${gpu.name}?`, a: `We recommend at least 20% headroom above the transient peak for ATX 3.1 PSUs, or 35% for older ATX 2.x units. For the ${gpu.name}, that means ${analysis.recommendedWattage}W minimum (ATX 3.1) or ${analysis.recommendedWattageAtx2x}W (ATX 2.x).` },
+  );
+} else if (type === 'gpu-cpu-combo') {
+  faqEntries.push(
+    { q: `What size PSU is needed for the ${gpu.name} paired with the ${cpu!.name}?`, a: `We recommend a minimum power supply rating of ${analysis.recommendedWattage}W (ATX 3.1) or ${analysis.recommendedWattageAtx2x}W (ATX 2.x) when pairing the ${gpu.name} with the ${cpu!.name}. This is based on a combined sustained base draw of ${analysis.baseDraw}W and sub-millisecond transient power spikes reaching up to ${analysis.transientPeak}W.` },
+    { q: `Does the ${cpu!.name} bottleneck the power requirements for the ${gpu.name}?`, a: `The ${cpu!.name} has a TDP of ${cpu!.tdp}W and can draw up to ${cpu!.tdpSustained}W under boost. In this configuration, the ${analysis.bindingConstraint === 'gpu' ? 'GPU' : 'CPU'} is the primary power-binding constraint, meaning total power requirements are mostly driven by the ${analysis.bindingConstraint === 'gpu' ? gpu.name : cpu!.name}.` },
+    { q: `How much power headroom is recommended for a ${gpu.name} and ${cpu!.name} build?`, a: `We recommend a safety buffer of at least 10% to 20% above the peak transient draw to ensure efficiency and stability. For this specific pairing, that translates to at least ${analysis.recommendedWattage}W to keep the system stable during heavy workloads.` },
+    { q: `Is an ATX 3.1 PSU recommended for the ${gpu.name} and ${cpu!.name}?`, a: `Yes. The ${gpu.name} uses the modern ${gpu.connectorType} connection standard. An ATX 3.1 PSU provides a native cable and guarantees the ability to handle 200% transient power excursions for 100 microseconds, which is crucial for modern high-performance builds.` }
   );
 } else if (type === 'upgrade-check') {
   const v = upgradeResult!;
@@ -482,6 +497,21 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
           ))}
         </div>
       </section>
+
+      {/* === PSU REPLACEMENT CROSS-LINKS === */}
+      {replacementLinks.length > 0 && (
+        <section class="cross-links" aria-labelledby="replacement-links-heading" style="margin-top:2.5rem;">
+          <h2 id="replacement-links-heading">PSU Health &amp; Replacement Checkers</h2>
+          <div class="oracle-link-grid">
+            {replacementLinks.map(link => (
+              <a href={link.href} class="oracle-link-card card" key={link.href}>
+                <span class="oracle-link-label">{link.label}</span>
+                <span class="oracle-link-arrow">→</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* === RELATED GPUs === */}
       {relatedGpus.length > 0 && (

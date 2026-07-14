@@ -1,0 +1,175 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TableOfContents from '../../components/ui/TableOfContents';
+import MethodologyCard from '../../components/ui/MethodologyCard.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-14",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Should I get a 750W or 850W power supply?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For standard gaming rigs with mid-range cards like the RTX 4070 SUPER or RX 7800 XT, a 750W PSU is fully adequate. However, if you pair these with power-hungry CPUs or plan to upgrade to high-end cards (RTX 4080 / 5080), choosing an 850W PSU provides valuable headroom for transient spikes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does an 850W PSU draw more electricity than a 750W PSU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. A power supply only draws the amount of wattage your PC components actually demand, plus conversion loss. If your PC draws 400W under load, both a 750W and an 850W PSU will deliver exactly 400W of output."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does PSU efficiency peak?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most power supplies reach their highest conversion efficiency (usually 90-92% for 80 PLUS Gold) when operating at exactly 50% of their rated capacity. Running a 400W system on an 850W power supply positions the load near this efficiency sweet spot."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="750W vs 850W PSU: Which Do You Need for Gaming? — PSUCheck"
+  description="Compare 750W vs 850W power supplies. Learn which wattage capacity fits your graphics card, processor load, and transient power margin requirements."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 1.5rem;">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/guides/">Guides</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">750W vs 850W PSU</span>
+      </nav>
+
+      <header class="guide-header">
+        <div class="guide-meta">
+          <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
+          <span>Updated: July 14, 2026</span>
+          <span style="margin: 0 0.5rem; opacity: 0.5;">•</span>
+          <span class="reading-time-badge">2 min read</span>
+        </div>
+        <h1>750W vs 850W PSU: Which Do You Need?</h1>
+        <p class="guide-lead">
+          Sizing your power supply correctly is one of the most important decisions when building a PC.
+          We compare 750W vs 850W units to help you choose the best match for your GPU.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — RECOMMENDED SPONSOR
+          </div>
+
+          <h2 id="headroom">The Headroom Difference</h2>
+          <p>
+            The difference between 750W and 850W is only 100W on paper, but in terms of safety headroom, it is huge. Modern CPUs and GPUs experience transient power spikes that last less than a millisecond. If your rig draws 600W under load, a 750W PSU only leaves 150W of safety margin, whereas an 850W unit leaves 250W.
+          </p>
+          <p>
+            If you use a high-end CPU like the Intel Core i9-14900K or AMD Ryzen 9 9950X, they can draw up to 250W-300W alone. Pairing them with a 300W+ GPU leaves very little buffer on a 750W unit.
+          </p>
+
+          <h2 id="efficiency">The Efficiency Sweet Spot</h2>
+          <p>
+            Power supply efficiency operates on a curve. Power supplies achieve their peak conversion efficiency (where the least heat is wasted during AC-to-DC conversion) when running at approximately 50% load.
+          </p>
+          <p>
+            For example, a typical high-end gaming PC with an RTX 4070 Ti Super draws about 400W-420W under peak gaming load. 
+            On an 850W PSU, this 400W load sits exactly at the 47-50% utilization mark, keeping the unit running at its maximum efficiency point, generating less heat, and minimizing fan noise. On a 750W PSU, this same load runs at 56% utilization, which is slightly past the peak efficiency apex.
+          </p>
+
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — IN-CONTENT BANNER
+          </div>
+
+          <h2 id="sizing-table">Transient Spikes Sizing Table</h2>
+          <p>
+            Here is a breakdown of how common GPU + CPU configurations load 750W and 850W PSUs during micro-second transient spikes:
+          </p>
+          <div style="overflow-x: auto; margin-bottom: 2rem;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary);">
+                  <th style="padding: 0.5rem 0.75rem;">GPU + CPU Combo</th>
+                  <th style="padding: 0.5rem 0.75rem;">Steady Draw</th>
+                  <th style="padding: 0.5rem 0.75rem;">Transient Peak</th>
+                  <th style="padding: 0.5rem 0.75rem;">750W Verdict</th>
+                  <th style="padding: 0.5rem 0.75rem;">850W Verdict</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">RTX 4070 Super + Ryzen 5 7600</td>
+                  <td style="padding: 0.75rem;">342W</td>
+                  <td style="padding: 0.75rem;">480W</td>
+                  <td style="padding: 0.75rem; color: var(--color-safe); font-weight: 700;">✓ Fully Safe</td>
+                  <td style="padding: 0.75rem; color: var(--color-safe); font-weight: 700;">✓ Excess Margin</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">RTX 5080 + Ryzen 7 7800X3D</td>
+                  <td style="padding: 0.75rem;">537W</td>
+                  <td style="padding: 0.75rem;">680W</td>
+                  <td style="padding: 0.75rem; color: var(--color-warning-text); font-weight: 700;">⚠ Borderline</td>
+                  <td style="padding: 0.75rem; color: var(--color-safe); font-weight: 700;">✓ Recommended</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">RTX 5090 + Ryzen 9 9900X</td>
+                  <td style="padding: 0.75rem;">747W</td>
+                  <td style="padding: 0.75rem;">920W</td>
+                  <td style="padding: 0.75rem; color: var(--color-danger-text); font-weight: 700;">✕ Incompatible</td>
+                  <td style="padding: 0.75rem; color: var(--color-danger-text); font-weight: 700;">✕ Incompatible (Need 1000W+)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="750w-users">Who Should Buy a 750W PSU?</h2>
+          <ul>
+            <li>Builds using mid-range graphics cards up to RTX 4070 Ti SUPER or RX 7800 XT.</li>
+            <li>Users running low-to-mid TDP gaming processors (Ryzen 5 7600, Core i5-13600K).</li>
+            <li>Budget-focused builds where the $15-$20 price premium for 850W is not feasible and components do not exceed a 500W transient peak.</li>
+          </ul>
+
+          <h2 id="850w-users">Who Should Buy an 850W PSU?</h2>
+          <ul>
+            <li>Builds targeting RTX 4080 SUPER or RTX 5080 graphics cards which have high transient excursions.</li>
+            <li>Systems with high-end, overclockable CPUs (Core i9, Ryzen 9).</li>
+            <li>Users wanting to future-proof their builds for GPU upgrades in the next 3 to 5 years.</li>
+          </ul>
+        </main>
+
+        <aside class="guide-sidebar">
+          <TableOfContents client:load />
+          <MethodologyCard />
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .guide-article { padding: 3rem 0; }
+  .guide-header { margin-bottom: 2.5rem; }
+  .guide-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-top: 0.5rem; }
+  .guide-lead { font-size: 1.2rem; color: var(--color-text-secondary); margin-top: 1rem; line-height: 1.5; }
+  .guide-meta { display: flex; gap: 1rem; align-items: center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+  .guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+  @media (min-width: 1024px) {
+    .guide-layout { grid-template-columns: 3fr 1fr; }
+  }
+  .guide-content h2 { font-size: 1.5rem; font-weight: 800; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
+  .guide-content p { line-height: 1.6; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
+  .guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+  .guide-content li { margin-bottom: 0.5rem; color: var(--color-text-secondary); line-height: 1.5; }
+</style>

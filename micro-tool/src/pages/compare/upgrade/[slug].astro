@@ -1,0 +1,277 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import type { CpuIndex, GpuIndex, PsuIndex } from '../../../types/components';
+
+import cpuData from '../../../data/index/cpus.index.json';
+import gpuData from '../../../data/index/gpus.index.json';
+import psuData from '../../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const gpus = gpuData.items as GpuIndex[];
+
+  // 25 popular "current" GPUs to upgrade from
+  const currentGpuIds = [
+    'gtx-1060', 'gtx-1070', 'gtx-1080', 'gtx-1080-ti',
+    'rtx-2060', 'rtx-2070', 'rtx-2080', 'rtx-2080-ti',
+    'rtx-3050', 'rtx-3060', 'rtx-3060-ti', 'rtx-3070', 'rtx-3070-ti', 'rtx-3080', 'rtx-3080-ti', 'rtx-3090',
+    'rx-580', 'rx-590', 'rx-5700-xt', 'rx-6600', 'rx-6600-xt', 'rx-6700-xt', 'rx-6800', 'rx-6800-xt', 'rx-6900-xt'
+  ];
+
+  // 8 flagship "target" GPUs to upgrade to
+  const targetGpuIds = [
+    'rtx-4070-super', 'rtx-4070-ti-super', 'rtx-4080-super', 'rtx-4090',
+    'rtx-5070', 'rtx-5080', 'rtx-5090',
+    'rx-7800-xt'
+  ];
+
+  const paths = [];
+
+  for (const currentId of currentGpuIds) {
+    for (const targetId of targetGpuIds) {
+      const currentGpu = gpus.find(g => g.id === currentId);
+      const targetGpu = gpus.find(g => g.id === targetId);
+
+      if (currentGpu && targetGpu && currentGpu.id !== targetGpu.id) {
+        paths.push({
+          params: { slug: `upgrade-from-${currentGpu.id}-to-${targetGpu.id}` },
+          props: { currentGpu, targetGpu }
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+interface Props {
+  currentGpu: GpuIndex;
+  targetGpu: GpuIndex;
+}
+
+const { currentGpu, targetGpu } = Astro.props;
+
+const cpus = cpuData.items as CpuIndex[];
+const psus = psuData.items as PsuIndex[];
+
+// Model calculations using a default middle-tier CPU (Ryzen 7 7800X3D)
+const defaultCpu = cpus.find(c => c.id.includes('7800x3d')) || cpus[0];
+const cpuTdp = defaultCpu.tdpSustained || defaultCpu.tdp;
+
+const additionsWatts = 57; // standard additions sum
+const currentBaseDraw = cpuTdp + currentGpu.tbp + additionsWatts;
+const currentTransientPeak = Math.round((cpuTdp * 1.20) + (currentGpu.tbp * currentGpu.transientMultiplier) + 32);
+
+const targetBaseDraw = cpuTdp + targetGpu.tbp + additionsWatts;
+const targetTransientPeak = Math.round((cpuTdp * 1.20) + (targetGpu.tbp * targetGpu.transientMultiplier) + 32);
+
+const baseDelta = targetBaseDraw - currentBaseDraw;
+const peakDelta = targetTransientPeak - currentTransientPeak;
+
+// We check compatibility against common PSU capacities: 650W, 750W, 850W
+const psuWattages = [550, 650, 750, 850, 1000];
+
+// Recommendations for the target GPU
+const rawRecommended = targetTransientPeak * 1.20;
+const standardWattages = [550, 650, 750, 850, 1000, 1200, 1300, 1600];
+const recommendedWattage = standardWattages.find(w => w >= rawRecommended) || 1000;
+
+const recommendedPsus = psus
+  .filter(p => p.wattage >= recommendedWattage && p.qualityTier === 'A')
+  .slice(0, 3);
+
+// Dynamic FAQ list (Visual PAA & JSON-LD)
+const faqList = [
+  {
+    q: `Can my current PSU handle upgrading from ${currentGpu.name} to ${targetGpu.name}?`,
+    a: `It depends on your PSU's rated wattage. The new ${targetGpu.name} system produces transient load spikes up to ${targetTransientPeak}W (an increase of ${peakDelta}W over your current setup). We recommend at least a ${recommendedWattage}W PSU for this upgrade.`
+  },
+  {
+    q: `Do the power connectors change when upgrading from ${currentGpu.name} to ${targetGpu.name}?`,
+    a: currentGpu.connectorType === targetGpu.connectorType 
+      ? `No, both graphics cards use the same ${targetGpu.connectorType.toUpperCase()} connector standard.`
+      : `Yes. Your current ${currentGpu.name} uses ${currentGpu.connectorType.toUpperCase()} connectors, while the upgraded ${targetGpu.name} utilizes the new ${targetGpu.connectorType.toUpperCase()} standard. You will need a compatible cable or adapter.`
+  },
+  {
+    q: `What is the peak power spike difference between ${currentGpu.name} and ${targetGpu.name}?`,
+    a: `The ${targetGpu.name} experiences transient spikes up to ${Math.round(targetGpu.tbp * targetGpu.transientMultiplier)}W, compared to ${Math.round(currentGpu.tbp * currentGpu.transientMultiplier)}W for the ${currentGpu.name}. This results in a peak system power spike delta of +${peakDelta}W.`
+  }
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqList.map(item => ({
+    "@type": "Question",
+    "name": item.q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.a
+    }
+  }))
+};
+
+const pageTitle = `Upgrade from ${currentGpu.name} to ${targetGpu.name}: PSU & Power Guide — PSUCheck`;
+const pageDescription = `Check PSU compatibility and power deltas when upgrading from ${currentGpu.name} to ${targetGpu.name}. Calculate transient spikes, connector changes, and recommended wattage.`;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={[faqSchema]}
+>
+  <section class="upgrade-path-page" style="padding: 3rem 0 6rem;" aria-labelledby="path-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compare/gpu-upgrade-checker">GPU Upgrade Checker</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{currentGpu.name} to {targetGpu.name}</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Upgrade Compatibility Guide</div>
+        <h1 id="path-heading" style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+          Upgrading from <span class="gradient-text">{currentGpu.name} to {targetGpu.name}</span>: PSU Compatibility Sizing
+        </h1>
+        <p style="font-size: 1.05rem; color: var(--color-text-secondary); max-width: 75ch; line-height: 1.6;">
+          An engineering breakdown of PSU requirements, power differences, and wiring configurations when replacing 
+          your old {currentGpu.name} with the {targetGpu.name}.
+        </p>
+      </header>
+
+      {/* Narrative Section */}
+      <section class="card" aria-label="Detailed Power Sizing Analysis" style="margin-bottom: 2rem; padding: 1.5rem; border-left: 4px solid var(--color-accent-cyan);">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Technical Sizing Analysis</h2>
+        <div style="font-size: 0.9375rem; color: var(--color-text-secondary); line-height: 1.6; display: flex; flex-direction: column; gap: 1rem;">
+          <p>
+            Upgrading from the <strong>{currentGpu.name}</strong> (TBP of <strong>{currentGpu.tbp}W</strong>) to the <strong>{targetGpu.name}</strong> (TBP of <strong>{targetGpu.tbp}W</strong>) increases sustained graphics power demand by <strong>{targetGpu.tbp - currentGpu.tbp}W</strong>. However, the transient profile of the upgraded setup presents the primary sizing constraint.
+          </p>
+          <p>
+            Under typical gaming load conditions (modeled with a {defaultCpu.name} CPU), the system's peak transient power spikes will increase from <strong>{currentTransientPeak}W</strong> to <strong>{targetTransientPeak}W</strong> (a delta of <strong>+{peakDelta}W</strong>).
+          </p>
+          <p>
+            {currentGpu.connectorType !== targetGpu.connectorType ? (
+              <span>
+                <strong>Connector Upgrade Alert:</strong> The older {currentGpu.name} utilizes the standard {currentGpu.connectorType.toUpperCase()} connector interface, whereas the upgraded {targetGpu.name} uses the modern {targetGpu.connectorType.toUpperCase()} interface. Upgrading requires a native ATX 3.1 cable or a manufacturer-approved adapter to ensure safe current distribution.
+              </span>
+            ) : (
+              <span>
+                Both graphics cards utilize the same {targetGpu.connectorType.toUpperCase()} power connectors, meaning no additional power adapter wiring modifications are required.
+              </span>
+            )}
+          </p>
+        </div>
+      </section>
+
+      {/* Comparison Grid */}
+      <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem;">
+        {/* Specs Table */}
+        <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);">
+          <h3 style="font-size: 1rem; font-weight: 700; margin: 0 0 1rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Power Profile Delta Table</h3>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary);">
+                  <th style="padding: 0.5rem 0.75rem;">Power Spec</th>
+                  <th style="padding: 0.5rem 0.75rem;">{currentGpu.name} (Old)</th>
+                  <th style="padding: 0.5rem 0.75rem;">{targetGpu.name} (New)</th>
+                  <th style="padding: 0.5rem 0.75rem;">Delta Shift</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">GPU Board Power (TBP)</td>
+                  <td style="padding: 0.75rem;">{currentGpu.tbp}W</td>
+                  <td style="padding: 0.75rem;">{targetGpu.tbp}W</td>
+                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{targetGpu.tbp - currentGpu.tbp}W</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">Sustained System Draw</td>
+                  <td style="padding: 0.75rem;">{currentBaseDraw}W</td>
+                  <td style="padding: 0.75rem;">{targetBaseDraw}W</td>
+                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{baseDelta}W</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">Transient Peak Spike</td>
+                  <td style="padding: 0.75rem;">{currentTransientPeak}W</td>
+                  <td style="padding: 0.75rem; color: var(--color-warning-text);">{targetTransientPeak}W</td>
+                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{peakDelta}W</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">Connector Type</td>
+                  <td style="padding: 0.75rem;">{currentGpu.connectorType.toUpperCase()}</td>
+                  <td style="padding: 0.75rem;">{targetGpu.connectorType.toUpperCase()}</td>
+                  <td style="padding: 0.75rem; font-weight: 700;">{currentGpu.connectorType === targetGpu.connectorType ? 'No Change' : 'Altered'}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Capacity Verdict Cards */}
+        <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);">
+          <h3 style="font-size: 1rem; font-weight: 700; margin: 0 0 1rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Compatibility by PSU Capacity</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+            {psuWattages.map(w => {
+              const isOk = w >= recommendedWattage;
+              const isMarginal = w >= targetTransientPeak && w < recommendedWattage;
+              return (
+                <div style={`padding: 1rem; border-radius: var(--radius-md); border: 1px solid ${isOk ? 'var(--color-safe-border)' : isMarginal ? 'var(--color-warning-border)' : 'var(--color-danger-border)'}; background: ${isOk ? 'var(--color-safe-bg)' : isMarginal ? 'var(--color-warning-bg)' : 'var(--color-danger-bg)'};`}>
+                  <div style="font-size: 1.15rem; font-weight: 850; margin-bottom: 0.25rem;">{w}W PSU</div>
+                  <span style={`font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: ${isOk ? 'var(--color-safe)' : isMarginal ? 'var(--color-warning)' : 'var(--color-danger)'};`}>
+                    {isOk ? '✓ Fully Compatible' : isMarginal ? '⚠ Borderline' : '✕ Incompatible'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Recommended Upgrades */}
+      {recommendedPsus.length > 0 && (
+        <section style="margin-bottom: 3rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            Recommended PSU Upgrades for {targetGpu.name}
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+            {recommendedPsus.map(p => (
+              <div key={p.id} class="card card-accent" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-safe);">
+                <div>
+                  <span style="font-size: 0.7rem; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase;">{p.brand}</span>
+                  <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin: 0.25rem 0 0.5rem;">{p.name}</h4>
+                  <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                    <span class="badge badge-safe" style="font-size: 0.65rem; padding: 2px 6px;">Tier A</span>
+                    <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">{p.wattage}W</span>
+                    <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">ATX {p.atxVersion}</span>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                  <span style="font-size: 1.25rem; font-weight: 800; color: var(--color-accent-cyan); font-family: var(--font-mono);">${p.price}</span>
+                  <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">Specs &amp; Value →</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Visual FAQs / PAA */}
+      <section style="margin-top: 4rem;" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" style="font-size: 1.5rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1.5rem;">Frequently Asked Questions (People Also Ask)</h2>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          {faqList.map((faq, index) => (
+            <details class="card" key={index} style="padding: 1rem; cursor: pointer; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <summary style="font-weight: 700; color: var(--text-primary); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+                <span>{faq.q}</span>
+                <span style="color: var(--color-accent-cyan); font-size: 0.75rem;">▼</span>
+              </summary>
+              <p style="margin-top: 0.75rem; font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; cursor: default;" onclick="event.stopPropagation()">{faq.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>

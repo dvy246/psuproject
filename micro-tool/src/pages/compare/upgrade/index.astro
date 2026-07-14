@@ -1,0 +1,47 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import UpgradeImpactSimulator from '../../../components/calculators/UpgradeImpactSimulator';
+
+import cpuData from '../../../data/index/cpus.index.json';
+import gpuData from '../../../data/index/gpus.index.json';
+import psuData from '../../../data/index/psus.index.json';
+import caseData from '../../../data/index/cases.index.json';
+
+const cpus = cpuData.items;
+const gpus = gpuData.items;
+const psus = psuData.items;
+const cases = caseData.items;
+
+const pageTitle = "Universal Upgrade Impact Simulator — PSUCheck";
+const pageDescription = "Swap components in your virtual build. Run clearance checks, connector checks, capacitor aging, and transient peak calculations.";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <section class="compat-page" style="padding: 3rem 0 6rem;" aria-labelledby="simulator-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compatibility/">Compatibility</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">Upgrade Simulator</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; margin-top: 1.5rem;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;">Interactive Sizer Simulator</span>
+        <h1 id="simulator-heading" style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+          Upgrade Impact <span class="gradient-text">Simulator</span>
+        </h1>
+        <p style="font-size: 1.1rem; color: var(--color-text-secondary); max-width: 75ch; line-height: 1.6;">
+          Specify your current PC component list and target upgrade component. The simulator runs clearance verifications, 
+          connector availability audits, and age-derated power safety calculations.
+        </p>
+      </header>
+
+      <UpgradeImpactSimulator client:load cpus={cpus} gpus={gpus} psus={psus} cases={cases} />
+    </div>
+  </section>
+</Layout>

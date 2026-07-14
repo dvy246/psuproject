@@ -1,0 +1,139 @@
+---
+import Layout from '../../../../../layouts/Layout.astro';
+import { checkGpuPsu } from '../../../../../lib/compatibility/check-gpu-psu';
+
+import gpuData from '../../../../../data/index/gpus.index.json';
+import psuData from '../../../../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const gpus = gpuData.items;
+  const psus = psuData.items;
+  const paths = [];
+
+  for (const gpu of gpus) {
+    for (const psu of psus) {
+      paths.push({
+        params: { gpu: gpu.id, psu: psu.id },
+        props: { gpu, psu }
+      });
+    }
+  }
+  return paths;
+}
+
+const { gpu, psu } = Astro.props;
+const result = checkGpuPsu(gpu as any, psu as any);
+
+const pageTitle = `Is ${psu.name} Compatible with the ${gpu.name}? — PSUCheck`;
+const pageDescription = `Check compatibility between the ${psu.name} and the ${gpu.name}. Run transient spike power calculations and connector audits.`;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Can the ${psu.name} power the ${gpu.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": result.verdict === 'FAIL' 
+          ? `No. The upgraded setup transient peak reaches ${result.details.transientPeak}W, which exceeds the PSU's rated wattage of ${psu.wattage}W.`
+          : `Yes. The setup peak transient spikes reach ${result.details.transientPeak}W, fitting safely within the PSU's rated wattage of ${psu.wattage}W.`
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={[faqSchema]}
+>
+  <section class="compat-page" style="padding: 3rem 0 6rem;">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compatibility/">Compatibility</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{gpu.name} to {psu.name}</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; margin-top: 1.5rem;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;">GPU to PSU Power Sizing</span>
+        <h1 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; margin: 0 0 1rem; line-height: 1.15;">
+          Compatibility Audit: <span class="gradient-text">{gpu.name}</span> with <span class="gradient-text">{psu.name}</span>
+        </h1>
+      </header>
+
+      {/* Verdict Panel */}
+      <div class="card" style={`padding: 1.5rem; border-left: 4px solid ${result.verdict === 'PASS' ? 'var(--color-safe)' : result.verdict === 'WARN' ? 'var(--color-warning)' : 'var(--color-danger)'}; margin-bottom: 2.5rem;`}>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <span class={`badge ${result.verdict === 'PASS' ? 'badge-safe' : result.verdict === 'WARN' ? 'badge-warning' : 'badge-danger'}`} style="font-size: 0.85rem; padding: 4px 10px;">
+            {result.verdict === 'PASS' ? 'Safe & Compatible' : result.verdict === 'WARN' ? 'Borderline' : 'Incompatible'}
+          </span>
+        </div>
+        <p style="font-size: 1rem; line-height: 1.6; color: var(--color-text-primary);">
+          {result.verdict === 'PASS' ? (
+            <span>Yes! The <strong>{psu.name} ({psu.wattage}W)</strong> is fully compatible with the <strong>{gpu.name}</strong>. The system peak transient load is calculated at <strong>{result.details.transientPeak}W</strong>, providing a comfortable safety margin.</span>
+          ) : result.verdict === 'WARN' ? (
+            <span>The combination is <strong>borderline</strong>. While the steady-state draw fits, transient spikes or cable connector variations require adapters or caution.</span>
+          ) : (
+            <span>No. The <strong>{psu.name}</strong> does not have enough capacity or connectors for the <strong>{gpu.name}</strong>. Peak transient load is <strong>{result.details.transientPeak}W</strong>, which exceeds safety thresholds.</span>
+          )}
+        </p>
+
+        {result.warnings.map(w => (
+          <div style="margin-top: 0.75rem; color: var(--color-warning-text); font-size: 0.875rem;">⚠️ {w}</div>
+        ))}
+        {result.failures.map(f => (
+          <div style="margin-top: 0.75rem; color: var(--color-danger-text); font-size: 0.875rem;">❌ {f}</div>
+        ))}
+      </div>
+
+      {/* Details table */}
+      <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); margin-bottom: 3rem;">
+        <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0 0 1.25rem; text-transform: uppercase; letter-spacing: 0.05em;">Sizing Calculations</h2>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary);">
+                <th style="padding: 0.5rem 0.75rem;">Metric</th>
+                <th style="padding: 0.5rem 0.75rem;">Value</th>
+                <th style="padding: 0.5rem 0.75rem;">Requirement / Limit</th>
+                <th style="padding: 0.5rem 0.75rem;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">PSU Rated Wattage</td>
+                <td style="padding: 0.75rem;">{psu.wattage}W</td>
+                <td style="padding: 0.75rem;">—</td>
+                <td style="padding: 0.75rem;">✅ OK</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">Sustained System Draw</td>
+                <td style="padding: 0.75rem;">{result.details.baseDraw}W</td>
+                <td style="padding: 0.75rem;">{psu.wattage}W</td>
+                <td style="padding: 0.75rem;">{result.details.baseDraw <= psu.wattage ? '✅ Pass' : '❌ Fail'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">Peak Transient Spike</td>
+                <td style="padding: 0.75rem; color: var(--color-warning-text);">{result.details.transientPeak}W</td>
+                <td style="padding: 0.75rem;">{result.details.effectiveCapacity}W</td>
+                <td style="padding: 0.75rem;">{result.details.transientPeak <= result.details.effectiveCapacity ? '✅ Pass' : '❌ Fail'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">GPU Connector Type</td>
+                <td style="padding: 0.75rem;">{gpu.powerConnectors.type.toUpperCase()} ({gpu.powerConnectors.count}x)</td>
+                <td style="padding: 0.75rem;">—</td>
+                <td style="padding: 0.75rem;">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

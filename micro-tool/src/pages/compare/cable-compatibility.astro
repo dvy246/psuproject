@@ -1,0 +1,80 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CableCompatibilitySizer from '../../components/calculators/CableCompatibilitySizer';
+import psuData from '../../data/index/psus.index.json';
+
+const psus = psuData.items;
+
+const pageTitle = "PSU Modular Cable Compatibility Sizer — PSUCheck";
+const pageDescription = "Are your modular PSU cables cross-compatible? Verify modular cable compatibility between PSU models. Avoid short circuits and components damage.";
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I reuse my modular PSU cables?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Only if both power supplies share the exact same manufacturer pinout standard (e.g. Corsair Type 4 to Corsair Type 4). Never mix cables across different brands like Corsair and Seasonic, even if the connectors physically fit, as modular pinouts on the power supply side are not standardized."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if you mix PSU cables?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mixing incompatible modular cables sends incorrect voltage (e.g. 12V down a ground line) directly to motherboard slots, graphics cards, or SATA drives, instantly destroying components and creating fire hazards."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={[faqSchema]}
+>
+  <section class="compat-page" style="padding: 3rem 0 6rem;" aria-labelledby="sizer-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compatibility/">Compatibility</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">Modular Cable Sizer</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; margin-top: 1.5rem;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;">Connector Safety Suite</span>
+        <h1 id="sizer-heading" style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+          PSU Cable Compatibility <span class="gradient-text">Sizer</span>
+        </h1>
+        <p style="font-size: 1.1rem; color: var(--color-text-secondary); max-width: 75ch; line-height: 1.6;">
+          Upgrading your power supply? Verify if you can safely reuse your existing modular PCIe, EPS, or SATA cables. 
+          Avoid expensive electrical hazards and short circuits.
+        </p>
+      </header>
+
+      <CableCompatibilitySizer client:load psus={psus as any} />
+
+      <section style="margin-top: 4.5rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1.25rem;">Why Modular Cable Pinouts Differ</h2>
+        <div style="font-size: 0.9375rem; color: var(--color-text-secondary); line-height: 1.65; max-width: 75ch; display: flex; flex-direction: column; gap: 1rem;">
+          <p>
+            While the connectors plugging into your graphics card (PCIe 8-pin) or motherboard (24-pin ATX) conform to strict 
+            industry standards, there are <strong>no standards</strong> governing the connector layouts on the power supply 
+            housing itself. 
+          </p>
+          <p>
+            Each PSU brand designs its modular interface independently, changing pinning orders across product lines. 
+            Plugging an incompatible modular cable into a power supply can send 12V down a ground line, instantly frying 
+            connected components (hard drives, solid-state drives, and graphics cards).
+          </p>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>

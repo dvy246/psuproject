@@ -1,0 +1,109 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GpuUpgradeChecker from '../../components/calculators/GpuUpgradeChecker';
+
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+import psuData from '../../data/index/psus.index.json';
+
+const cpus = cpuData.items;
+const gpus = gpuData.items;
+const psus = psuData.items;
+
+const pageTitle = "GPU Upgrade PSU Safety & Compatibility Checker — PSUCheck";
+const pageDescription = "Upgrading your GPU? Calculate if your current power supply can handle the new graphics card. Check peak transient load spikes, connector changes, and safety margins.";
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I upgrade my GPU without upgrading my PSU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, provided the total transient peak draw of your upgraded system (including CPU, GPU, and additions) remains below your PSU's effective rated wattage. High-end cards like the RTX 5080 or RTX 4090 usually require larger capacity units."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does capacitor aging affect GPU upgrades?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PC power supply capacitors degrade over time, losing about 5% output capacity per year after the third year. An older 750W PSU might only deliver ~600W of clean output safely, making it risky to run high-draw modern graphics cards."
+      }
+    }
+  ]
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Comparisons", "item": "https://psucheck.com/compare/" },
+    { "@type": "ListItem", "position": 3, "name": "GPU Upgrade Checker" }
+  ]
+};
+
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PSUCheck GPU Upgrade PSU Safety Checker",
+  "url": "https://psucheck.com/compare/gpu-upgrade-checker",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "description": "Calculate if your current power supply can handle the upgraded graphics card. Check peak transient load spikes, connector changes, and safety margins.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "GPU power comparison",
+    "Sustained load tracking",
+    "Transient peak excursion calculation",
+    "Power connector compatibility alerts"
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema, webAppSchema];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schemas}
+>
+  <section class="upgrade-checker-page" style="padding: 3rem 0 6rem;" aria-labelledby="upgrade-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compare/">Comparisons</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">GPU Upgrade Checker</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Upgrade Sizing Suite</div>
+        <h1 id="upgrade-heading" style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+          GPU Upgrade <span class="gradient-text">PSU Safety Checker</span>
+        </h1>
+        <p style="font-size: 1.1rem; color: var(--color-text-secondary); max-width: 70ch; line-height: 1.6;">
+          Upgrading your graphics card? Check if your current PSU can absorb the transient power spikes, 
+          detect connector alterations, and ensure your system stays fully stable.
+        </p>
+      </header>
+
+      <GpuUpgradeChecker client:load cpus={cpus} gpus={gpus} psus={psus} />
+
+      <section style="margin-top: 4rem;" aria-labelledby="methodology-heading">
+        <h2 id="methodology-heading" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem;">Sizing Methodology</h2>
+        <p style="font-size: 0.9375rem; color: var(--color-text-secondary); line-height: 1.6; max-width: 75ch;">
+          Our sizing engine uses real-world transient power multiplier constants sourced from database specifications. 
+          Standard TDP addition calculations are insufficient for modern components because cards experience sub-millisecond 
+          power spikes up to 200% of their rated limits. This calculator derates your PSU capacity dynamically based on 
+          capacitor aging estimates (5% annually starting at year 3) to ensure you have a safe operational cushion.
+        </p>
+      </section>
+    </div>
+  </section>
+</Layout>

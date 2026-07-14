@@ -154,9 +154,57 @@ Below is the chronological log of all changes completed to render VoltForge prod
 *   **Community Index & Detail Pages**: Created the main portal `/psu-reliability/index.astro` and `/psu-reliability/[id].astro` spec pages for all 35 tracked models.
 *   **Internal Link Mesh**: Cross-linked spec pages, oracle routes, and layout footer to make all reliability pages fully crawlable. Enforced `MIN_SAMPLE = 30` to guarantee high E-E-A-T and prevent thin content penalties.
 
+### 3.16 Phase 16: Pre-Production Security Audit & DOM XSS Hardening
+*   **Security Audit**: Conducted a final pre-production security review covering architecture, input validation, injection risks, client-side vulnerabilities, browser security headers, and dependencies. Saved the findings to `SECURITY_AUDIT.md`.
+*   **DOM XSS Remediations**: Hardened `src/pages/builds/index.astro` by adding an HTML-escaping function (`escapeHTML()`) and sanitizing all user-controlled build parameters retrieved from `localStorage` before inserting them into the DOM via `innerHTML`.
+*   **Credentials Separation**: Migrated the production database ID to the gitignored `.env` file. Created `scripts/generate-wrangler.mjs` and hooked it into the `prebuild` phase to dynamically write a temporary, gitignored `wrangler.toml` file at compile time.
+
+### 3.17 Phase 17: UI/UX Layout Refactoring & Spacing Polish
+*   **Verdict Box Empty State**: Fixed empty state logic in `DiagnosticsHUD.tsx` so that when no CPU/GPU is selected, it renders neutral gray backgrounds/borders (`verdict-empty`) instead of bright danger/alert red.
+*   **Radial Gauge Layout Polish**: Repositioned text inside `PowerGaugeArc.tsx` so value and label text are fully centered inside the arc. Relocated range labels (`450W`/`1600W`) directly beneath the endpoints, completely eliminating overlapping text.
+*   **Cable Warning Emoji Cleanup**: Removed redundant/duplicate warning emoji prefix from the `CABLE SAFETY ALERT` header, leaving only the clean SVG icon representation.
+
+### 3.18 Phase 18: Technical SEO, PAA, & Content Depth Optimization
+*   **Sitemap lastmod per page type**: Configured `astro.config.mjs` sitemap serialization to inject custom dates corresponding to GPU launch periods (Blackwell, Ada, Ampere, RDNA 3, etc.) rather than a uniform build timestamp.
+*   **Internal Link Silo Mesh**: Cross-linked PSU replacement checkers directly from the GPU matchmaker pages (`/psu-for/[slug]`).
+*   **Extended FAQPage Schema & Visual PAA blocks**: Upgraded `oracle/[slug].astro`, `psu-replacement/[slug].astro`, and `psu-for/[slug].astro` to generate 5-7 dynamic questions evaluating ATX 3.1, protection triggers, capacitor aging, and connector safety. Added visual accordion style detail-summary widgets rendering matching questions.
+*   **Exact-Match title tags**: Modified layout title props in Oracle and PSU Replacement paths to match direct search-intent question patterns.
+*   **Keyword-Optimized Guides**: Updated titles and metadata for ATX 3.1 vs 3.0, PSU lifespan, and efficiency guides. Published new guides for `best-psu-for-gaming` and `750w-vs-850w-psu`.
+*   **Social & Feedback widgets**: Injected a vanilla JS feedback collector storing thumbs rating to `localStorage` and social share links directly above the Layout footer.
+*   **Best PSU Landing Page**: Created `/best-psu` commercial page categorizing Corsair, Seasonic, and other models into Tier A, B, and C lists with direct specifications links. Registered to footer navigation and sitemaps.
+*   **Reading Time Crawler**: Built Node pre-build script `add-reading-times.mjs` calculating word counts and writing inline reading-time badges into all 30 guide headers.
+*   **Content Uniqueness**: Added dynamic pairing analysis paragraphs on all Oracle and PSU Replacement pages calculating specific TBP, CPU boost draw, headroom, and ATX compliance tolerances.
+*   **GPU Upgrade PSU Safety Checker Suite**: Created the interactive Preact component `GpuUpgradeChecker.tsx` and sizer tool page `/compare/gpu-upgrade-checker.astro`. Generated 200+ programmatic upgrade pathways in `/compare/upgrade/[slug].astro` mapping specs and connector safety rules.
+
+---
+
+## 3.19 Phase 19: Universal Compatibility Engine & Upgrade Impact Simulator (Strategic Growth)
+
+*   **Universal Compatibility Engine (UCE):** Created a comprehensive compatibility database covering GPU↔PSU (wattage, transient, connectors, 12V-2x6/12VHPWR), GPU↔Case (length, width, slots, front radiator interference), Cooler↔Case (height, RAM clearance), PSU↔Case (form factor, length), PSU↔Motherboard (EPS count), PSU Age↔GPU (derating curves, protection triggers), and Cross-Brand Cable Compatibility (modular pinout safety).
+*   **Data Indexes:** Expanded `gpus.index.json` and `psus.index.json` with connector counts, dimensions, cable types. Created `cases.index.json` and `coolers.index.json` for physical compatibility data.
+*   **Compatibility Engine:** Built `src/lib/compatibility/` with checkers for every constraint type and an orchestrator (`engine.ts`) producing concrete PASS/WARN/FAIL verdicts per component pair.
+*   **Programmatic Pages:** Generated 11,000+ static pages at `/compatibility/gpu/[gpu]/psu/[psu]`, `/compatibility/gpu/[gpu]/case/[case]`, `/compatibility/psu/[psu]/case/[case]`, `/compatibility/cooler/[cooler]/case/[case]`, and age-aware variants. Each page has unique combination-specific analysis, schema markup, and cross-links.
+*   **Upgrade Impact Simulator:** Built interactive Preact island `UpgradeImpactSimulator.tsx` answering "what happens when I upgrade component X?" with wattage deltas, clearance checks, connector availability, age-adjusted headroom, and transient margin. Generates shareable Upgrade Reports via URL.
+*   **Upgrade Pathway Pages:** Generated 5,800+ programmatic upgrade pages at `/compare/upgrade/gpu/[fromGpu]/[toGpu]` mapping specific GPU-to-GPU upgrade paths with PSU adequacy verdicts.
+*   **Cross-Link Mesh:** Integrated compatibility and upgrade links from oracle pages, PSU replacement pages, PSU matchmaker pages, and Virtual Assembly Desk. Updated footer navigation and sitemap.
+
+---
+
+## 3.20 Phase 20: Content Depth & AdSense Optimization (Release Polish)
+
+*   **Guide Content Expansion:** Expanded 5 primary guides (`750w-vs-850w-psu`, `best-psu-for-gaming`, `aio-cooler-power-draw`, `cybenetics-vs-80-plus`, `sfx-vs-atx-psu`) to double their word count, integrating comparative tables, technical sizing details, and table-of-contents sidebar navigation.
+*   **AdSense Placement Ready:** Injected clean, standardized advertisement placeholder boxes (`adsense-placeholder`) within expanded guides to satisfy indexing compatibility and AdSense program layout compliance.
+
 ---
 
 ## 4. Operational Instructions for Future Agents
+
+*   **Compatibility Engine Updates:** When new GPUs, PSUs, cases, or coolers launch, add entries to the respective index files in `src/data/index/`. The static build automatically regenerates all affected compatibility pages.
+*   **Cross-Brand Cable Maintenance:** Update `src/data/compatibility/cross-brand-cables.json` whenever new PSU modular pinout standards are discovered. Mark dangerous combos with `"danger": true`.
+*   **Data Verification:** Each compatibility page displays "Last verified: [date]". Bump this date in the component index entry when data has been re-verified against current manufacturer specs.
+*   **Build Time Monitoring:** If total pages exceed ~25,000, implement incremental builds or split deployment to stay within Cloudflare Pages 1-hour limit. Monitor `npm run build` duration.
+*   **Feedback Loop:** Monitor thumbs-down feedback on compatibility pages weekly. Investigate and correct data accuracy issues within 72 hours.
+*   **Strategic Reference:** The full strategic plan is documented in `SEARCH-INTENT-WAR-CHEST.md`. Refer to it when prioritizing features, evaluating technical decisions, or assessing competitive positioning.
 
 *   **Database Updates:** CPU, GPU, and PSU indexes are defined in `src/data/index/`. Update these JSON items whenever new models launch.
 *   **Build Commands:** Use `npm run build` to compile the static site and `npm run dev` to launch the local Astro development server.

@@ -1,0 +1,219 @@
+---
+import Layout from '../layouts/Layout.astro';
+import type { PsuIndex } from '../types/components';
+import psuData from '../data/index/psus.index.json';
+
+const psus = psuData.items as PsuIndex[];
+
+// Group PSUs by their Tier
+const tierAPsus = psus.filter(p => p.qualityTier === 'A').slice(0, 8);
+const tierBPsus = psus.filter(p => p.qualityTier === 'B').slice(0, 8);
+const tierCPsus = psus.filter(p => p.qualityTier === 'C').slice(0, 8);
+
+const effLabelMap: Record<string, string> = {
+  '80plus': '80+',
+  bronze: '80+ Bronze',
+  silver: '80+ Silver',
+  gold: '80+ Gold',
+  platinum: '80+ Platinum',
+  titanium: '80+ Titanium'
+};
+
+const pageTitle = "Best PSU for Gaming 2026: Power Supplies Ranked by Quality | PSUCheck";
+const pageDescription = "Find the best power supply units (PSU) for gaming PCs in 2026. Compare top-rated ATX 3.1 PSUs by quality tiers, modularity, efficiency, and cost-per-watt value scores.";
+
+// Schema markup
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the best overall PSU for gaming in 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For high-end gaming rigs, the best overall PSU is a Tier A ATX 3.1 model like the Corsair RM850x (2024) or the Seasonic Focus GX-850. These units feature excellent voltage regulation, premium Japanese capacitors, and natively handle 200% transient power spikes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What do the PSU quality tiers mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PSU quality tiers categorize power supplies by component quality, safety protections, and electrical performance: Tier A represents premium gold/platinum units for high-end builds; Tier B covers mid-range units for standard rigs; Tier C covers budget units for low-draw builds; and Tier Avoid denotes units with unsafe designs or lacking critical protection circuits."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is an ATX 3.1 PSU important for modern GPUs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ATX 3.1 power supplies natively support the revised 12V-2x6 power connector, replacing the older 12VHPWR. They are designed to withstand 200% transient power excursions for 100 microseconds, preventing sudden OCP/OPP shutdowns commonly triggered by high-performance graphics cards."
+      }
+    }
+  ]
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Best PSU 2026" }
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schemas}
+>
+  <section class="best-psu-page" aria-labelledby="best-psu-heading" style="padding: 3rem 0 6rem;">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 2rem;">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">Best PSU 2026</span>
+      </nav>
+
+      <header class="page-header" style="margin-bottom: 3rem;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">2026 Buyer's Guide</div>
+        <h1 id="best-psu-heading" style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+          Best PSUs for Gaming <span class="gradient-text">in 2026</span>
+        </h1>
+        <p style="font-size: 1.1rem; color: var(--color-text-secondary); max-width: 70ch; line-height: 1.6;">
+          Our editors ranked 35+ power supplies using first-party reliability stats, Cultists tiering, 
+          and ATX 3.1 transient excursion testing. Skimping on the power supply can ruin a high-end gaming PC — select a verified tier below.
+        </p>
+      </header>
+
+      {/* --- Section: Tier A --- */}
+      <section style="margin-bottom: 4rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--color-safe); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--color-safe);">★</span> Tier A: Premium Choice (High-End &amp; Silent Builds)
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 1.5rem;">
+          Best suited for RTX 4090/5090 and overclocked setups. These feature Japanese 105°C capacitors, outstanding voltage regulation, and whisper-quiet operations.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+          {tierAPsus.map(p => (
+            <div key={p.id} class="card card-accent" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-safe);">
+              <div>
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase;">{p.brand}</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 0.25rem;">{p.name}</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.75rem;">
+                  <span class="badge badge-safe" style="font-size: 0.65rem; padding: 2px 6px;">Tier A</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">{p.wattage}W</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">{effLabelMap[p.efficiencyTier]}</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">ATX {p.atxVersion}</span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                <span style="font-size: 1.25rem; font-weight: 800; color: var(--color-accent-cyan); font-family: var(--font-mono);">${p.price}</span>
+                <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">Specs &amp; Value →</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- Section: Tier B --- */}
+      <section style="margin-bottom: 4rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--color-accent-blue); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--color-accent-blue);">✦</span> Tier B: Recommended Mid-Range (Excellent Value)
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 1.5rem;">
+          Excellent choice for RTX 4070 SUPER, RX 7800 XT, or similar mid-tier hardware. Reliable, efficient, and cost-effective.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+          {tierBPsus.map(p => (
+            <div key={p.id} class="card card-accent" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-blue);">
+              <div>
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase;">{p.brand}</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 0.25rem;">{p.name}</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.75rem;">
+                  <span class="badge" style="font-size: 0.65rem; padding: 2px 6px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #3b82f6;">Tier B</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">{p.wattage}W</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">{effLabelMap[p.efficiencyTier]}</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">ATX {p.atxVersion}</span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                <span style="font-size: 1.25rem; font-weight: 800; color: var(--color-accent-cyan); font-family: var(--font-mono);">${p.price}</span>
+                <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">Specs &amp; Value →</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- Section: Tier C --- */}
+      <section style="margin-bottom: 4rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--color-warning); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--color-warning);">⚡</span> Tier C: Budget Builds (Entry-Level Rig Sizing)
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 1.5rem;">
+          Perfect for budget builds (RTX 4060, RX 7600). These prioritize basic protections and safety certifications at the lowest price points.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+          {tierCPsus.map(p => (
+            <div key={p.id} class="card card-accent" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-warning);">
+              <div>
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase;">{p.brand}</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 0.25rem;">{p.name}</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.75rem;">
+                  <span class="badge badge-warning" style="font-size: 0.65rem; padding: 2px 6px;">Tier C</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">{p.wattage}W</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">{effLabelMap[p.efficiencyTier]}</span>
+                  <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">ATX {p.atxVersion}</span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                <span style="font-size: 1.25rem; font-weight: 800; color: var(--color-accent-cyan); font-family: var(--font-mono);">${p.price}</span>
+                <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">Specs &amp; Value →</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- Visual FAQs --- */}
+      <section style="margin-top: 5rem;" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" style="font-size: 1.75rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1.5rem;">Frequently Asked Questions</h2>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <details class="card" style="padding: 1rem; cursor: pointer; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+            <summary style="font-weight: 700; color: var(--text-primary); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+              <span>What is the best overall PSU for gaming in 2026?</span>
+              <span style="color: var(--color-accent-cyan); font-size: 0.75rem;">▼</span>
+            </summary>
+            <p style="margin-top: 0.75rem; font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; cursor: default;" onclick="event.stopPropagation()">
+              For high-end gaming rigs, the best overall PSU is a Tier A ATX 3.1 model like the Corsair RM850x (2024) or the Seasonic Focus GX-850. These units feature excellent voltage regulation, premium Japanese capacitors, and natively handle 200% transient power spikes.
+            </p>
+          </details>
+          <details class="card" style="padding: 1rem; cursor: pointer; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+            <summary style="font-weight: 700; color: var(--text-primary); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+              <span>What do the PSU quality tiers mean?</span>
+              <span style="color: var(--color-accent-cyan); font-size: 0.75rem;">▼</span>
+            </summary>
+            <p style="margin-top: 0.75rem; font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; cursor: default;" onclick="event.stopPropagation()">
+              PSU quality tiers categorize power supplies by component quality, safety protections, and electrical performance: Tier A represents premium gold/platinum units for high-end builds; Tier B covers mid-range units for standard rigs; Tier C covers budget units for low-draw builds; and Tier Avoid denotes units with unsafe designs or lacking critical protection circuits.
+            </p>
+          </details>
+          <details class="card" style="padding: 1rem; cursor: pointer; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+            <summary style="font-weight: 700; color: var(--text-primary); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+              <span>Why is an ATX 3.1 PSU important for modern GPUs?</span>
+              <span style="color: var(--color-accent-cyan); font-size: 0.75rem;">▼</span>
+            </summary>
+            <p style="margin-top: 0.75rem; font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; cursor: default;" onclick="event.stopPropagation()">
+              ATX 3.1 power supplies natively support the revised 12V-2x6 power connector, replacing the older 12VHPWR. They are designed to withstand 200% transient power excursions for 100 microseconds, preventing sudden OCP/OPP shutdowns commonly triggered by high-performance graphics cards.
+            </p>
+          </details>
+        </div>
+      </section>
+
+    </div>
+  </section>
+</Layout>

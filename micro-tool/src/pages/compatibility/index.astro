@@ -1,0 +1,109 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+import gpuData from '../../data/index/gpus.index.json';
+import psuData from '../../data/index/psus.index.json';
+import caseData from '../../data/index/cases.index.json';
+import coolerData from '../../data/index/coolers.index.json';
+
+const gpus = gpuData.items;
+const psus = psuData.items;
+const cases = caseData.items;
+const coolers = coolerData.items;
+
+const pageTitle = "PC Component Compatibility Hub & Sizing Center — PSUCheck";
+const pageDescription = "Verify physical and electrical compatibility between your PC components. Sizing validators for GPU to PSU, CPU Cooler clearance, and PSU aging.";
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <section class="compat-hub" style="padding: 3rem 0 6rem;" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">Compatibility Hub</span>
+      </nav>
+
+      <header style="margin-bottom: 3rem;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Universal Sizing Suite</div>
+        <h1 id="hub-heading" style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+          Universal PC <span class="gradient-text">Compatibility Hub</span>
+        </h1>
+        <p style="font-size: 1.1rem; color: var(--color-text-secondary); max-width: 75ch; line-height: 1.6;">
+          Select a compatibility matrix category below to run automated sizing audits, clearance checks, and power safety verifications.
+        </p>
+      </header>
+
+      {/* Grid of validation tools */}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 4rem;">
+        {/* GPU to PSU */}
+        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">⚡ GPU ↔ PSU Sizing</h2>
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+              Audit sustained draw, transient spikes, adapter rules, and ATX 3.1 connections.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href={`/compatibility/gpu/${gpus[0].id}/psu/${psus[0].id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Run Sample Audit →</a>
+          </div>
+        </div>
+
+        {/* GPU to Case */}
+        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">📏 GPU ↔ Case Clearances</h2>
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+              Verify graphics card length and width clearances including front radiator thickness deductions.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href={`/compatibility/gpu/${gpus[0].id}/case/${cases[0].id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Run Sample Clearance →</a>
+          </div>
+        </div>
+
+        {/* PSU to Case */}
+        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">🔌 PSU ↔ Case Sizing</h2>
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+              Confirm form factor fits (SFX, SFX-L, ATX) and shroud compartment depth clearances.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href={`/compatibility/psu/${psus[0].id}/case/${cases[0].id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Run Sizing Audit →</a>
+          </div>
+        </div>
+
+        {/* Cooler to Case */}
+        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">❄ Cooler ↔ Case Height</h2>
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+              Verify cpu cooler height clearances, RAM clearance conflicts, and AIO mounts.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href={`/compatibility/cooler/${coolers[0].id}/case/${cases[0].id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Check Cooler Height →</a>
+          </div>
+        </div>
+
+        {/* Modular Cables */}
+        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">⚠️ Modular Cable Safety</h2>
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+              Audit pinout compatibility between PSU brands to avoid short circuits and component fire hazards.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="/compatibility/connector/corsair/seasonic" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Check Brand Safety →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

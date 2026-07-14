@@ -1,0 +1,136 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TableOfContents from '../../components/ui/TableOfContents';
+import MethodologyCard from '../../components/ui/MethodologyCard.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-13",
+  "dateModified": "2026-07-14",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the best PSU for a gaming PC in 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For most gaming builds, an 850W Tier A power supply like the Corsair RM850x (2024) or Seasonic Focus GX-850 is the best choice. These units offer ATX 3.1 compliance and native 12V-2x6 connection for modern graphics cards."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I choose the right PSU wattage?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You should size your PSU based on the combined transient peak draw of your CPU and GPU. We recommend leaving at least 15% headroom above the peak draw to guarantee stability."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does a Tier A PSU actually mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tier A models are premium units verified by expert testing databases (like Cultists List and Cybenetics). They require Japanese 105°C primary and secondary capacitors, full bridge LLC resonant topologies, and transient response drop rates below 1% under load."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Best PSU for Gaming 2026: Tier List & Buyer Guide — PSUCheck"
+  description="How to choose the best power supply for your gaming PC in 2026. Compare top brands, efficiency certifications, and Cultists quality tiers."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 1.5rem;">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/guides/">Guides</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">Best PSU for Gaming</span>
+      </nav>
+
+      <header class="guide-header">
+        <div class="guide-meta">
+          <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
+          <span>Updated: July 14, 2026</span>
+          <span style="margin: 0 0.5rem; opacity: 0.5;">•</span>
+          <span class="reading-time-badge">2 min read</span>
+        </div>
+        <h1>Best PSU for Gaming 2026: Tier List &amp; Buyer Guide</h1>
+        <p class="guide-lead">
+          Choosing the right power supply unit (PSU) is critical to protect your PC components.
+          This guide outlines how to select the best PSU for gaming based on quality tiers, transient tolerances, and efficiency.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — SPONSOR PLACEMENT
+          </div>
+
+          <h2 id="tiers">Why PSU Quality Tiers Matter</h2>
+          <p>
+            Power supplies are classified into Tiers based on their component quality, circuit design, and protection features. Skimping on your PSU is one of the most common PC building mistakes. A low-quality PSU can fail catastrophically and take out your motherboard, GPU, or CPU.
+          </p>
+          <p>
+            The classification system aligns with verified laboratory tests (such as Cybenetics database reports and the popular Cultists Network Tier List):
+          </p>
+          <ul>
+            <li><strong>Tier A (Premium Quality):</strong> Mandatory for high-end builds (RTX 4080, 5080, 4090, 5090). They feature Japanese 105°C primary capacitors, full bridge LLC resonant converters, DC-to-DC topology, and outstanding transient load recovery.</li>
+            <li><strong>Tier B (Mid-Range):</strong> Highly recommended for standard gaming rigs (RTX 4070 SUPER, RX 7800 XT). Excellent compromise between pricing and reliability.</li>
+            <li><strong>Tier C (Budget):</strong> Entry-level units suitable for low-power budget rigs (RTX 4060, RX 7600).</li>
+            <li><strong>Tier Avoid:</strong> Models with hazardous circuit configurations or missing vital OCP/OTP protection triggers.</li>
+          </ul>
+
+          <div style="margin: 2rem 0; padding: 1.25rem; background: rgba(6,182,212,0.05); border: 1px solid rgba(6,182,212,0.15); border-radius: var(--radius-lg); text-align: center;">
+            <h3 style="margin-top: 0; font-weight: 800;">Explore Top-Rated Power Supplies</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">View our database of editorially selected PSUs filtered by quality tiers and pricing.</p>
+            <a href="/best-psu" class="btn btn-primary" style="margin-top: 0.5rem; display: inline-block;">View Best PSU Picks 2026 →</a>
+          </div>
+
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — IN-CONTENT SQUARE
+          </div>
+
+          <h2 id="specifications">Key Sizing Factors for 2026</h2>
+          <p>
+            Modern graphics cards demand extremely dynamic power. An RTX 50-series card experiences sub-millisecond <strong>transient spikes</strong> that can exceed its rated board power by 1.5x. Make sure you select a PSU that is ATX 3.1 compliant to natively handle these spikes.
+          </p>
+          <p>
+            Furthermore, the ATX 3.1 standard introduces the <strong>12V-2x6 connector</strong> which resolves the safety flaws of the previous 12VHPWR design. This standard features shorter sideband pins to prevent current flow if the cable is not fully inserted, eliminating thermal hazard scenarios.
+          </p>
+
+          <h2 id="efficiency-cert">Efficiency Standards: ETA vs 80 PLUS</h2>
+          <p>
+            While 80 PLUS remains popular, modern builders look to <strong>Cybenetics ETA</strong> ratings. Cybenetics tests efficiency across thousands of load combinations (rather than 80 PLUS's simple 3-point check) and also grades noise output (LAMBDA ratings). Always prefer units rated Cybenetics ETA-A or higher.
+          </p>
+        </main>
+
+        <aside class="guide-sidebar">
+          <TableOfContents client:load />
+          <MethodologyCard />
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .guide-article { padding: 3rem 0; }
+  .guide-header { margin-bottom: 2.5rem; }
+  .guide-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-top: 0.5rem; }
+  .guide-lead { font-size: 1.2rem; color: var(--color-text-secondary); margin-top: 1rem; line-height: 1.5; }
+  .guide-meta { display: flex; gap: 1rem; align-items: center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+  .guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+  @media (min-width: 1024px) {
+    .guide-layout { grid-template-columns: 3fr 1fr; }
+  }
+  .guide-content h2 { font-size: 1.5rem; font-weight: 800; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
+  .guide-content p { line-height: 1.6; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
+  .guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+  .guide-content li { margin-bottom: 0.5rem; color: var(--color-text-secondary); line-height: 1.5; }
+</style>

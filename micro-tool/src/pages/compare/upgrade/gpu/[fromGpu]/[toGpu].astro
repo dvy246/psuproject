@@ -1,0 +1,179 @@
+---
+import Layout from '../../../../../layouts/Layout.astro';
+
+import cpuData from '../../../../../data/index/cpus.index.json';
+import gpuData from '../../../../../data/index/gpus.index.json';
+import psuData from '../../../../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const gpus = gpuData.items;
+
+  // 15 popular older cards
+  const fromGpuIds = [
+    'gtx-1060', 'gtx-1070', 'gtx-1080-ti',
+    'rtx-2060', 'rtx-2070', 'rtx-2080', 'rtx-2080-ti',
+    'rtx-3060', 'rtx-3070', 'rtx-3080', 'rtx-3090',
+    'rx-580', 'rx-5700-xt', 'rx-6700-xt', 'rx-6800-xt'
+  ];
+
+  // 15 popular newer target cards
+  const toGpuIds = [
+    'rtx-4060', 'rtx-4070', 'rtx-4070-super', 'rtx-4070-ti-super', 'rtx-4080-super', 'rtx-4090',
+    'rtx-5060', 'rtx-5070', 'rtx-5070-ti', 'rtx-5080', 'rtx-5090',
+    'rx-7600', 'rx-7700-xt', 'rx-7800-xt', 'rx-7900-xtx'
+  ];
+
+  const paths = [];
+
+  for (const fromId of fromGpuIds) {
+    for (const toId of toGpuIds) {
+      if (fromId !== toId) {
+        const fromGpu = gpus.find(g => g.id === fromId);
+        const toGpu = gpus.find(g => g.id === toId);
+
+        if (fromGpu && toGpu) {
+          paths.push({
+            params: { fromGpu: fromId, toGpu: toId },
+            props: { fromGpu, toGpu }
+          });
+        }
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { fromGpu, toGpu } = Astro.props;
+
+const cpus = cpuData.items;
+const psus = psuData.items;
+
+// default middle tier CPU Ryzen 7 7800X3D
+const defaultCpu = cpus.find(c => c.id.includes('7800x3d')) || cpus[0];
+const cpuTdp = defaultCpu.tdpSustained || defaultCpu.tdp;
+
+const additionsWatts = 57;
+const fromBaseDraw = cpuTdp + fromGpu.tbp + additionsWatts;
+const fromTransientPeak = Math.round((cpuTdp * 1.20) + (fromGpu.tbp * fromGpu.transientMultiplier) + 32);
+
+const toBaseDraw = cpuTdp + toGpu.tbp + additionsWatts;
+const toTransientPeak = Math.round((cpuTdp * 1.20) + (toGpu.tbp * toGpu.transientMultiplier) + 32);
+
+const baseDelta = toBaseDraw - fromBaseDraw;
+const peakDelta = toTransientPeak - fromTransientPeak;
+
+const safetyBuffer = 0.15;
+const rawRecommended = toTransientPeak * 1.20;
+const standardWattages = [550, 650, 750, 850, 1000, 1200, 1300, 1600];
+const recommendedWattage = standardWattages.find(w => w >= rawRecommended) || 1000;
+
+// Filter matching PSUs
+const recommendedPsus = psus
+  .filter(p => p.wattage >= recommendedWattage && p.qualityTier === 'A')
+  .slice(0, 3);
+
+const pageTitle = `Upgrading from ${fromGpu.name} to ${toGpu.name}: Sizing Analysis — PSUCheck`;
+const pageDescription = `Detailed power draw comparison, peak transient load increases, and PSU recommendations for upgrading from ${fromGpu.name} to ${toGpu.name}.`;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <section class="compat-page" style="padding: 3rem 0 6rem;">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compatibility/">Compatibility</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{fromGpu.name} to {toGpu.name}</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; margin-top: 1.5rem;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;">GPU Upgrade Pathway</span>
+        <h1 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; margin: 0 0 1rem; line-height: 1.15;">
+          Upgrade Sizing: <span class="gradient-text">{fromGpu.name}</span> to <span class="gradient-text">{toGpu.name}</span>
+        </h1>
+      </header>
+
+      {/* Sizing comparison card */}
+      <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--color-accent-cyan); margin-bottom: 2.5rem;">
+        <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0 0 1rem;">Power delta summary</h2>
+        <p style="font-size: 1rem; line-height: 1.6; color: var(--color-text-primary); margin: 0;">
+          Upgrading from the <strong>{fromGpu.name}</strong> to the <strong>{toGpu.name}</strong> shift system steady-state power draw by <strong>{baseDelta >= 0 ? `+${baseDelta}` : baseDelta}W</strong>. 
+          Additionally, system transient peak spikes will shift by <strong>{peakDelta >= 0 ? `+${peakDelta}` : peakDelta}W</strong>. We recommend upgrading to at least a <strong>{recommendedWattage}W</strong> power supply unit for this build.
+        </p>
+      </div>
+
+      {/* Comparison Grid */}
+      <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem;">
+        {/* Specs Table */}
+        <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);">
+          <h3 style="font-size: 1rem; font-weight: 700; margin: 0 0 1rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Comparative Sizing Table</h3>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary);">
+                  <th style="padding: 0.5rem 0.75rem;">Power Spec</th>
+                  <th style="padding: 0.5rem 0.75rem;">{fromGpu.name} (Old)</th>
+                  <th style="padding: 0.5rem 0.75rem;">{toGpu.name} (New)</th>
+                  <th style="padding: 0.5rem 0.75rem;">Delta Shift</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">GPU Rated TBP</td>
+                  <td style="padding: 0.75rem;">{fromGpu.tbp}W</td>
+                  <td style="padding: 0.75rem;">{toGpu.tbp}W</td>
+                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{toGpu.tbp - fromGpu.tbp}W</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">Sustained System Draw</td>
+                  <td style="padding: 0.75rem;">{fromBaseDraw}W</td>
+                  <td style="padding: 0.75rem;">{toBaseDraw}W</td>
+                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{baseDelta}W</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">Transient Peak Spike</td>
+                  <td style="padding: 0.75rem;">{fromTransientPeak}W</td>
+                  <td style="padding: 0.75rem; color: var(--color-warning-text);">{toTransientPeak}W</td>
+                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{peakDelta}W</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Recommended Upgrades */}
+      {recommendedPsus.length > 0 && (
+        <section style="margin-bottom: 3rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            Recommended PSU Upgrades for {toGpu.name}
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+            {recommendedPsus.map(p => (
+              <div key={p.id} class="card card-accent" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-safe);">
+                <div>
+                  <span style="font-size: 0.7rem; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase;">{p.brand}</span>
+                  <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin: 0.25rem 0 0.5rem;">{p.name}</h4>
+                  <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                    <span class="badge badge-safe" style="font-size: 0.65rem; padding: 2px 6px;">Tier A</span>
+                    <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">{p.wattage}W</span>
+                    <span style="font-size: 0.75rem; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); padding: 1px 6px; border-radius: 4px; color: var(--color-text-secondary);">ATX {p.atxVersion}</span>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                  <span style="font-size: 1.25rem; font-weight: 800; color: var(--color-accent-cyan); font-family: var(--font-mono);">${p.price}</span>
+                  <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">Specs &amp; Value →</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  </section>
+</Layout>

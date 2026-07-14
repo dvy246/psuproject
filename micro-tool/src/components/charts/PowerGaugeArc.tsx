@@ -107,12 +107,12 @@ export function PowerGaugeArc({ recommendedWattage, psuRated, verdict, 'aria-lab
 
         {/* Center: recommended wattage label */}
         <text
-          x={CX} y={CY - 10}
+          x={CX} y={CY - 8}
           text-anchor="middle"
           class="gauge-value-text"
           style={{
             fill: hasData ? color : 'var(--color-text-tertiary)',
-            'font-size': '22px',
+            'font-size': '24px',
             'font-family': 'var(--font-mono)',
             'font-variant-numeric': 'tabular-nums',
             'font-weight': '900',
@@ -122,22 +122,23 @@ export function PowerGaugeArc({ recommendedWattage, psuRated, verdict, 'aria-lab
         </text>
 
         <text
-          x={CX} y={CY + 3}
+          x={CX} y={CY - 32}
           text-anchor="middle"
           style={{
             fill: 'var(--color-text-tertiary)',
-            'font-size': '8.5px',
+            'font-size': '8px',
             'font-family': 'var(--font-body)',
             'text-transform': 'uppercase',
-            'letter-spacing': '0.06em',
+            'letter-spacing': '0.08em',
+            'font-weight': '600',
           }}
         >
           {hasData ? 'RECOMMENDED' : 'SELECT COMPONENTS'}
         </text>
 
-        {/* Range labels */}
-        <text x="12" y="94" text-anchor="start" style="fill:var(--color-text-tertiary);font-size:9px;font-family:var(--font-mono);">{MIN_W}W</text>
-        <text x="168" y="94" text-anchor="end" style="fill:var(--color-text-tertiary);font-size:9px;font-family:var(--font-mono);">{MAX_W}W</text>
+        {/* Range labels aligned beneath the arc endpoints */}
+        <text x="20" y="98" text-anchor="middle" style="fill:var(--color-text-tertiary);font-size:9px;font-family:var(--font-mono);">{MIN_W}W</text>
+        <text x="160" y="98" text-anchor="middle" style="fill:var(--color-text-tertiary);font-size:9px;font-family:var(--font-mono);">{MAX_W}W</text>
       </svg>
 
       {/* Screen-reader accessible data table (visually hidden) */}

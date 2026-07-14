@@ -1,0 +1,139 @@
+{
+  "version": "2026-07-14",
+  "items": [
+    {
+      "id": "nh-d15",
+      "brand": "Noctua",
+      "name": "Noctua NH-D15 chromax.black",
+      "type": "air-tower",
+      "height": 165,
+      "width": 150,
+      "depth": 161,
+      "ramClearanceMaxHeight": 32,
+      "tdpRating": 250
+    },
+    {
+      "id": "peerless-assassin-120",
+      "brand": "Thermalright",
+      "name": "Thermalright Peerless Assassin 120 SE",
+      "type": "air-tower",
+      "height": 155,
+      "width": 125,
+      "depth": 135,
+      "ramClearanceMaxHeight": 46,
+      "tdpRating": 245
+    },
+    {
+      "id": "dark-rock-pro-5",
+      "brand": "be quiet!",
+      "name": "be quiet! Dark Rock Pro 5",
+      "type": "air-tower",
+      "height": 168,
+      "width": 136,
+      "depth": 145,
+      "ramClearanceMaxHeight": 35,
+      "tdpRating": 270
+    },
+    {
+      "id": "nh-l9i",
+      "brand": "Noctua",
+      "name": "Noctua NH-L9i chromax.black",
+      "type": "air-low-profile",
+      "height": 37,
+      "width": 95,
+      "depth": 95,
+      "ramClearanceMaxHeight": 0,
+      "tdpRating": 65
+    },
+    {
+      "id": "arctic-liquid-freezer-iii-360",
+      "brand": "Arctic",
+      "name": "Arctic Liquid Freezer III 360 AIO",
+      "type": "aio",
+      "height": 38,
+      "width": 120,
+      "depth": 398,
+      "ramClearanceMaxHeight": 0,
+      "radiator": {
+        "size": "360",
+        "thicknessWithFans": 63
+      },
+      "tdpRating": 350
+    },
+    {
+      "id": "corsair-h150i-elite",
+      "brand": "Corsair",
+      "name": "Corsair iCUE H150i ELITE LCD XT",
+      "type": "aio",
+      "height": 27,
+      "width": 120,
+      "depth": 397,
+      "ramClearanceMaxHeight": 0,
+      "radiator": {
+        "size": "360",
+        "thicknessWithFans": 52
+      },
+      "tdpRating": 330
+    },
+    {
+      "id": "nzxt-kraken-360",
+      "brand": "NZXT",
+      "name": "NZXT Kraken Elite 360",
+      "type": "aio",
+      "height": 27,
+      "width": 121,
+      "depth": 394,
+      "ramClearanceMaxHeight": 0,
+      "radiator": {
+        "size": "360",
+        "thicknessWithFans": 53
+      },
+      "tdpRating": 320
+    },
+    {
+      "id": "arctic-liquid-freezer-iii-240",
+      "brand": "Arctic",
+      "name": "Arctic Liquid Freezer III 240 AIO",
+      "type": "aio",
+      "height": 38,
+      "width": 120,
+      "depth": 277,
+      "ramClearanceMaxHeight": 0,
+      "radiator": {
+        "size": "240",
+        "thicknessWithFans": 63
+      },
+      "tdpRating": 280
+    },
+    {
+      "id": "nzxt-kraken-240",
+      "brand": "NZXT",
+      "name": "NZXT Kraken 240",
+      "type": "aio",
+      "height": 27,
+      "width": 121,
+      "depth": 275,
+      "ramClearanceMaxHeight": 0,
+      "radiator": {
+        "size": "240",
+        "thicknessWithFans": 52
+      },
+      "tdpRating": 250
+    },
+    {
+      "id": "ek-nucleus-360",
+      "brand": "EKWB",
+      "name": "EK-Nucleus AIO CR360 Lux D-RGB",
+      "type": "aio",
+      "height": 27,
+      "width": 124,
+      "depth": 400,
+      "ramClearanceMaxHeight": 0,
+      "radiator": {
+        "size": "360",
+        "thicknessWithFans": 54
+      },
+      "tdpRating": 340
+    }
+  ]
+}

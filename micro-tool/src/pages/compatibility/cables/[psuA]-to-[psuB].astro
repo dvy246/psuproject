@@ -1,0 +1,134 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import psuData from '../../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const psus = psuData.items;
+
+  // 10 most popular source PSUs to compare from
+  const popularSourceIds = [
+    'corsair-rm1000x-2024',
+    'corsair-rm850x-2024',
+    'corsair-rm750x-2024',
+    'seasonic-focus-gx-850',
+    'seasonic-focus-gx-750',
+    'bequiet-pure-power-12-m-750',
+    'evga-supernova-1000-g7',
+    'msi-mpg-a1000g',
+    'asus-rog-strix-1000g',
+    'thermaltake-smart-500'
+  ];
+
+  const paths = [];
+
+  for (const sourceId of popularSourceIds) {
+    for (const target of psus) {
+      if (sourceId !== target.id) {
+        const source = psus.find(p => p.id === sourceId);
+        if (source) {
+          paths.push({
+            params: { psuA: sourceId, psuB: target.id },
+            props: { psuA: source, psuB: target }
+          });
+        }
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { psuA, psuB } = Astro.props;
+
+const sourceStandard = psuA.modularPinoutStandard || 'standard';
+const targetStandard = psuB.modularPinoutStandard || 'standard';
+const sourceBrand = psuA.brand;
+const targetBrand = psuB.brand;
+
+let verdict: 'PASS' | 'WARN' | 'FAIL' = 'FAIL';
+let verdictLabel = '';
+let details = '';
+
+if (sourceStandard === targetStandard && sourceStandard !== 'standard') {
+  verdict = 'PASS';
+  verdictLabel = 'Fully Compatible';
+  details = `Yes. Both the ${psuA.name} and the ${psuB.name} share the '${sourceStandard}' modular cable standard. PCIe, EPS, and SATA cables can be safely swapped.`;
+} else if (sourceBrand.toLowerCase() === targetBrand.toLowerCase()) {
+  verdict = 'WARN';
+  verdictLabel = 'Partial Compatibility / High Risk';
+  details = `Caution: Both units are from ${sourceBrand} but utilize different modular standards ('${sourceStandard}' vs '${targetStandard}'). Reusing cables may cause short-circuits.`;
+} else {
+  verdict = 'FAIL';
+  verdictLabel = 'DANGEROUS — INCOMPATIBLE';
+  details = `DANGER! Mixing cables between the ${psuA.name} (${sourceBrand}) and the ${psuB.name} (${targetBrand}) will cause short circuits and destroy your computer.`;
+}
+
+const pageTitle = `Are ${psuA.name} and ${psuB.name} Cables Compatible? — PSUCheck`;
+const pageDescription = `Check modular cable compatibility between the ${psuA.name} and the ${psuB.name}. Run pinout family safety checks.`;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <section class="compat-page" style="padding: 3rem 0 6rem;">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/compatibility/">Compatibility</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{psuA.name} to {psuB.name} Cables</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; margin-top: 1.5rem;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;">Modular Pinout Audit</span>
+        <h1 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; margin: 0 0 1rem; line-height: 1.15;">
+          Cable Compatibility: <span class="gradient-text">{psuA.name}</span> &amp; <span class="gradient-text">{psuB.name}</span>
+        </h1>
+      </header>
+
+      {/* Verdict Panel */}
+      <div class="card" style={`padding: 1.5rem; border-left: 4px solid ${verdict === 'PASS' ? 'var(--color-safe)' : verdict === 'WARN' ? 'var(--color-warning)' : 'var(--color-danger)'}; margin-bottom: 2.5rem;`}>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <span class={`badge ${verdict === 'PASS' ? 'badge-safe' : verdict === 'WARN' ? 'badge-warning' : 'badge-danger'}`} style="font-size: 0.85rem; padding: 4px 10px;">
+            {verdictLabel}
+          </span>
+        </div>
+        <p style="font-size: 1.1rem; line-height: 1.65; color: var(--color-text-primary); margin: 0;">
+          {details}
+        </p>
+      </div>
+
+      {/* Technical details table */}
+      <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); margin-bottom: 3rem;">
+        <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0 0 1.25rem; text-transform: uppercase; letter-spacing: 0.05em;">Pinout Specifications</h2>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary);">
+                <th style="padding: 0.5rem 0.75rem;">PSU Model</th>
+                <th style="padding: 0.5rem 0.75rem;">Manufacturer Brand</th>
+                <th style="padding: 0.5rem 0.75rem;">Modular Cable Standard</th>
+                <th style="padding: 0.5rem 0.75rem;">Cables Interchangeable</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">{psuA.name}</td>
+                <td style="padding: 0.75rem;">{psuA.brand}</td>
+                <td style="padding: 0.75rem; font-family: var(--font-mono);">{sourceStandard.toUpperCase()}</td>
+                <td style="padding: 0.75rem; rowspan: 2; font-weight: 700; color: verdict === 'PASS' ? 'var(--color-safe)' : 'var(--color-danger)';">{verdict === 'PASS' ? '✅ Yes' : '❌ No'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
+                <td style="padding: 0.75rem; font-weight: 700;">{psuB.name}</td>
+                <td style="padding: 0.75rem;">{psuB.brand}</td>
+                <td style="padding: 0.75rem; font-family: var(--font-mono);">{targetStandard.toUpperCase()}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

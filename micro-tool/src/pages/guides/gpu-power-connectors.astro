@@ -7,7 +7,7 @@ const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-07-13",
+  "dateModified": "2026-07-14",
   "mainEntity": [
     {
       "@type": "Question",
@@ -15,6 +15,14 @@ const faqSchema = {
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "The 12V-2x6 connector is the PCIe CEM 5.1 physical specification replacing the older 12VHPWR design. It shortens the sense pins so that if the cable is not fully plugged in, the PSU limits power to prevent port melting."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why did 12VHPWR connectors melt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The original 12VHPWR connectors melted due to user insertion errors, cable bends too close to the connector housing, or loose terminals. This created high electrical resistance points, causing thermal runaways exceeding 150°C under 450W+ loads."
       }
     }
   ]
@@ -28,10 +36,20 @@ const faqSchema = {
 >
   <article class="guide-article">
     <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 1.5rem;">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/guides/">Guides</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">GPU Power Connectors</span>
+      </nav>
+
       <header class="guide-header">
         <div class="guide-meta">
           <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
-          <span>Updated: July 13, 2026</span>
+          <span>Updated: July 14, 2026</span>
+          <span style="margin: 0 0.5rem; opacity: 0.5;">•</span>
+          <span class="reading-time-badge">2 min read</span>
         </div>
         <h1>GPU Power Connectors: 8-pin, 12VHPWR, &amp; 12V-2x6</h1>
         <p class="guide-lead">
@@ -42,52 +60,80 @@ const faqSchema = {
 
       <div class="guide-layout">
         <main class="guide-content" id="main-content">
-          <h2>Classic 8-Pin PCIe Connectors</h2>
-          <p>
-            Standard 8-pin PCIe power cables are rated to supply up to 150W of power safely.
-            High-draw GPUs historically required up to three or four of these cables.
-          </p>
-          <div class="important-warning">
-            <strong>⚠ Daisy-Chaining Warning:</strong> Never use a single cable with two daisy-chained 8-pin heads
-            for cards drawing more than 225W. Always run separate, individual PCIe cables directly from the PSU.
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — LEADERBOARD
           </div>
 
-          <h2>The 12VHPWR Connector (ATX 3.0)</h2>
+          <h2 id="classic-8pin">Classic 8-Pin PCIe Connectors</h2>
+          <p>
+            Standard 8-pin PCIe power cables are officially rated by PCI-SIG to supply up to <strong>150W of power</strong> safely. High-draw graphics cards historically required up to three or four of these cables.
+          </p>
+          <div class="important-warning" style="margin: 1.5rem 0; padding: 1rem; background: rgba(239, 68, 68, 0.05); border-left: 4px solid var(--color-danger); border-radius: 4px; font-size: 0.9rem;">
+            <strong>⚠ Daisy-Chaining Warning:</strong> Never use a single cable with two daisy-chained 8-pin heads for cards drawing more than 225W (such as RTX 3080/3090/rx-7900-xt). Always run separate, individual PCIe cables directly from the PSU modular ports to distribute current safely across multiple copper wire lanes.
+          </div>
+
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — IN-CONTENT SQUARE
+          </div>
+
+          <h2 id="12vhpwr">The 12VHPWR Connector (ATX 3.0)</h2>
           <p>
             Introduced with PCIe 5.0 and ATX 3.0, the 12VHPWR connector delivers up to 600W through a single cable.
-            However, minor installation errors (loose connections) caused ports to melt on heavy loads.
+            However, minor installation errors (loose connections, bending cables too close to the connector casing) caused terminals to slip, increasing electrical resistance. Under 450W+ loads, this caused ports to melt.
           </p>
 
-          <h2>The 12V-2x6 Connector (ATX 3.1)</h2>
+          <h2 id="12v-2x6">The 12V-2x6 Connector (ATX 3.1)</h2>
           <p>
-            ATX 3.1 adopts the 12V-2x6 connector. It fixes the melting issue by shortening the sense/signal pins.
-            If the plug shifts out of its slot, the sense pins lose contact first, signaling the PSU to drop output to 150W,
-            avoiding fire hazards entirely.
+            To address the safety vulnerabilities, PCI-SIG and Intel revised the standard for ATX 3.1, introducing the <strong>12V-2x6 connector</strong> (PCIe CEM 5.1).
+          </p>
+          <p>
+            The 12V-2x6 connector uses shorter sense/signal pins (shortened by 1.25mm) and slightly longer power terminals. If the connector is loose, the sense pins lose electrical contact first, signaling the PSU to limit output to a safe 150W ceiling, eliminating melting hazards.
           </p>
 
-          <div style="margin-top:3rem;">
-            <a href="/psu-calculator" class="btn btn-primary">Check GPU cable requirements</a>
+          <h2 id="connector-table">Connector Sizing Comparison Table</h2>
+          <div style="overflow-x: auto; margin-bottom: 2rem;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary);">
+                  <th style="padding: 0.5rem 0.75rem;">Connector Standard</th>
+                  <th style="padding: 0.5rem 0.75rem;">Pin Count</th>
+                  <th style="padding: 0.5rem 0.75rem;">Max Safe Wattage</th>
+                  <th style="padding: 0.5rem 0.75rem;">Safety Sensor Pins</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">PCIe 6-pin</td>
+                  <td style="padding: 0.75rem;">6 pins</td>
+                  <td style="padding: 0.75rem;">75W</td>
+                  <td style="padding: 0.75rem;">No</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">PCIe 8-pin</td>
+                  <td style="padding: 0.75rem;">8 pins</td>
+                  <td style="padding: 0.75rem;">150W</td>
+                  <td style="padding: 0.75rem;">No</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">12VHPWR (ATX 3.0)</td>
+                  <td style="padding: 0.75rem;">12+4 pins</td>
+                  <td style="padding: 0.75rem;">600W</td>
+                  <td style="padding: 0.75rem;">Yes (Long sidebands)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 0.75rem; font-weight: 700;">12V-2x6 (ATX 3.1)</td>
+                  <td style="padding: 0.75rem;">12+4 pins</td>
+                  <td style="padding: 0.75rem;">600W</td>
+                  <td style="padding: 0.75rem;">Yes (Shortened, safer)</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </main>
 
         <aside class="guide-sidebar">
           <TableOfContents client:load />
           <MethodologyCard />
-          <div class="card">
-            <h3>Calculators</h3>
-            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
-              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
-              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Other Guides</h3>
-            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
-              <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide</a></li>
-              <li><a href="/guides/psu-cable-extensions">Cable Extensions Safety</a></li>
-              <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
-            </ul>
-          </div>
         </aside>
       </div>
     </div>
@@ -95,18 +141,15 @@ const faqSchema = {
 </Layout>
 
 <style>
-.guide-article { padding: 4rem 0; }
-.guide-header { margin-bottom: 3rem; }
-.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
-.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
-.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
-@media (min-width: 1024px) {
-  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
-}
-.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
-.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
-.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
-.important-warning { background: var(--color-surface-raised); border-left: 4px solid var(--color-accent-orange); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
-.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
-.guide-sidebar .card { padding: 1.25rem; }
+  .guide-article { padding: 3rem 0; }
+  .guide-header { margin-bottom: 2.5rem; }
+  .guide-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-top: 0.5rem; }
+  .guide-lead { font-size: 1.2rem; color: var(--color-text-secondary); margin-top: 1rem; line-height: 1.5; }
+  .guide-meta { display: flex; gap: 1rem; align-items: center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+  .guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+  @media (min-width: 1024px) {
+    .guide-layout { grid-template-columns: 3fr 1fr; }
+  }
+  .guide-content h2 { font-size: 1.5rem; font-weight: 800; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
+  .guide-content p { line-height: 1.6; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
 </style>

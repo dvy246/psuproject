@@ -1,0 +1,142 @@
+---
+import Layout from '../layouts/Layout.astro';
+const lastUpdated = "July 14, 2026";
+---
+
+<Layout
+  title="Disclaimer — PSUCheck"
+  description="PSUCheck disclaimer: affiliate relationships, accuracy limitations, liability disclaimers, and non-endorsement policy for psucheck.com."
+  noIndex={false}
+>
+  <div class="legal-page">
+    <div class="legal-hero">
+      <div class="container">
+        <div class="badge badge-safe" style="margin-bottom:1rem;">Legal</div>
+        <h1>Disclaimer</h1>
+        <p class="legal-meta">Last updated: {lastUpdated}</p>
+      </div>
+    </div>
+
+    <div class="legal-body">
+      <div class="container">
+        <div class="legal-content">
+
+          <h2>1. Affiliate Disclosure</h2>
+          <p>
+            PSUCheck participates in affiliate programs including <strong>Amazon Associates</strong>
+            and the <strong>Newegg Affiliate Program</strong>. When you click a product link on this
+            website and make a purchase, PSUCheck may earn a small commission at no additional cost to you.
+          </p>
+          <p>
+            Affiliate relationships do not influence our calculator results, product recommendations, or
+            editorial content. We recommend products based on technical specifications and value — not
+            commission rates. PSUCheck is not a retailer and does not sell products directly.
+          </p>
+
+          <h2>2. Accuracy Disclaimer</h2>
+          <p>
+            All information on PSUCheck, including power supply recommendations, pricing estimates,
+            component specifications, and cost projections, is provided for <strong>informational and
+            educational purposes only</strong>. While we strive for accuracy, we make no guarantees that:
+          </p>
+          <ul>
+            <li>Wattage recommendations are accurate for every specific hardware configuration</li>
+            <li>Pricing information reflects current market prices or availability</li>
+            <li>Component specifications are free from errors or omissions</li>
+            <li>Transient spike estimates match every individual unit's behavior</li>
+          </ul>
+          <p>
+            Power supply requirements vary based on overclocking settings, ambient temperature, PSU age
+            and quality, and specific component manufacturing variances. Our recommendations are
+            starting points — verify requirements with your specific hardware documentation before purchasing.
+          </p>
+
+          <h2>3. No Professional Advice</h2>
+          <p>
+            PSUCheck's tools and content do not constitute professional engineering, electrical,
+            or safety advice. PC building involves working with electrical components that can cause
+            injury or property damage if handled improperly. If you are unsure about any aspect of
+            your build, consult a qualified professional.
+          </p>
+
+          <h2>4. Limitation of Liability</h2>
+          <p>
+            To the maximum extent permitted by applicable law, PSUCheck and its operators shall not
+            be liable for any damages arising from use of this website, including but not limited to:
+          </p>
+          <ul>
+            <li>Hardware damage resulting from an undersized or incompatible power supply</li>
+            <li>Financial losses from purchasing components based on our cost estimates</li>
+            <li>Data loss or system instability resulting from power-related events</li>
+            <li>Reliance on our calculator results for critical or commercial systems</li>
+          </ul>
+
+          <h2>5. External Links</h2>
+          <p>
+            PSUCheck contains links to third-party websites including retailer product pages,
+            manufacturer specifications, and industry resources. We are not responsible for the
+            content, accuracy, or practices of these external sites.
+          </p>
+
+          <h2>6. Changes to This Disclaimer</h2>
+          <p>
+            We may update this Disclaimer from time to time. The "Last updated" date at the top of
+            this page reflects the most recent revision.
+          </p>
+
+          <h2>7. Contact</h2>
+          <p>
+            For questions about this disclaimer, please use our <a href="/contact">Contact page</a>.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+.legal-page {}
+.legal-hero {
+  padding: 4rem 0 2rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.legal-meta {
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+.legal-body {
+  padding: 3rem 0 5rem;
+}
+.legal-content {
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.legal-content h2 {
+  font-size: 1.375rem;
+  margin-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.legal-content p {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  max-width: 70ch;
+}
+.legal-content ul {
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--text-secondary);
+}
+.legal-summary {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+</style>
