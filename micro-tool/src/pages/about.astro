@@ -112,6 +112,65 @@ const schema = {
       </div>
     </section>
 
+    <!-- Sizing & Sizer Calculations Methodology -->
+    <section class="about-section">
+      <div class="container">
+        <h2 style="margin-bottom:1.5rem;">Sizing &amp; Sizer Calculations Methodology</h2>
+        <div style="display:flex; flex-direction:column; gap:1.5rem; max-width:85ch; line-height:1.65; color:var(--text-secondary);">
+          <p>
+            VoltForge uses a rigorous mathematical model derived from Intel's ATX 3.1 specification, Cybenetics Lab load metrics, and real-world reviewer oscilloscope testing. Here is exactly how our sizer calculates your system's power footprint:
+          </p>
+
+          <div class="card" style="padding:1.5rem; background:var(--bg-secondary); border-radius:var(--radius-lg); border:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:1rem;">
+            <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">1. Sustained Base Power Draw</h3>
+            <p style="font-size:0.875rem; margin:0;">
+              We calculate the continuous operating load by summing the sustained thermal design power (TDP) or total board power (TBP) of your components plus baseline infrastructure overheads:
+            </p>
+            <code style="font-family:var(--font-mono); font-size:0.8rem; background:var(--bg-deep); padding:8px 12px; border-radius:6px; color:var(--color-accent-cyan); display:block; overflow-x:auto; white-space:pre;">
+              BaseDraw = CPU_TDP + GPU_TBP + RAM (10W) + NVMe (10W) + Cooling (10W) + Fans (12W) + System Overhead (15W)
+            </code>
+          </div>
+
+          <div class="card" style="padding:1.5rem; background:var(--bg-secondary); border-radius:var(--radius-lg); border:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:1rem;">
+            <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">2. Transient Peak Power Excursions</h3>
+            <p style="font-size:0.875rem; margin:0;">
+              Modern processors and graphics cards pull short microsecond-level power spikes (transients). We model this peak draw by applying GPU-tier multipliers (ranging from 1.2× to 1.7× based on Cybenetics benchmarks) and CPU transient factors:
+            </p>
+            <code style="font-family:var(--font-mono); font-size:0.8rem; background:var(--bg-deep); padding:8px 12px; border-radius:6px; color:var(--color-accent-cyan); display:block; overflow-x:auto; white-space:pre;">
+              TransientPeak = (CPU_TDP × 1.20) + (GPU_TBP × GPU_Transient_Multiplier) + 32W (System Transient Overhead)
+            </code>
+          </div>
+
+          <div class="card" style="padding:1.5rem; background:var(--bg-secondary); border-radius:var(--radius-lg); border:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:1rem;">
+            <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">3. Recommended PSU Sizing</h3>
+            <p style="font-size:0.875rem; margin:0;">
+              To find the safe PSU wattage, we apply a headroom multiplier based on the ATX specification. ATX 3.0/3.1 systems natively handle up to 200% transient spikes, allowing a tighter 20% buffer. Legacy ATX 2.x systems require a 35% buffer to prevent OCP trips:
+            </p>
+            <ul style="font-size:0.875rem; padding-left:1.5rem; margin:0; display:flex; flex-direction:column; gap:0.4rem; color:var(--text-secondary);">
+              <li><strong>ATX 3.0 / 3.1:</strong> Recommended = TransientPeak × 1.20 × (1 + SafetyBuffer/2)</li>
+              <li><strong>ATX 2.x:</strong> Recommended = TransientPeak × 1.35 × (1 + SafetyBuffer/2)</li>
+            </ul>
+            <p style="font-size:0.875rem; margin:0;">
+              We then factor in **capacitor aging degradation** (increasing required wattage by 5% annually starting at year 4) and round up to the nearest standard output tier (e.g. 550W, 650W, 750W, 850W, 1000W, 1200W, 1600W).
+            </p>
+          </div>
+
+          <div class="card" style="padding:1.5rem; background:var(--bg-secondary); border-radius:var(--radius-lg); border:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:1rem;">
+            <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">4. PSU Health Scoring</h3>
+            <p style="font-size:0.875rem; margin:0;">
+              Our PSU Replacement Calculator grades power supply units out of 100 using a composite index:
+            </p>
+            <ul style="font-size:0.875rem; padding-left:1.5rem; margin:0; display:flex; flex-direction:column; gap:0.4rem; color:var(--text-secondary);">
+              <li><strong>Age Weight (50%):</strong> 100% capacity for years 0-3, then drops 5% annually.</li>
+              <li><strong>Headroom Weight (25%):</strong> Evaluates the difference between effective capacity and transient peak draw.</li>
+              <li><strong>Transient Safety Weight (15%):</strong> Confirms if effective capacity stays above transient spikes.</li>
+              <li><strong>Connector Weight (10%):</strong> Grades native 12V-2x6 / 12VHPWR links (100) vs daisy-chain configurations (30-70).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Limitations -->
     <section class="about-section">
       <div class="container">

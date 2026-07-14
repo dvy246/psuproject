@@ -316,8 +316,23 @@ const productSchema = {
         </div>
       </section>
 
+      {/* PSU Finder cross-link */}
+      <div style="margin-top:2.5rem;">
+        <a
+          href={`/psu-for/${gpu.id}`}
+          class="card"
+          style="display:flex;justify-content:space-between;align-items:center;padding:1.25rem;text-decoration:none;border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);transition:border-color 0.15s;"
+        >
+          <div>
+            <div style="font-size:0.6875rem;font-weight:700;color:var(--color-accent-cyan);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;">PSU Finder</div>
+            <span style="font-size:1rem;font-weight:700;color:var(--text-primary);">Best PSU picks for {gpu.name} →</span>
+          </div>
+          <span style="font-size:1.25rem;color:var(--color-accent-cyan);">⚡</span>
+        </a>
+      </div>
+
       {/* Internal quick link */}
-      <div style="margin-top:3rem;text-align:center;">
+      <div style="margin-top:1.5rem;text-align:center;">
         <a href="/psu-calculator" class="btn btn-primary">Run custom PSU analysis on your full PC build →</a>
       </div>
     </div>

@@ -1,0 +1,139 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DesktopVsLaptopTco from '../../components/calculators/DesktopVsLaptopTco';
+
+const pageTitle = "Desktop vs. Laptop Power Consumption & Electricity Cost Calculator — PSUCheck";
+const pageDescription = "Calculate side-by-side power draw differences and 5-year electricity TCO bills between custom desktop PCs and gaming or creator laptops.";
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much electricity does a gaming desktop use compared to a gaming laptop?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A mid-to-high-end gaming desktop (e.g. Ryzen 7 + RTX 5080) draws between 300W and 550W under load. In contrast, a high-end gaming laptop draws between 120W and 230W under load. This means a gaming desktop draws roughly 2.5× to 3× more electricity than a gaming laptop for similar playtimes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does switching to a laptop save money on electricity bills?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. At an average US rate of $0.16/kWh, playing 4 hours/day on a 350W mid-range desktop PC costs roughly $82 annually, while a 180W gaming laptop costs $42 annually. Adding office idle hours can increase annual savings to $50–$150 by switching to a laptop, amounting to $250–$750 over 5 years."
+      }
+    }
+  ]
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "PSU Comparisons", "item": "https://psucheck.com/compare/psu/" },
+    { "@type": "ListItem", "position": 3, "name": "Desktop vs Laptop" }
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schemas}
+>
+  <section class="tco-page" aria-labelledby="tco-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/compare/psu">Comparisons</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Desktop vs Laptop</span>
+      </nav>
+
+      <header class="tco-header">
+        <div class="section-eyebrow">Electricity Cost Sizer</div>
+        <h1 id="tco-heading">
+          Desktop vs. Laptop <span class="gradient-text">Power Comparison</span>
+        </h1>
+        <p class="tco-intro">
+          Analyze electricity consumption differences and calculate your total cost of ownership (TCO) savings by comparing modular desktop builds with portable laptops.
+        </p>
+      </header>
+
+      {/* === PREACT CALCULATOR ISLAND === */}
+      <div style="margin-bottom: 3rem;">
+        <DesktopVsLaptopTco client:load />
+      </div>
+
+      {/* === SUPPORTING SEO ANALYSIS === */}
+      <section class="seo-copy-section" aria-labelledby="analysis-heading">
+        <h2 id="analysis-heading" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom:1rem;">
+          How Power Specifications Differ: Desktop vs. Laptop
+        </h2>
+        <div style="display:grid; grid-template-columns: 1fr; gap: 1.5rem; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.65;">
+          <p>
+            When comparing power consumption, the biggest difference lies in voltage regulation and thermal limitations. A desktop PC utilizes a large, modular power supply (PSU) with cooling fans, allowing components to run at their maximum rated thermal design power (TDP). An NVIDIA GeForce RTX 5080 desktop card runs at a 400W Total Board Power (TBP) budget and can spike higher.
+          </p>
+          <p>
+            Laptops, however, run on tightly constrained thermal envelopes. A mobile "RTX 5080 Laptop" GPU typically runs at a 80W–150W TGP (Total Graphics Power) limit. While mobile chips use similar architecture names, they are severely detuned to run cooler and consume less power. This is why a gaming laptop draws up to 3× less power under load, but also delivers 20% to 40% lower performance compared to its desktop namesake.
+          </p>
+          <h3>Does the Efficiency Premium Matter?</h3>
+          <p>
+            Yes. A gaming desktop's PSU operates at 80 PLUS efficiency curves, wasting 10% to 15% of wall power as heat. Laptops draw power from GaN power adapters and convert it directly to charging circuits, bypassing the multi-rail distribution loss (+12V, +5V, +3.3V) found in desktops. Over years of heavy editing, rendering, or gaming workloads, this efficiency difference creates significant utility bill deltas, as shown in the TCO calculator above.
+          </p>
+        </div>
+      </section>
+
+      {/* === INTERNAL MESH LINKS === */}
+      <section class="links-section" aria-labelledby="links-heading" style="margin-top: 3rem; padding-top: 2rem; border-top:1px solid var(--color-border-subtle);">
+        <h2 id="links-heading" style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom:1rem;">Related Power Calculators</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem;">
+          <a href="/psu-calculator" class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">Custom Desktop PSU Sizer</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">Transient-aware desktop calculator.</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+          <a href="/charger-for" class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">USB-C PD Charger Database</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">Sizing guides for MacBooks & laptops.</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.tco-page {
+  padding: 3rem 0 6rem;
+}
+.tco-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.tco-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.tco-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.card:hover {
+  border-color: var(--color-accent-cyan);
+}
+</style>

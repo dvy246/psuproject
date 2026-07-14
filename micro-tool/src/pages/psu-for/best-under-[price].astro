@@ -1,0 +1,344 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { calculateValueScore } from '../../lib/psu-matcher';
+import type { PsuIndex } from '../../types/components';
+
+import psuData from '../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const prices = [50, 100, 120, 150, 200, 250, 300, 400];
+  return prices.map(price => ({
+    params: { price: price.toString() },
+    props: { targetPrice: price }
+  }));
+}
+
+const { targetPrice } = Astro.props as { targetPrice: number };
+
+const psus = psuData.items as PsuIndex[];
+
+// Filter and rank PSUs under target price
+const matchedPsus = psus
+  .filter(p => p.price <= targetPrice)
+  .map(p => ({
+    psu: p,
+    valueScore: calculateValueScore(p)
+  }))
+  .sort((a, b) => a.valueScore - b.valueScore);
+
+const effLabelMap: Record<string, string> = {
+  '80plus': '80+',
+  bronze: '80+ Bronze',
+  silver: '80+ Silver',
+  gold: '80+ Gold',
+  platinum: '80+ Platinum',
+  titanium: '80+ Titanium'
+};
+
+const pageTitle = `Best PSUs Under $${targetPrice} in 2026 — Rated by Value | PSUCheck`;
+const pageDescription = `Find the best power supply units (PSU) under $${targetPrice} ranked by efficiency, wattage capacity, modularity, and cost-per-watt value scores.`;
+
+// Schema Markup
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `What is the best power supply under $${targetPrice}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": matchedPsus.length > 0
+          ? `Based on our value scoring system (cost per watt adjusted for efficiency and connectors), the best PSU under $${targetPrice} is the ${matchedPsus[0].psu.name} (${matchedPsus[0].psu.wattage}W, rated ${effLabelMap[matchedPsus[0].psu.efficiencyTier]}).`
+          : `We currently do not have power supplies registered under $${targetPrice} in our database.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Should I buy a cheap PSU for a gaming PC?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `Never skimp on the power supply. While staying under $${targetPrice} is fine for budget-to-mid builds, always ensure the unit is certified (80+ Bronze/Gold) and ATX 3.0/3.1 compliant to protect against transient voltage spikes.`
+      }
+    }
+  ]
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "PSU Finder", "item": "https://psucheck.com/psu-for/" },
+    { "@type": "ListItem", "position": 3, "name": `Best Under $${targetPrice}` }
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schemas}
+>
+  <section class="budget-page" aria-labelledby="budget-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span>PSU Finder</span>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Best Under ${targetPrice}</span>
+      </nav>
+
+      <header class="budget-header">
+        <div class="section-eyebrow">Budget Sizing Guide</div>
+        <h1 id="budget-heading">
+          Best PSUs <span class="gradient-text">Under ${targetPrice}</span>
+        </h1>
+        <p class="budget-intro">
+          Top power supply units under ${targetPrice} ranked by wattage, modularity, and price-to-performance value scores.
+        </p>
+      </header>
+
+      {/* === PSU LIST === */}
+      {matchedPsus.length > 0 ? (
+        <div class="psu-list">
+          {matchedPsus.map((item, idx) => (
+            <div class="psu-row card" key={item.psu.id}>
+              <div class="psu-row-main">
+                <div class="psu-rank">#{idx + 1}</div>
+                <div class="psu-info">
+                  <div class="psu-brand">{item.psu.brand}</div>
+                  <h3 class="psu-name">
+                    <a href={`/psu/${item.psu.id}`} style="color:var(--text-primary); text-decoration:none;">
+                      {item.psu.name}
+                    </a>
+                  </h3>
+                  <div class="psu-specs">
+                    <span class="hw-spec">{item.psu.wattage}W</span>
+                    <span class="hw-spec text-capitalize">{effLabelMap[item.psu.efficiencyTier] || item.psu.efficiencyTier}</span>
+                    <span class="hw-spec">ATX {item.psu.atxVersion}</span>
+                    <span class="hw-spec text-capitalize">{item.psu.modular} Modular</span>
+                    {item.psu.has12v2x6 && <span class="hw-spec spec-accent">✓ ATX 3.1 12V-2x6</span>}
+                  </div>
+                </div>
+              </div>
+              <div class="psu-row-meta">
+                <div class="psu-value-badge">
+                  <span class="value-label">Value Score</span>
+                  <span class="value-val">{item.valueScore}</span>
+                </div>
+                <div class="psu-action">
+                  <span class="psu-price">${item.psu.price}</span>
+                  <a href={`/psu/${item.psu.id}`} class="btn btn-secondary btn-sm">Full Specs →</a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="card" style="padding: 2rem; text-align: center;">
+          <p style="color: var(--text-secondary); margin: 0;">
+            No power supplies found under ${targetPrice} in our database. Try expanding your budget range.
+          </p>
+        </div>
+      )}
+
+      {/* === RELATIVE BUDGET BANDS === */}
+      <section class="budget-bands" aria-labelledby="bands-heading" style="margin-top: 3rem;">
+        <h2 id="bands-heading">Browse Other Budget Ranges</h2>
+        <div class="bands-grid">
+          {[50, 100, 120, 150, 200, 250, 300, 400].map(price => (
+            price !== targetPrice && (
+              <a href={`/psu-for/best-under-${price}`} class="band-card card">
+                <span>Best PSUs Under ${price}</span>
+                <span class="arrow">→</span>
+              </a>
+            )
+          ))}
+        </div>
+      </section>
+
+      {/* === RELATED GUIDES === */}
+      <section class="guides-section" aria-labelledby="guides-heading" style="margin-top: 3rem;">
+        <h2>Related PSU Sizing Resources</h2>
+        <div class="bands-grid">
+          <a href="/guides/psu-efficiency-guide" class="band-card card">
+            <span>80+ Efficiency Guide — Gold vs Platinum vs Titanium</span>
+            <span class="arrow">→</span>
+          </a>
+          <a href="/guides/atx-3-1-guide" class="band-card card">
+            <span>ATX 3.1 Guide — What is 12V-2x6?</span>
+            <span class="arrow">→</span>
+          </a>
+          <a href="/guides/psu-sizing-guide" class="band-card card">
+            <span>PSU Sizing Guide — Sizing Your PSU Correctly</span>
+            <span class="arrow">→</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.budget-page {
+  padding: 3rem 0 6rem;
+}
+.budget-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.budget-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.budget-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+
+/* PSU Row card */
+.psu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.psu-row {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+@media (min-width: 768px) {
+  .psu-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+.psu-row-main {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.psu-rank {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-accent-cyan);
+  font-family: var(--font-mono);
+  min-width: 2.5rem;
+}
+.psu-brand {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.psu-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.2rem 0 0.5rem;
+}
+.psu-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.hw-spec {
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+.spec-accent {
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--color-accent-cyan);
+  font-weight: 700;
+}
+.psu-row-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+.psu-value-badge {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  text-align: right;
+}
+.value-label {
+  color: var(--text-tertiary);
+}
+.value-val {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+.psu-action {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.psu-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--color-accent-cyan);
+}
+.btn-sm {
+  font-size: 0.75rem !important;
+  padding: 6px 12px !important;
+  min-height: 32px !important;
+}
+
+/* Budget bands */
+.budget-bands h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.bands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+.band-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.15s, transform 0.1s;
+}
+.band-card:hover {
+  border-color: var(--color-accent-cyan);
+  transform: translateY(-1px);
+}
+.band-card span {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.band-card .arrow {
+  color: var(--color-accent-cyan);
+  font-weight: 700;
+}
+</style>

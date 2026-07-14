@@ -1,0 +1,169 @@
+{
+  "items": [
+    {
+      "id": "macbook-pro-16-m3-max",
+      "name": "Apple MacBook Pro 16\" (M3 Max, 2023)",
+      "brand": "Apple",
+      "batteryCapacityWh": 100,
+      "maxChargeWatts": 140,
+      "protocol": "PD 3.1",
+      "typicalOfficeWatts": 15,
+      "typicalLoadWatts": 90,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-pro-14-m3-pro",
+      "name": "Apple MacBook Pro 14\" (M3 Pro, 2023)",
+      "brand": "Apple",
+      "batteryCapacityWh": 72.4,
+      "maxChargeWatts": 96,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 12,
+      "typicalLoadWatts": 65,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-air-13-m3",
+      "name": "Apple MacBook Air 13\" (M3, 2024)",
+      "brand": "Apple",
+      "batteryCapacityWh": 52.6,
+      "maxChargeWatts": 70,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 7,
+      "typicalLoadWatts": 35,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "dell-xps-15-9530",
+      "name": "Dell XPS 15 (9530, 2023)",
+      "brand": "Dell",
+      "batteryCapacityWh": 86,
+      "maxChargeWatts": 130,
+      "protocol": "Custom USB-C PD",
+      "typicalOfficeWatts": 15,
+      "typicalLoadWatts": 85,
+      "connectorType": "USB-C"
+    },
+    {
+      "id": "dell-xps-13-9320",
+      "name": "Dell XPS 13 Plus (9320)",
+      "brand": "Dell",
+      "batteryCapacityWh": 55,
+      "maxChargeWatts": 60,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 10,
+      "typicalLoadWatts": 45,
+      "connectorType": "USB-C"
+    },
+    {
+      "id": "thinkpad-x1-carbon-g11",
+      "name": "Lenovo ThinkPad X1 Carbon Gen 11",
+      "brand": "Lenovo",
+      "batteryCapacityWh": 57,
+      "maxChargeWatts": 65,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 10,
+      "typicalLoadWatts": 45,
+      "connectorType": "USB-C"
+    },
+    {
+      "id": "thinkpad-t14s-g4",
+      "name": "Lenovo ThinkPad T14s Gen 4",
+      "brand": "Lenovo",
+      "batteryCapacityWh": 57,
+      "maxChargeWatts": 65,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 8,
+      "typicalLoadWatts": 40,
+      "connectorType": "USB-C"
+    },
+    {
+      "id": "asus-rog-zephyrus-g14-2024",
+      "name": "ASUS ROG Zephyrus G14 (2024)",
+      "brand": "ASUS",
+      "batteryCapacityWh": 73,
+      "maxChargeWatts": 100,
+      "protocol": "PD 3.0 (Supports 180W Proprietary)",
+      "typicalOfficeWatts": 15,
+      "typicalLoadWatts": 80,
+      "connectorType": "USB-C / Slim Tip"
+    },
+    {
+      "id": "razer-blade-14-2024",
+      "name": "Razer Blade 14 (2024)",
+      "brand": "Razer",
+      "batteryCapacityWh": 68.1,
+      "maxChargeWatts": 100,
+      "protocol": "PD 3.0 (Supports 230W Proprietary)",
+      "typicalOfficeWatts": 18,
+      "typicalLoadWatts": 85,
+      "connectorType": "USB-C / Proprietary Power Port"
+    },
+    {
+      "id": "hp-spectre-x360-14-2024",
+      "name": "HP Spectre x360 14 (2024)",
+      "brand": "HP",
+      "batteryCapacityWh": 68,
+      "maxChargeWatts": 65,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 9,
+      "typicalLoadWatts": 45,
+      "connectorType": "USB-C"
+    },
+    {
+      "id": "framework-laptop-13-amd",
+      "name": "Framework Laptop 13 (AMD Ryzen 7040)",
+      "brand": "Framework",
+      "batteryCapacityWh": 61,
+      "maxChargeWatts": 80,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 10,
+      "typicalLoadWatts": 55,
+      "connectorType": "USB-C"
+    },
+    {
+      "id": "samsung-galaxy-book4-ultra",
+      "name": "Samsung Galaxy Book4 Ultra (2024)",
+      "brand": "Samsung",
+      "batteryCapacityWh": 76,
+      "maxChargeWatts": 140,
+      "protocol": "PD 3.1",
+      "typicalOfficeWatts": 14,
+      "typicalLoadWatts": 85,
+      "connectorType": "USB-C"
+    },
+    {
+      "id": "microsoft-surface-laptop-6",
+      "name": "Microsoft Surface Laptop 6",
+      "brand": "Microsoft",
+      "batteryCapacityWh": 47,
+      "maxChargeWatts": 65,
+      "protocol": "PD 3.0 / Surface Connect",
+      "typicalOfficeWatts": 8,
+      "typicalLoadWatts": 40,
+      "connectorType": "USB-C / Surface Connect"
+    },
+    {
+      "id": "lg-gram-17-2024",
+      "name": "LG Gram 17\" (2024)",
+      "brand": "LG",
+      "batteryCapacityWh": 77,
+      "maxChargeWatts": 65,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 9,
+      "typicalLoadWatts": 45,
+      "connectorType": "USB-C"
+    },
+    {
+      "id": "asus-zenbook-14-oled-2024",
+      "name": "ASUS Zenbook 14 OLED (2024)",
+      "brand": "ASUS",
+      "batteryCapacityWh": 75,
+      "maxChargeWatts": 65,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 8,
+      "typicalLoadWatts": 40,
+      "connectorType": "USB-C"
+    }
+  ]
+}

@@ -100,11 +100,11 @@ export function DiagnosticsHUD({ cpu, gpu, ram, storage, cooling, psu, fans, psu
         {effectiveWattage !== null && (
           <div
             class="hud-note"
-            style="margin-bottom:0.5rem;padding:6px 10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:6px;"
+            style="margin-bottom:0.5rem;padding:6px 10px;background:var(--color-warning-bg);border:1px solid var(--color-warning-border);border-radius:6px;"
             aria-live="polite"
           >
-            <strong style="color:#f59e0b;">⚠ Age derated:</strong>{' '}
-            <span class="tabular" style="color:#f59e0b;">{psuWattage}W rated → ~{effectiveWattage}W effective</span>
+            <strong style="color:var(--color-warning);">⚠ Age derated:</strong>{' '}
+            <span class="tabular" style="color:var(--color-warning);">{psuWattage}W rated → ~{effectiveWattage}W effective</span>
             <span style="font-size:0.7rem;color:var(--color-text-tertiary);display:block;margin-top:2px;">
               Capacitor aging: {psuAgeYears}yr PSU loses ~{Math.round((1 - effectiveWattage/psuWattage)*100)}% capacity
             </span>

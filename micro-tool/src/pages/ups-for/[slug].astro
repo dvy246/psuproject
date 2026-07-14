@@ -1,0 +1,210 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sizeUpsForPc, UPS_PRODUCTS } from '../../lib/electrical';
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+
+interface CpuItem {
+  id: string;
+  name: string;
+  tdpSustained: number;
+  tdp: number;
+}
+
+interface GpuItem {
+  id: string;
+  name: string;
+  tbp: number;
+  minPsuWattage: number;
+}
+
+export async function getStaticPaths() {
+  const targetGpus = [
+    "rtx-5090", "rtx-5080", "rtx-5070-ti", "rtx-5070",
+    "rtx-4090", "rtx-4080-super", "rtx-4070-super",
+    "rx-9070-xt", "rx-7900-xtx"
+  ];
+  const targetCpus = [
+    "ryzen-7-9800x3d", "ryzen-9-9950x", "ryzen-7-7800x3d",
+    "core-ultra-9-285k", "core-i9-14900k", "core-i7-14700k",
+    "ryzen-5-7600"
+  ];
+
+  const gpus = (gpuData.items as GpuItem[]).filter(g => targetGpus.includes(g.id));
+  const cpus = (cpuData.items as CpuItem[]).filter(c => targetCpus.includes(c.id));
+
+  const paths = [];
+  for (const gpu of gpus) {
+    for (const cpu of cpus) {
+      paths.push({
+        params: { slug: `${gpu.id}-with-${cpu.id}` },
+        props: { gpu, cpu }
+      });
+    }
+  }
+  return paths;
+}
+
+const { gpu, cpu } = Astro.props as { gpu: GpuItem; cpu: CpuItem };
+
+// Gaming load estimate: GPU TBP + typical CPU gaming load (estimated at 60% of tdpSustained) + 50W peripherals
+const pcGamingWatts = Math.round(gpu.tbp + (cpu.tdpSustained * 0.6) + 50);
+const pcIdleWatts = 75; // Average desktop idle
+const monitorWatts = 40; // Typical gaming monitor
+
+const result = sizeUpsForPc(pcGamingWatts, pcIdleWatts, monitorWatts, true);
+
+const pageTitle = `Best UPS for ${gpu.name} & ${cpu.name} — Sizer Guide`;
+const pageDescription = `Find the best battery backup (UPS) rating for a system with ${gpu.name} and ${cpu.name}. Analyze VA requirements, pure sine wave needs, and runtimes.`;
+
+// Schema Markup
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `What size battery backup do I need for ${gpu.name} and ${cpu.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `A PC with an ${gpu.name} (${gpu.tbp}W TBP) and ${cpu.name} draws approximately ${pcGamingWatts}W under load. When combined with a standard monitor, you require a UPS rated for at least ${result.requiredWatts}W and ${result.requiredVa}VA. A 1500VA / 1000W Pure Sine Wave UPS is highly recommended.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Can I use a simulated sine wave UPS with this CPU and GPU setup?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `It is not recommended. Modern power supplies paired with high-end parts like ${gpu.name} utilize Active Power Factor Correction (PFC). Simulated sine wave UPS units switch to stepped batteries, causing Active PFC systems to trip and shut down instantly. A Pure Sine Wave UPS is required.`
+      }
+    }
+  ]
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "UPS Calculator", "item": "https://psucheck.com/compare/ups-calculator" },
+    { "@type": "ListItem", "position": 3, "name": `${gpu.name} + ${cpu.name}` }
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schemas}
+>
+  <section class="ups-combo-page" aria-labelledby="combo-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/compare/ups-calculator">UPS Calculator</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{gpu.name} + {cpu.name}</span>
+      </nav>
+
+      <header class="combo-header" style="margin-top: 1.5rem; margin-bottom: 2.5rem;">
+        <div class="section-eyebrow">Programmatic Sizing Guide</div>
+        <h1 id="combo-heading" style="font-size: clamp(1.6rem, 4vw, 2.5rem); font-weight: 850; line-height: 1.2; letter-spacing: -0.02em;">
+          UPS Battery Backup for <span class="gradient-text">{gpu.name} & {cpu.name}</span>
+        </h1>
+        <p class="combo-intro" style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1rem;">
+          Calculated power draw configurations, minimum Volt-Ampere (VA) limits, and backup runtime estimations.
+        </p>
+      </header>
+
+      {/* === METRICS OVERVIEW === */}
+      <div style="display:grid; grid-template-columns:1fr; gap:1.5rem; margin-bottom:2.5rem;" class="pricing-deck">
+        <div class="card" style="padding:1.5rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); display:flex; flex-direction:column; gap:1.25rem;">
+          <h2 style="font-size:1.25rem; font-weight:700; color:var(--text-primary); margin:0;">System Sizing Profile</h2>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem;">
+            <div>
+              <span style="font-size:0.75rem; color:var(--text-tertiary); display:block; text-transform:uppercase; font-weight:700;">GPU Peak Draw</span>
+              <strong style="font-size:1.35rem; color:var(--text-primary); font-family:var(--font-mono);">{gpu.tbp}W</strong>
+            </div>
+            <div>
+              <span style="font-size:0.75rem; color:var(--text-tertiary); display:block; text-transform:uppercase; font-weight:700;">CPU Game Draw (Est.)</span>
+              <strong style="font-size:1.35rem; color:var(--text-primary); font-family:var(--font-mono);">{Math.round(cpu.tdpSustained * 0.6)}W</strong>
+            </div>
+            <div>
+              <span style="font-size:0.75rem; color:var(--text-tertiary); display:block; text-transform:uppercase; font-weight:700;">Combined System Load</span>
+              <strong style="font-size:1.35rem; color:var(--color-accent-cyan); font-family:var(--font-mono);">{result.requiredWatts}W</strong>
+            </div>
+            <div>
+              <span style="font-size:0.75rem; color:var(--text-tertiary); display:block; text-transform:uppercase; font-weight:700;">Minimum UPS Capacity</span>
+              <strong style="font-size:1.35rem; color:var(--color-accent-cyan); font-family:var(--font-mono);">{result.requiredVa}VA</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* === COMPATIBILITY BREAKDOWN === */}
+      <section style="margin-bottom: 3rem;">
+        <h2 style="font-size:1.35rem; font-weight:800; color:var(--text-primary); margin-bottom:1rem;">UPS Compatibility Matrix</h2>
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          {result.verdicts.map(v => {
+            const ups = UPS_PRODUCTS.find(u => u.id === v.upsId);
+            if (!ups) return null;
+
+            return (
+              <div key={v.upsId} style="padding:1.25rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); background:var(--color-bg-secondary); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                <div style="display:flex; flex-direction:column; gap:0.2rem; flex:1; min-width:250px;">
+                  <div style="font-size:0.6875rem; font-weight:700; color:var(--text-tertiary); text-transform:uppercase;">{ups.brand} · {ups.waveType}</div>
+                  <h3 style="font-size:1.05rem; font-weight:700; color:var(--text-primary); margin:0;">{ups.name}</h3>
+                  <p style="font-size:0.8125rem; color:var(--text-secondary); margin:0.35rem 0 0; line-height:1.5;">{v.notes}</p>
+                </div>
+                <div style="text-align:right; display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end; min-width:140px;">
+                  <span class={`badge badge-${v.isCompatible ? 'safe' : 'danger'}`} style="font-size:0.8125rem;">
+                    {v.isCompatible ? '✓ Fully Compatible' : '✕ Incompatible'}
+                  </span>
+                  {v.isCompatible && (
+                    <span style="font-size:0.75rem; color:var(--text-secondary);">
+                      Gaming: <strong>{v.runtimeGamingMins} mins</strong> | Office: <strong>{v.runtimeOfficeMins} mins</strong>
+                    </span>
+                  )}
+                  <a href={ups.affiliateUrl} target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding:6px 12px; font-size:0.75rem;">View on Amazon →</a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* === TECHNICAL AUDIT ADVICE === */}
+      <section style="padding:2rem; background:var(--color-surface); border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); margin-bottom:3rem;">
+        <h2 style="font-size:1.25rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem; display:flex; align-items:center; gap:8px;">
+          <span style="color:var(--color-accent-cyan);">⚡</span> Why Waveform Matching is Critical
+        </h2>
+        <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.65; margin:0;">
+          The {gpu.name} paired with a {cpu.name} requires a high-quality Power Supply Unit (PSU) with Active Power Factor Correction (PFC) rated for at least {gpu.minPsuWattage}W. If you pair this system with a budget simulated sine wave UPS, the PSU's Active PFC circuit will detect the stepped electrical waveform when switching to battery power, interpret it as a short-circuit fault, and shut down instantly. To guarantee your PC stays powered during a blackout, you <strong>must select a Pure Sine Wave UPS</strong> with a rated wattage exceeding {result.requiredWatts}W.
+        </p>
+      </section>
+
+      {/* === BACKWARD LINKS === */}
+      <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+        <a href="/compare/ups-calculator" class="btn btn-primary">UPS Capacity Workspace →</a>
+        <a href="/compare/breaker-calculator" class="btn btn-secondary">Room Breaker Planner →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.ups-combo-page {
+  padding: 3rem 0 6rem;
+}
+.btn-sm {
+  font-size: 0.75rem !important;
+  padding: 6px 12px !important;
+  min-height: 32px !important;
+}
+.card:hover {
+  border-color: var(--color-accent-cyan);
+}
+</style>

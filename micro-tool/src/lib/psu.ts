@@ -17,6 +17,10 @@ import type {
   StorageConfig,
   CoolingConfig,
   OcConfig,
+  PsuHealthScore,
+  HealthTimelinePoint,
+  ReplacementVerdict,
+  PsuIndex,
 } from '../types/components';
 
 import transientData from '../data/derived/transient-constants.json';
@@ -321,5 +325,117 @@ export function runFullPsuAnalysis(
     atxCompliance,
     cableAudit,
     perRail,
+  };
+}
+
+export function calculatePsuHealthScore(
+  psuAgeYears: number,
+  psuWattage: number,
+  transientPeak: number,
+  hasNative12v2x6: boolean,
+  connectorSafe: boolean
+): PsuHealthScore {
+  // Effective Capacity
+  const capAgingFactor = psuAgeYears <= 3 ? 1 : Math.max(0.4, 1 - (psuAgeYears - 3) * 0.05);
+  const effectiveCapacity = Math.round(psuWattage * capAgingFactor);
+
+  // Age score: 100 at 0-3yr, -5/yr after year 3
+  const ageScore = Math.max(0, 100 - Math.max(0, psuAgeYears - 3) * 5);
+
+  // Headroom score: psu capacity minus transient peak
+  const headroom = effectiveCapacity - transientPeak;
+  const headroomScore = headroom <= 0 ? 0 : Math.min(100, Math.round((headroom / psuWattage) * 200));
+
+  // Transient safety score: if PSU can handle transient peak, 100, otherwise 20
+  const transientScore = headroom > 0 ? 100 : 20;
+
+  // Connector score: native 12V-2x6 = 100, daisy-chain safe = 70, otherwise 30
+  const connScore = hasNative12v2x6 ? 100 : connectorSafe ? 70 : 30;
+
+  // Weighted composite
+  const finalScore = Math.round(
+    ageScore * 0.50 +
+    headroomScore * 0.25 +
+    transientScore * 0.15 +
+    connScore * 0.10
+  );
+
+  // Timeline points
+  const timeline: HealthTimelinePoint[] = [
+    { year: 0,  effectiveWatts: psuWattage,       score: 100, label: 'New' },
+    { year: 3,  effectiveWatts: psuWattage,       score: 100, label: 'Healthy' },
+    { year: 5,  effectiveWatts: Math.round(psuWattage * 0.90), score: 80,  label: 'Degrading' },
+    { year: 8,  effectiveWatts: Math.round(psuWattage * 0.75), score: 55,  label: 'Warning' },
+    { year: 10, effectiveWatts: Math.round(psuWattage * 0.65), score: 35,  label: 'Critical' },
+    { year: 15, effectiveWatts: Math.round(psuWattage * 0.40), score: 10,  label: 'EOL' },
+  ];
+
+  // Narrative generator
+  let narrative = '';
+  if (finalScore >= 70) {
+    narrative = `Your PSU is in good health (Score: ${finalScore}/100). It retains ~${Math.round(capAgingFactor * 100)}% of its original capacity with stable voltage rails.`;
+  } else if (finalScore >= 40) {
+    narrative = `Your PSU is showing warning signs (Score: ${finalScore}/100). Age-related capacitor dry-out has degraded capacity to ~${effectiveCapacity}W. Plan for an upgrade within 12 months.`;
+  } else {
+    narrative = `Your PSU is in a critical safety zone (Score: ${finalScore}/100). Capacity is degraded to ~${effectiveCapacity}W, failing to safely buffer your system's ${Math.round(transientPeak)}W peak spikes. Replace immediately.`;
+  }
+
+  return {
+    score: finalScore,
+    rating: finalScore >= 70 ? 'good' : finalScore >= 40 ? 'warning' : 'danger',
+    degradationPercent: Math.round((1 - capAgingFactor) * 100),
+    effectiveCapacity,
+    timeline,
+    narrative
+  };
+}
+
+export function generateReplacementVerdict(
+  score: number,
+  psuWattage: number,
+  effectiveCapacity: number,
+  transientPeak: number,
+  psuAgeYears: number,
+  recommendedWattage: number,
+  psusIndex: PsuIndex[]
+): ReplacementVerdict {
+  const headroom = effectiveCapacity - transientPeak;
+
+  let action: 'replace' | 'plan' | 'keep' = 'keep';
+  let urgency: 'immediate' | 'within-year' | 'none' = 'none';
+  let reason = '';
+
+  if (score < 40 || headroom <= 0) {
+    action = 'replace';
+    urgency = 'immediate';
+    reason = `Your PSU is critically degraded or lacks the capacity to handle your build's ${Math.round(transientPeak)}W transient spikes, risking instant system resets or component damage.`;
+  } else if (score < 65 || (headroom < 100 && psuAgeYears > 5)) {
+    action = 'plan';
+    urgency = 'within-year';
+    reason = `Your PSU is degraded (~${Math.round(effectiveCapacity)}W effective capacity) and operates with slim headroom under peak loads. Plan to replace within 12 months.`;
+  } else {
+    action = 'keep';
+    urgency = 'none';
+    reason = `Your PSU is healthy, holds adequate headroom (~${Math.round(headroom)}W above peak draw), and does not require immediate replacement.`;
+  }
+
+  const estimatedLifespan = Math.max(0, 10 - psuAgeYears);
+
+  const recommendedPsus = psusIndex
+    .filter(p => p.wattage >= recommendedWattage && p.wattage <= recommendedWattage + 150)
+    .sort((a, b) => a.price - b.price)
+    .slice(0, 3);
+
+  const costBenefit = recommendedWattage > psuWattage
+    ? `Upgrading to a modern Gold/Platinum PSU resolves peak OCP shutdowns and improves overall load efficiency.`
+    : `A new 80+ Gold PSU will operate at its peak efficiency zone (~50% load), saving an estimated $15-$30 annually in electricity bills.`;
+
+  return {
+    action,
+    reason,
+    urgency,
+    estimatedLifespan,
+    recommendedPsus,
+    costBenefit
   };
 }

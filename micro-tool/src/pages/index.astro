@@ -72,10 +72,10 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      "name": "How much does it cost to build a gaming PC in 2025?",
+      "name": "How much does it cost to build a gaming PC in 2026?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A budget gaming PC in 2025 costs $500–$800 (Ryzen 5/GTX-class GPU). A mid-range build with RTX 5060 Ti or RX 9070 costs $900–$1,400. A high-end gaming PC with RTX 5080/5090 costs $2,000–$4,000+. These estimates include CPU, GPU, RAM, storage, motherboard, PSU, and case, but not monitor or peripherals."
+        "text": "A budget gaming PC in 2026 costs $500–$800 (Ryzen 5/GTX-class GPU). A mid-range build with RTX 5060 Ti or RX 9070 costs $900–$1,400. A high-end gaming PC with RTX 5080/5090 costs $2,000–$4,000+. These estimates include CPU, GPU, RAM, storage, motherboard, PSU, and case, but not monitor or peripherals."
       }
     },
     {
@@ -643,6 +643,73 @@ const faqSchema = {
     </div>
   </section>
 
+  <!-- ===== PSU FINDER / MATCHMAKER SECTION ===== -->
+  <section style="padding: 4rem 0 3rem; background: var(--color-surface); border-top: 1px solid var(--color-border-subtle); border-bottom: 1px solid var(--color-border-subtle);">
+    <div class="container">
+      <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom: 2rem;">
+        <div class="section-eyebrow">PSU Finder</div>
+        <h2 style="font-size:clamp(1.5rem, 3.5vw, 2.25rem); font-weight:850; line-height:1.2; letter-spacing:-0.02em;">
+          GPU Sizing Matchmaker & Budget Guides
+        </h2>
+        <p style="color:var(--text-secondary); max-width:65ch; margin-top:0.25rem;">
+          Find unbiased, transient-tested power supply recommendations based on your exact graphics card or target budget tier.
+        </p>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr; gap: 2rem;">
+        {/* GPU Matchmaker Row */}
+        <div>
+          <h3 style="font-size:1.1rem; font-weight:700; margin-bottom: 1rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <span>⚡</span> GPU Sizing Guides
+          </h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem;">
+            <a href="/psu-for/rtx-5090" class="oracle-pill" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); text-decoration:none; background:var(--color-bg); font-weight:600;">
+              <span>Best PSU for RTX 5090</span>
+              <span style="color:var(--color-accent-cyan);">→</span>
+            </a>
+            <a href="/psu-for/rtx-5080" class="oracle-pill" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); text-decoration:none; background:var(--color-bg); font-weight:600;">
+              <span>Best PSU for RTX 5080</span>
+              <span style="color:var(--color-accent-cyan);">→</span>
+            </a>
+            <a href="/psu-for/rtx-5070" class="oracle-pill" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); text-decoration:none; background:var(--color-bg); font-weight:600;">
+              <span>Best PSU for RTX 5070</span>
+              <span style="color:var(--color-accent-cyan);">→</span>
+            </a>
+            <a href="/psu-for/rtx-4090" class="oracle-pill" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); text-decoration:none; background:var(--color-bg); font-weight:600;">
+              <span>Best PSU for RTX 4090</span>
+              <span style="color:var(--color-accent-cyan);">→</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Budget Matchmaker Row */}
+        <div>
+          <h3 style="font-size:1.1rem; font-weight:700; margin-bottom: 1rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <span>💰</span> Budget PSU Guides
+          </h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem;">
+            <a href="/psu-for/best-under-100" class="oracle-pill" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); text-decoration:none; background:var(--color-bg); font-weight:600;">
+              <span>Best PSUs Under $100</span>
+              <span style="color:var(--color-accent-cyan);">→</span>
+            </a>
+            <a href="/psu-for/best-under-150" class="oracle-pill" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); text-decoration:none; background:var(--color-bg); font-weight:600;">
+              <span>Best PSUs Under $150</span>
+              <span style="color:var(--color-accent-cyan);">→</span>
+            </a>
+            <a href="/psu-for/best-under-200" class="oracle-pill" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); text-decoration:none; background:var(--color-bg); font-weight:600;">
+              <span>Best PSUs Under $200</span>
+              <span style="color:var(--color-accent-cyan);">→</span>
+            </a>
+            <a href="/psu-for/best-under-300" class="oracle-pill" style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); text-decoration:none; background:var(--color-bg); font-weight:600;">
+              <span>Best PSUs Under $300</span>
+              <span style="color:var(--color-accent-cyan);">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== FAQ SECTION (FAQPage schema content) ===== -->
   <section class="faq-section" aria-labelledby="faq-heading">
     <div class="container">
@@ -712,11 +779,11 @@ const faqSchema = {
 
         <details class="faq-item" id="faq-7">
           <summary class="faq-question">
-            How much does it cost to build a gaming PC in 2025?
+            How much does it cost to build a gaming PC in 2026?
             <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
           </summary>
           <div class="faq-answer">
-            <p>A budget gaming PC in 2025 costs $500–$800 (Ryzen 5 / budget GPU). A mid-range build with RTX&nbsp;5060&nbsp;Ti or RX&nbsp;9070 costs $900–$1,400. A high-end gaming PC with RTX&nbsp;5080/5090 costs $2,000–$4,000+. These estimates include CPU, GPU, RAM, storage, motherboard, PSU, and case — but not monitor or peripherals.</p>
+            <p>A budget gaming PC in 2026 costs $500–$800 (Ryzen 5 / budget GPU). A mid-range build with RTX&nbsp;5060&nbsp;Ti or RX&nbsp;9070 costs $900–$1,400. A high-end gaming PC with RTX&nbsp;5080/5090 costs $2,000–$4,000+. These estimates include CPU, GPU, RAM, storage, motherboard, PSU, and case — but not monitor or peripherals.</p>
           </div>
         </details>
 

@@ -263,3 +263,30 @@ export interface WaveformData {
   isDanger: boolean;
   timeAxisMs: number;
 }
+
+// --- PSU Health & Replacement Types ---
+
+export interface PsuHealthScore {
+  score: number;                    // 0-100
+  rating: 'good' | 'warning' | 'danger';
+  degradationPercent: number;       // e.g. 20 (for "20% degraded")
+  effectiveCapacity: number;        // aged wattage (e.g. 850W → 680W)
+  timeline: HealthTimelinePoint[];
+  narrative: string;                // contextual explanation
+}
+
+export interface HealthTimelinePoint {
+  year: number;
+  effectiveWatts: number;
+  score: number;
+  label: string;                    // "New", "Healthy", "Degrading", "End of Life"
+}
+
+export interface ReplacementVerdict {
+  action: 'replace' | 'plan' | 'keep';
+  reason: string;
+  urgency: 'immediate' | 'within-year' | 'none';
+  estimatedLifespan: number;        // years remaining
+  recommendedPsus: PsuIndex[];      // from database
+  costBenefit: string;              // e.g. "$120 now saves $45/yr in electricity"
+}

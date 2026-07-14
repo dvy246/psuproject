@@ -1,0 +1,148 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BreakerAuditor from '../../components/calculators/BreakerAuditor';
+
+const pageTitle = "Circuit Breaker Calculator & Room Load Planner — PSUCheck";
+const pageDescription = "Analyze household electrical circuit loads. Check if running your gaming PC alongside room appliances (AC, space heaters) will overload 15A or 20A breakers.";
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why does my gaming PC trip the circuit breaker?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The most common reason is circuit overload. A typical US bedroom circuit has a 15-amp breaker, which limits total power draw to 1800W. If your gaming PC draws 600W under load, and you run a space heater (1500W) or a portable AC (900W) on the same circuit, the combined current triggers a breaker trip."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is AFCI nuisance tripping for PCs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Modern homes use Arc Fault Circuit Interrupters (AFCIs) for fire safety. Some high-end PC power supplies create high-frequency electrical line noise. Overly sensitive AFCI breakers can misinterpret this noise as an arc and trip, even if the total wattage is well below the circuit's maximum rating."
+      }
+    }
+  ]
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Comparisons", "item": "https://psucheck.com/compare/psu" },
+    { "@type": "ListItem", "position": 3, "name": "Circuit Breaker Planner" }
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schemas}
+>
+  <section class="breaker-page" aria-labelledby="breaker-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/compare/psu">Comparisons</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Circuit Breaker Planner</span>
+      </nav>
+
+      <header class="breaker-header">
+        <div class="section-eyebrow">Electrical Safety Planner</div>
+        <h1 id="breaker-heading">
+          Circuit Breaker <span class="gradient-text">Load Calculator</span>
+        </h1>
+        <p class="breaker-intro">
+          Check if running your high-end gaming PC alongside air conditioners, space heaters, and room lighting will trip your bedroom circuit breaker.
+        </p>
+      </header>
+
+      {/* === PREACT BREAKER AUDITOR ISLAND === */}
+      <div style="margin-bottom: 3rem;">
+        <BreakerAuditor client:load />
+      </div>
+
+      {/* === SUPPORTING SEO ANALYSIS === */}
+      <section class="seo-copy-section" aria-labelledby="safety-heading">
+        <h2 id="safety-heading" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom:1rem;">
+          How Household Circuit Load Math Works
+        </h2>
+        <div style="display:grid; grid-template-columns: 1fr; gap: 1.5rem; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.65;">
+          <p>
+            In the United States, standard residential electrical outlets operate at a nominal **120 Volts (V)**. Most bedrooms and home offices are wired to a shared circuit controlled by a **15 Ampere (A)** breaker in the electrical panel, though some modern or utility rooms utilize **20 Ampere (A)** circuits.
+          </p>
+          <p>
+            The mathematical formula to determine capacity is:
+            <code style="display:block; padding:12px; background:var(--color-bg-secondary); border-radius:4px; margin: 10px 0; color:var(--color-accent-cyan); font-family:var(--font-mono); text-align:center;">Watts = Volts × Amps</code>
+            This means a standard 15A bedroom circuit can supply a maximum theoretical capacity of **1,800 Watts (W)**. However, the National Electrical Code (NEC) recommends maintaining continuous loads below **80% of capacity** (1,440 Watts) to prevent thermal expansion in the breaker, which leads to trips.
+          </p>
+          <h3>Why High-End PCs Trigger Tripping</h3>
+          <p>
+            An enthusiast gaming rig featuring an Intel i9-14900K and an NVIDIA RTX 5090 or RTX 4090 can pull between **700W and 950W** from the wall under full system load (gaming, rendering, 3D modeling). During sub-millisecond transient power spikes, this draw can increase temporarily. 
+          </p>
+          <p>
+            If you plug this PC into the same room circuit as a portable space heater (which typically draws a constant **1,500W**) or a portable AC unit (drawing **900W–1,200W**), the combined draw instantly exceeds 2,200W—forcing the circuit breaker's thermal trigger to trip and cut power to protect your home's copper wiring from overheating.
+          </p>
+          <div style="margin-top:1rem; padding:1.25rem; border-radius:var(--radius-lg); border:1px solid #ef4444; background:rgba(239, 68, 68, 0.03);">
+            <strong style="color:#ef4444; display:block; margin-bottom:0.25rem;">⚠️ Physical Electrical Disclaimer</strong>
+            This calculator provides mathematical estimations based on device specifications. It does not replace physical inspections by a licensed professional. If your breakers trip repeatedly under normal loads, or you notice warm outlets, immediately unplug high-draw devices and contact a qualified, licensed electrician.
+          </div>
+        </div>
+      </section>
+
+      {/* === RELATED INFRASTRUCTURE LINKS === */}
+      <section class="links-section" aria-labelledby="links-heading" style="margin-top: 3rem; padding-top: 2rem; border-top:1px solid var(--color-border-subtle);">
+        <h2 id="links-heading" style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom:1rem;">Related Sizing Calculators</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem;">
+          <a href="/compare/ups-calculator" class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">UPS Sizer & Runtime Calculator</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">Size battery backup for Active PFC.</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+          <a href="/psu-calculator" class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">Custom Desktop PSU Sizer</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">Calculate component transient peaks.</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.breaker-page {
+  padding: 3rem 0 6rem;
+}
+.breaker-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.breaker-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.breaker-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.card:hover {
+  border-color: var(--color-accent-cyan);
+}
+</style>

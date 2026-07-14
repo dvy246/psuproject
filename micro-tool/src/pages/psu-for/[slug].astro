@@ -1,0 +1,878 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {
+  runMatchmakerAnalysis,
+  matchPsusForGpu,
+  tierPsuRecommendations,
+  generateUniqueInsight,
+  runUpgradeCheck,
+} from '../../lib/psu-matcher';
+import type { CpuIndex, GpuIndex, PsuIndex } from '../../types/components';
+
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+import psuData from '../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const gpus = gpuData.items as GpuIndex[];
+  const cpus = cpuData.items as CpuIndex[];
+  const psus = psuData.items as PsuIndex[];
+  const wattages = [550, 650, 750, 850, 1000];
+
+  const paths: any[] = [];
+
+  // --- Type A: GPU-specific hub pages ---
+  for (const gpu of gpus) {
+    paths.push({
+      params: { slug: gpu.id },
+      props: { type: 'gpu-hub', gpu, cpu: null, psuWattage: 0 }
+    });
+  }
+
+  // --- Type B: GPU+CPU combo pages ---
+  const topGpus = gpus.filter(g => g.confirmed).slice(0, 10);
+  const topCpus = cpus.filter(c => c.confirmed).slice(0, 10);
+
+  for (const gpu of topGpus) {
+    for (const cpu of topCpus) {
+      paths.push({
+        params: { slug: `${gpu.id}-with-${cpu.id}` },
+        props: { type: 'gpu-cpu-combo', gpu, cpu, psuWattage: 0 }
+      });
+    }
+  }
+
+  // --- Type C: Upgrade checker pages ---
+  for (const gpu of gpus) {
+    for (const wattage of wattages) {
+      paths.push({
+        params: { slug: `can-${wattage}w-run-${gpu.id}` },
+        props: { type: 'upgrade-check', gpu, cpu: null, psuWattage: wattage }
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { type, gpu, cpu, psuWattage } = Astro.props as {
+  type: 'gpu-hub' | 'gpu-cpu-combo' | 'upgrade-check';
+  gpu: GpuIndex;
+  cpu: CpuIndex | null;
+  psuWattage: number;
+};
+
+const psus = psuData.items as PsuIndex[];
+const gpus = gpuData.items as GpuIndex[];
+
+// Run analysis
+const analysis = runMatchmakerAnalysis(gpu, cpu);
+const insight = generateUniqueInsight(gpu, cpu, analysis);
+
+// PSU recommendations (for hub and combo pages)
+const rankedPsus = matchPsusForGpu(gpu, cpu, psus);
+const tiered = tierPsuRecommendations(rankedPsus);
+
+// Upgrade check (for upgrade-check pages)
+const upgradeResult = type === 'upgrade-check'
+  ? runUpgradeCheck(psuWattage, gpu, cpu)
+  : null;
+
+// Related oracle pages
+const oracleWattages = [550, 650, 750, 850, 1000];
+const oracleLinks = oracleWattages.map(w => ({
+  href: `/oracle/is-${w}w-enough-for-${gpu.id}`,
+  label: `Is ${w}W enough for ${gpu.name}?`,
+  active: type === 'upgrade-check' && psuWattage === w,
+}));
+
+// Related GPU comparisons — same tier GPUs
+const relatedGpus = gpus
+  .filter(g => g.id !== gpu.id && g.tier === gpu.tier)
+  .slice(0, 4);
+
+// Generate titles/descriptions based on page type
+let pageTitle = '';
+let pageDescription = '';
+let h1Text = '';
+
+if (type === 'gpu-hub') {
+  pageTitle = `Best PSU for ${gpu.name} in 2026 — Transient-Safe Picks | PSUCheck`;
+  pageDescription = `Find the best power supply for ${gpu.name} (${gpu.tbp}W TBP). Our transient-aware calculator accounts for ${gpu.tier}-tier power spikes and recommends PSUs across budget, mid-range, and premium tiers.`;
+  h1Text = `Best PSU for the ${gpu.name}`;
+} else if (type === 'gpu-cpu-combo') {
+  pageTitle = `Best PSU for ${gpu.name} + ${cpu!.name} Build — 2026 Picks | PSUCheck`;
+  pageDescription = `Exact PSU requirements for ${gpu.name} (${gpu.tbp}W) + ${cpu!.name} (${cpu!.tdpSustained}W). Our transient-aware calculator recommends ${analysis.recommendedWattage}W minimum. See our top picks.`;
+  h1Text = `Best PSU for ${gpu.name} + ${cpu!.name}`;
+} else {
+  const v = upgradeResult!;
+  const verdictWord = v.verdict === 'yes' ? 'Yes' : v.verdict === 'borderline' ? 'Borderline' : 'No';
+  pageTitle = `Can a ${psuWattage}W PSU Run ${gpu.name}? — ${verdictWord} | PSUCheck`;
+  pageDescription = `Find out if your ${psuWattage}W power supply can safely handle ${gpu.name}. Our transient spike analysis gives a ${verdictWord} verdict with ${v.headroom}W headroom.`;
+  h1Text = `Can a ${psuWattage}W PSU Run the ${gpu.name}?`;
+}
+
+// Tier labels
+const tierLabel: Record<string, string> = {
+  budget: 'Budget', mid: 'Mid-Range', high: 'High-End', ultra: 'Ultra', halo: 'Halo / Flagship'
+};
+
+// Efficiency label
+const effLabel: Record<string, string> = {
+  '80plus': '80+', bronze: '80+ Bronze', silver: '80+ Silver',
+  gold: '80+ Gold', platinum: '80+ Platinum', titanium: '80+ Titanium'
+};
+
+// Verdict styling
+const verdictColor = (v: string) => v === 'yes' ? 'safe' : v === 'borderline' ? 'warning' : 'danger';
+const verdictIcon = (v: string) => v === 'yes' ? '✓' : v === 'borderline' ? '⚠' : '✕';
+
+// Schema markup
+const faqEntries: any[] = [];
+
+if (type === 'gpu-hub') {
+  faqEntries.push(
+    { q: `What PSU do I need for ${gpu.name}?`, a: `We recommend at least a ${analysis.recommendedWattage}W ATX 3.1 PSU for the ${gpu.name}. The GPU has a ${gpu.tbp}W TBP with ${gpu.tier}-tier transient spikes reaching ${analysis.transientPeak}W.` },
+    { q: `Is ATX 3.1 required for ${gpu.name}?`, a: gpu.connectorType === '12v-2x6' ? `Yes. The ${gpu.name} uses a 12V-2x6 connector which requires an ATX 3.1 PSU with a native cable.` : `Not strictly required, but ATX 3.1 PSUs handle transient spikes better. The ${gpu.name} uses ${gpu.connectorType} connectors.` },
+    { q: `What happens if my PSU is too weak for ${gpu.name}?`, a: `An underpowered PSU may trigger Over Current Protection (OCP) during transient power spikes, causing sudden shutdowns. Sustained operation near capacity also accelerates capacitor aging.` },
+    { q: `How much headroom should I have for ${gpu.name}?`, a: `We recommend at least 20% headroom above the transient peak for ATX 3.1 PSUs, or 35% for older ATX 2.x units. For the ${gpu.name}, that means ${analysis.recommendedWattage}W minimum (ATX 3.1) or ${analysis.recommendedWattageAtx2x}W (ATX 2.x).` },
+  );
+} else if (type === 'upgrade-check') {
+  const v = upgradeResult!;
+  faqEntries.push(
+    { q: `Can a ${psuWattage}W PSU run ${gpu.name}?`, a: `${v.verdict === 'yes' ? 'Yes' : v.verdict === 'borderline' ? 'It is borderline' : 'No'}. The ${gpu.name} system produces transient spikes up to ${v.analysis.transientPeak}W. A ${psuWattage}W PSU provides ${v.headroom}W of headroom (${v.headroomPercent}%).` },
+    { q: `What PSU wattage does ${gpu.name} actually need?`, a: `We recommend at least ${v.analysis.recommendedWattage}W for ATX 3.1 or ${v.analysis.recommendedWattageAtx2x}W for ATX 2.x power supplies.` },
+  );
+}
+
+const faqSchema = faqEntries.length > 0 ? {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqEntries.map(f => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  }))
+} : null;
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "PSU Finder", "item": "https://psucheck.com/psu-for/" },
+    { "@type": "ListItem", "position": 3, "name": h1Text },
+  ]
+};
+
+const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schemas}
+>
+  <section class="matchmaker-page" aria-labelledby="matchmaker-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/psu-calculator">PSU Calculator</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{type === 'gpu-hub' ? gpu.name : type === 'gpu-cpu-combo' ? `${gpu.name} + ${cpu!.name}` : `${psuWattage}W + ${gpu.name}`}</span>
+      </nav>
+
+      <header class="matchmaker-header">
+        <h1 id="matchmaker-heading">
+          {type === 'upgrade-check' ? (
+            <>Can a <span class="gradient-text">{psuWattage}W PSU</span> Run the <span class="gradient-text">{gpu.name}</span>?</>
+          ) : type === 'gpu-cpu-combo' ? (
+            <>Best PSU for <span class="gradient-text">{gpu.name}</span> + <span class="gradient-text">{cpu!.name}</span></>
+          ) : (
+            <>Best PSU for the <span class="gradient-text">{gpu.name}</span></>
+          )}
+        </h1>
+        <p class="matchmaker-intro">{insight}</p>
+      </header>
+
+      {/* === UPGRADE CHECK VERDICT === */}
+      {type === 'upgrade-check' && upgradeResult && (
+        <div class={`verdict-panel verdict-panel--${verdictColor(upgradeResult.verdict)}`} role="region" aria-label="Upgrade compatibility verdict">
+          <div class="verdict-header-row">
+            <span class="verdict-label">Compatibility Verdict</span>
+            <span class={`badge badge-${verdictColor(upgradeResult.verdict)}`}>
+              {verdictIcon(upgradeResult.verdict)} {upgradeResult.verdict === 'yes' ? 'YES — SAFE' : upgradeResult.verdict === 'borderline' ? 'BORDERLINE' : 'NO — INSUFFICIENT'}
+            </span>
+          </div>
+          <div class="verdict-description">
+            {upgradeResult.verdict === 'yes' ? (
+              <p>
+                <strong>Yes</strong>, your <strong>{psuWattage}W PSU</strong> can safely power the {gpu.name}.
+                The system's transient peak is <strong>{upgradeResult.analysis.transientPeak}W</strong>,
+                leaving <strong>{upgradeResult.headroom}W ({upgradeResult.headroomPercent}%)</strong> of headroom.
+              </p>
+            ) : upgradeResult.verdict === 'borderline' ? (
+              <p>
+                Your <strong>{psuWattage}W PSU</strong> is borderline for the {gpu.name}.
+                Transient spikes reach <strong>{upgradeResult.analysis.transientPeak}W</strong> — only
+                <strong>{upgradeResult.headroom}W</strong> of margin. You may experience OCP trips under heavy load.
+              </p>
+            ) : (
+              <p>
+                <strong>No</strong>, a <strong>{psuWattage}W PSU</strong> cannot safely power the {gpu.name}.
+                The transient peak of <strong>{upgradeResult.analysis.transientPeak}W</strong> exceeds your PSU's
+                capacity. You need at least a <strong>{upgradeResult.analysis.recommendedWattage}W</strong> PSU.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* === POWER METRICS GRID === */}
+      <div class="matchmaker-grid">
+        <div class="card card-dark">
+          <h2>Power Analysis</h2>
+          <div class="stat-stack">
+            <div class="stat-row">
+              <span class="stat-label">GPU TBP</span>
+              <span class="stat-val tabular">{gpu.tbp}W</span>
+            </div>
+            {cpu && (
+              <div class="stat-row">
+                <span class="stat-label">CPU Sustained Power</span>
+                <span class="stat-val tabular">{cpu.tdpSustained}W</span>
+              </div>
+            )}
+            <div class="stat-row">
+              <span class="stat-label">System Base Draw</span>
+              <span class="stat-val tabular">{analysis.baseDraw}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Transient Peak ({gpu.transientMultiplier}× GPU spike)</span>
+              <span class="stat-val tabular" style="color: var(--color-warning-text);">{analysis.transientPeak}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Recommended PSU (ATX 3.1)</span>
+              <span class="stat-val tabular" style="color:var(--color-accent-cyan);font-weight:800;">{analysis.recommendedWattage}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Recommended PSU (ATX 2.x)</span>
+              <span class="stat-val tabular">{analysis.recommendedWattageAtx2x}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">If PSU is 5+ Years Old</span>
+              <span class="stat-val tabular" style="color: var(--color-warning-text);">{analysis.agedRecommendation5yr}W</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-dark">
+          <h2>Hardware Details</h2>
+          <div class="stat-stack">
+            <div class="stat-row">
+              <span class="stat-label">GPU Tier</span>
+              <span class="stat-val">{tierLabel[gpu.tier] || gpu.tier}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Transient Multiplier</span>
+              <span class="stat-val tabular">{gpu.transientMultiplier}×</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Power Connector</span>
+              <span class="stat-val">{gpu.connectorType === '12v-2x6' ? '12V-2x6 (ATX 3.1)' : gpu.connectorType}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Binding Constraint</span>
+              <span class="stat-val" style={`color: ${analysis.bindingConstraint === 'gpu' ? 'var(--color-accent-cyan)' : analysis.bindingConstraint === 'cpu' ? 'var(--color-accent-purple)' : 'var(--text-secondary)'};`}>
+                {analysis.bindingConstraint === 'gpu' ? 'GPU' : analysis.bindingConstraint === 'cpu' ? 'CPU' : 'Balanced'}
+              </span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Cable Safety</span>
+              <span class={`stat-val ${analysis.cableAudit.severity === 'warning' ? 'text-warning' : ''}`}>
+                {analysis.cableAudit.severity === 'safe' ? '✓ Standard' : '⚠ Special Requirements'}
+              </span>
+            </div>
+            {cpu && (
+              <div class="stat-row">
+                <span class="stat-label">CPU Socket</span>
+                <span class="stat-val">{cpu.socket}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* === CABLE AUDIT WARNING === */}
+      {analysis.cableAudit.severity === 'warning' && (
+        <div class="cable-warning" role="alert">
+          <h3>⚡ Cable Safety Alert</h3>
+          <p>{analysis.cableAudit.message}</p>
+        </div>
+      )}
+
+      {/* === TRANSIENT BAR VISUALIZATION === */}
+      <div class="card card-dark" style="margin-top: 1.5rem;">
+        <h2>Power Draw Visualization</h2>
+        <p style="font-size:0.8125rem;color:var(--text-secondary);margin:0.5rem 0 1.5rem;">
+          How your system's power draw compares to PSU capacity thresholds:
+        </p>
+        <div class="transient-bar-container">
+          <div class="transient-bar-track">
+            <div class="transient-bar-base" style={`width: ${Math.min(100, (analysis.baseDraw / (analysis.recommendedWattage * 1.2)) * 100)}%`}>
+              <span class="bar-label">Base: {analysis.baseDraw}W</span>
+            </div>
+            <div class="transient-bar-peak" style={`width: ${Math.min(100, (analysis.transientPeak / (analysis.recommendedWattage * 1.2)) * 100)}%`}>
+              <span class="bar-label">Peak: {analysis.transientPeak}W</span>
+            </div>
+            <div class="transient-bar-recommended" style={`left: ${Math.min(100, (analysis.recommendedWattage / (analysis.recommendedWattage * 1.2)) * 100)}%`}>
+              <span class="bar-marker-label">Rec: {analysis.recommendedWattage}W</span>
+            </div>
+          </div>
+          <div class="bar-legend">
+            <span class="legend-item"><span class="legend-dot base"></span> Sustained Draw</span>
+            <span class="legend-item"><span class="legend-dot peak"></span> Transient Spike</span>
+            <span class="legend-item"><span class="legend-dot rec"></span> Min Recommended</span>
+          </div>
+        </div>
+      </div>
+
+      {/* === PSU RECOMMENDATIONS === */}
+      {(type === 'gpu-hub' || type === 'gpu-cpu-combo' || (type === 'upgrade-check' && upgradeResult && upgradeResult.verdict !== 'yes')) && (
+        <section class="rec-section" aria-labelledby="psu-recs-heading" style="margin-top: 3rem;">
+          <h2 id="psu-recs-heading">
+            {type === 'upgrade-check' ? 'Recommended PSU Upgrades' : `Top PSU Picks for ${gpu.name}`}
+          </h2>
+          <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:2rem;">
+            All recommendations meet the minimum {analysis.recommendedWattage}W threshold with transient spike safety margin.
+          </p>
+
+          {/* Premium Tier */}
+          {tiered.premium.length > 0 && (
+            <div class="tier-section">
+              <h3 class="tier-label tier-premium">🏆 Premium Picks</h3>
+              <div class="psu-cards-grid">
+                {tiered.premium.map(r => (
+                  <div class="psu-match-card" key={r.psu.id}>
+                    <div class="psu-card-header">
+                      <span class="psu-brand">{r.psu.brand}</span>
+                      {r.connectorMatch && r.atx31 && <span class="psu-badge badge-safe">✓ Best Match</span>}
+                    </div>
+                    <h4 class="psu-name">{r.psu.name}</h4>
+                    <div class="psu-specs">
+                      <span class="hw-spec">{r.psu.wattage}W</span>
+                      <span class="hw-spec text-capitalize">{effLabel[r.psu.efficiencyTier] || r.psu.efficiencyTier}</span>
+                      <span class="hw-spec">ATX {r.psu.atxVersion}</span>
+                      {r.psu.has12v2x6 && <span class="hw-spec">12V-2x6</span>}
+                    </div>
+                    <div class="psu-stats">
+                      <span>Headroom: <strong>{r.headroom}W ({r.headroomPercent}%)</strong></span>
+                      {r.psu.cybeneticsRating && <span>Cybenetics: <strong>{r.psu.cybeneticsRating}</strong></span>}
+                    </div>
+                    <div class="psu-card-footer">
+                      <span class="psu-price">${r.psu.price}</span>
+                      <a href={`/compare/psu/${r.psu.id}-vs-${tiered.premium[0]?.psu.id !== r.psu.id ? tiered.premium[0]?.psu.id : (tiered.mid[0]?.psu.id || '')}`} class="btn btn-secondary btn-sm">Compare →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Mid Tier */}
+          {tiered.mid.length > 0 && (
+            <div class="tier-section">
+              <h3 class="tier-label tier-mid">⚡ Mid-Range Value</h3>
+              <div class="psu-cards-grid">
+                {tiered.mid.map(r => (
+                  <div class="psu-match-card" key={r.psu.id}>
+                    <div class="psu-card-header">
+                      <span class="psu-brand">{r.psu.brand}</span>
+                      {r.connectorMatch && r.atx31 && <span class="psu-badge badge-safe">✓ Compatible</span>}
+                    </div>
+                    <h4 class="psu-name">{r.psu.name}</h4>
+                    <div class="psu-specs">
+                      <span class="hw-spec">{r.psu.wattage}W</span>
+                      <span class="hw-spec text-capitalize">{effLabel[r.psu.efficiencyTier] || r.psu.efficiencyTier}</span>
+                      <span class="hw-spec">ATX {r.psu.atxVersion}</span>
+                      {r.psu.has12v2x6 && <span class="hw-spec">12V-2x6</span>}
+                    </div>
+                    <div class="psu-stats">
+                      <span>Headroom: <strong>{r.headroom}W ({r.headroomPercent}%)</strong></span>
+                    </div>
+                    <div class="psu-card-footer">
+                      <span class="psu-price">${r.psu.price}</span>
+                      <a href="/psu-calculator" class="btn btn-secondary btn-sm">Full Analysis →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Budget Tier */}
+          {tiered.budget.length > 0 && (
+            <div class="tier-section">
+              <h3 class="tier-label tier-budget">💰 Budget Options</h3>
+              <div class="psu-cards-grid">
+                {tiered.budget.map(r => (
+                  <div class="psu-match-card" key={r.psu.id}>
+                    <div class="psu-card-header">
+                      <span class="psu-brand">{r.psu.brand}</span>
+                      {!r.connectorMatch && <span class="psu-badge badge-warning">⚠ Adapter Needed</span>}
+                    </div>
+                    <h4 class="psu-name">{r.psu.name}</h4>
+                    <div class="psu-specs">
+                      <span class="hw-spec">{r.psu.wattage}W</span>
+                      <span class="hw-spec text-capitalize">{effLabel[r.psu.efficiencyTier] || r.psu.efficiencyTier}</span>
+                      <span class="hw-spec">ATX {r.psu.atxVersion}</span>
+                    </div>
+                    <div class="psu-stats">
+                      <span>Headroom: <strong>{r.headroom}W ({r.headroomPercent}%)</strong></span>
+                    </div>
+                    <div class="psu-card-footer">
+                      <span class="psu-price">${r.psu.price}</span>
+                      <a href="/psu-calculator" class="btn btn-secondary btn-sm">Full Analysis →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* === ORACLE CROSS-LINKS === */}
+      <section class="cross-links" aria-labelledby="oracle-links-heading" style="margin-top:3rem;">
+        <h2 id="oracle-links-heading">Wattage Compatibility Guides for {gpu.name}</h2>
+        <div class="oracle-link-grid">
+          {oracleLinks.map(link => (
+            <a href={link.href} class={`oracle-link-card card ${link.active ? 'card-active' : ''}`} key={link.href}>
+              <span class="oracle-link-label">{link.label}</span>
+              <span class="oracle-link-arrow">→</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* === RELATED GPUs === */}
+      {relatedGpus.length > 0 && (
+        <section class="cross-links" aria-labelledby="related-gpus-heading" style="margin-top:2.5rem;">
+          <h2 id="related-gpus-heading">PSU Guides for Similar GPUs</h2>
+          <div class="oracle-link-grid">
+            {relatedGpus.map(g => (
+              <a href={`/psu-for/${g.id}`} class="oracle-link-card card" key={g.id}>
+                <span class="oracle-link-label">Best PSU for {g.name}</span>
+                <span class="oracle-link-arrow">→</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* === RELATED GUIDES === */}
+      <section class="cross-links" aria-labelledby="guides-heading" style="margin-top:2.5rem;">
+        <h2 id="guides-heading">Related Guides</h2>
+        <div class="oracle-link-grid">
+          {gpu.connectorType === '12v-2x6' && (
+            <a href="/guides/atx-3-1-guide" class="oracle-link-card card">
+              <span class="oracle-link-label">ATX 3.1 Guide — Why It Matters for {gpu.name}</span>
+              <span class="oracle-link-arrow">→</span>
+            </a>
+          )}
+          <a href="/guides/gpu-power-connectors" class="oracle-link-card card">
+            <span class="oracle-link-label">GPU Power Connectors — Safe Cabling Guide</span>
+            <span class="oracle-link-arrow">→</span>
+          </a>
+          <a href="/guides/psu-sizing-guide" class="oracle-link-card card">
+            <span class="oracle-link-label">PSU Sizing Guide — How Much Wattage Do You Need?</span>
+            <span class="oracle-link-arrow">→</span>
+          </a>
+          <a href="/guides/psu-efficiency-guide" class="oracle-link-card card">
+            <span class="oracle-link-label">80+ Efficiency Guide — Bronze vs Gold vs Platinum</span>
+            <span class="oracle-link-arrow">→</span>
+          </a>
+        </div>
+      </section>
+
+      {/* === FAQ SECTION === */}
+      {faqEntries.length > 0 && (
+        <section class="faq-section" aria-labelledby="faq-heading" style="margin-top:3rem;">
+          <h2 id="faq-heading">Frequently Asked Questions</h2>
+          {faqEntries.map(f => (
+            <div class="faq-item" key={f.q}>
+              <h3>{f.q}</h3>
+              <p>{f.a}</p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* === CTA === */}
+      <div style="margin-top:3rem;text-align:center;">
+        <a href="/psu-calculator" class="btn btn-primary">Run Full Custom PSU Analysis on Your Build →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.matchmaker-page {
+  padding: 3rem 0 6rem;
+}
+.matchmaker-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.matchmaker-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  max-width: 30ch;
+}
+.matchmaker-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  line-height: 1.6;
+  max-width: 65ch;
+}
+/* Verdict panel — reuse oracle pattern */
+.verdict-panel {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  margin-bottom: 2.5rem;
+}
+.verdict-panel--safe { border-color: var(--color-safe-border); background: var(--color-safe-bg); }
+.verdict-panel--warning { border-color: var(--color-warning-border); background: var(--color-warning-bg); }
+.verdict-panel--danger { border-color: var(--color-danger-border); background: var(--color-danger-bg); }
+.verdict-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.verdict-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+}
+.verdict-description p {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.verdict-description strong { color: var(--text-primary); }
+
+/* Grid */
+.matchmaker-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .matchmaker-grid { grid-template-columns: 1fr 1fr; }
+}
+.card-dark {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+}
+.card-dark h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.stat-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+.stat-label { color: var(--text-secondary); }
+.stat-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.text-warning { color: var(--color-warning-text, #f59e0b) !important; }
+
+/* Cable warning */
+.cable-warning {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-warning-border);
+  background: var(--color-warning-bg);
+}
+.cable-warning h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+.cable-warning p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Transient bar */
+.transient-bar-container { margin-top: 0.5rem; }
+.transient-bar-track {
+  position: relative;
+  height: 48px;
+  background: var(--color-bg-tertiary, #1e1e24);
+  border-radius: var(--radius-md, 8px);
+  overflow: visible;
+}
+.transient-bar-base {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  height: 18px;
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  border-radius: 4px 0 0 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  z-index: 2;
+}
+.transient-bar-peak {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  height: 18px;
+  background: linear-gradient(90deg, #f97316, #ef4444);
+  border-radius: 4px 0 0 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  z-index: 1;
+}
+.bar-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.transient-bar-recommended {
+  position: absolute;
+  top: 0;
+  bottom: -24px;
+  width: 2px;
+  background: var(--color-accent-cyan, #00e5ff);
+  z-index: 3;
+}
+.bar-marker-label {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--color-accent-cyan, #00e5ff);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+.bar-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.legend-dot.base { background: #38bdf8; }
+.legend-dot.peak { background: #ef4444; }
+.legend-dot.rec { background: var(--color-accent-cyan, #00e5ff); }
+
+/* PSU Recommendation cards */
+.rec-section h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.tier-section {
+  margin-top: 1.5rem;
+}
+.tier-label {
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--color-border-subtle);
+  margin-bottom: 1rem;
+}
+.tier-premium { color: var(--color-accent-purple, #a78bfa); border-color: var(--color-accent-purple, #a78bfa); }
+.tier-mid { color: var(--color-accent-cyan, #00e5ff); border-color: var(--color-accent-cyan, #00e5ff); }
+.tier-budget { color: #22c55e; border-color: #22c55e; }
+
+.psu-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.psu-match-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.15s;
+}
+.psu-match-card:hover {
+  border-color: var(--color-accent-cyan, #00e5ff);
+}
+.psu-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.psu-brand {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.psu-badge {
+  font-size: 0.625rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.badge-safe { background: rgba(34,197,94,0.15); color: #22c55e; }
+.badge-warning { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.psu-name {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.35rem 0 0.5rem;
+}
+.psu-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 0.75rem;
+}
+.psu-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+.psu-stats strong { color: var(--text-primary); }
+.psu-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+.psu-price {
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--color-accent-cyan, #00e5ff);
+  font-size: 1.125rem;
+}
+.btn-sm {
+  font-size: 0.75rem !important;
+  padding: 6px 12px !important;
+  min-height: 32px !important;
+}
+
+/* Cross-links */
+.cross-links h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.oracle-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+.oracle-link-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.15s, transform 0.1s;
+}
+.oracle-link-card:hover {
+  border-color: var(--color-accent-cyan);
+  transform: translateY(-1px);
+}
+.oracle-link-card.card-active {
+  border-color: var(--color-accent-cyan);
+  background: rgba(0, 229, 255, 0.05);
+}
+.oracle-link-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.oracle-link-arrow {
+  font-size: 1rem;
+  color: var(--color-accent-cyan);
+  font-weight: 700;
+}
+
+/* FAQ */
+.faq-section h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+.faq-item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.faq-item:last-child { border-bottom: none; }
+.faq-item h3 {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+.faq-item p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+</style>

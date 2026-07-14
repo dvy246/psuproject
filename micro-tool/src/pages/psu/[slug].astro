@@ -1,0 +1,462 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { gpuCompatibilityTable, calculateValueScore } from '../../lib/psu-matcher';
+import type { GpuIndex, PsuIndex } from '../../types/components';
+
+import gpuData from '../../data/index/gpus.index.json';
+import psuData from '../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const psus = psuData.items as PsuIndex[];
+  return psus.map(psu => ({
+    params: { slug: psu.id },
+    props: { psu }
+  }));
+}
+
+const { psu } = Astro.props as { psu: PsuIndex };
+
+const gpus = gpuData.items as GpuIndex[];
+const psus = psuData.items as PsuIndex[];
+
+// Compatibility rows
+const compatRows = gpuCompatibilityTable(psu, gpus);
+
+// Sort compatible GPUs: safe first, then borderline, then insufficient
+const sortedCompat = [...compatRows].sort((a, b) => {
+  const rank = { yes: 0, borderline: 1, no: 2 };
+  return rank[a.verdict] - rank[b.verdict];
+});
+
+// Find comparison pairings: same wattage or adjacent wattage, different brand
+const comparisonPairings = psus
+  .filter(p => p.id !== psu.id && p.brand !== psu.brand && Math.abs(p.wattage - psu.wattage) <= 150)
+  .slice(0, 4);
+
+// Calculations for TCO
+const hoursPerYear = 4 * 365; // standard usage: 4 hours per day
+const avgGamingDrawW = 400; // typical mid-high gaming load
+const kwhRate = 0.16; // average US electricity rate
+
+const effMap: Record<string, number> = {
+  '80plus': 0.80,
+  bronze: 0.82,
+  silver: 0.85,
+  gold: 0.87,
+  platinum: 0.89,
+  titanium: 0.92
+};
+
+const eff = effMap[psu.efficiencyTier] ?? 0.85;
+const annualElectricityKwh = (avgGamingDrawW / eff / 1000) * hoursPerYear;
+const annualCost = Math.round(annualElectricityKwh * kwhRate);
+const fiveYearCost = annualCost * 5;
+const totalCostOfOwnership = psu.price + fiveYearCost;
+
+// Value Score
+const valueScore = calculateValueScore(psu);
+
+// Schema Markup
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Is the ${psu.name} compatible with the RTX 5090?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": psu.wattage >= 1000 && psu.has12v2x6
+          ? `Yes, the ${psu.name} is fully compatible with the RTX 5090. It provides ${psu.wattage}W capacity and has a native 12V-2x6 cable required for ATX 3.1 GPUs.`
+          : `No. The RTX 5090 requires a minimum 1000W PSU and a native 12V-2x6 connector for safe ATX 3.1 compliance. The ${psu.name} has ${psu.wattage}W and does ${psu.has12v2x6 ? '' : 'not'} support native 12V-2x6.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `What is the 5-year running cost of the ${psu.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `Based on 4 hours/day gaming at a 400W load ($${kwhRate}/kWh), the ${psu.name} costs approximately $${annualCost} annually in electricity, totaling $${fiveYearCost} over 5 years. Total cost of ownership (purchase + 5-year electricity) is estimated at $${totalCostOfOwnership}.`
+      }
+    }
+  ]
+};
+
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": psu.name,
+  "description": `Detailed specifications, GPU compatibility, TCO analytics, and comparison guide for the ${psu.name} (${psu.wattage}W, ${psu.efficiencyTier} efficiency, ATX ${psu.atxVersion}).`,
+  "offers": {
+    "@type": "Offer",
+    "price": psu.price.toString(),
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "PSU Database", "item": "https://psucheck.com/psu/" },
+    { "@type": "ListItem", "position": 3, "name": psu.name }
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema, productSchema];
+
+const effLabelMap: Record<string, string> = {
+  '80plus': '80 Plus White',
+  bronze: '80 Plus Bronze',
+  silver: '80 Plus Silver',
+  gold: '80 Plus Gold',
+  platinum: '80 Plus Platinum',
+  titanium: '80 Plus Titanium'
+};
+---
+
+<Layout
+  title={`${psu.name} Review & GPU Compatibility Database — PSUCheck`}
+  description={`Detailed specs for ${psu.name} (${psu.wattage}W, ${effLabelMap[psu.efficiencyTier]} efficiency). View 5-year electricity TCO projections and check full compatibility tables for 25+ GPUs.`}
+  schema={schemas}
+>
+  <section class="psu-page" aria-labelledby="psu-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span>PSU Database</span>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{psu.name}</span>
+      </nav>
+
+      <header class="psu-header">
+        <div class="section-eyebrow">{psu.brand} Power Supply Unit</div>
+        <h1 id="psu-heading">
+          <span class="gradient-text">{psu.name}</span>
+        </h1>
+        <p class="psu-intro">
+          Full technical specs, GPU compatibility audit, and multi-year cost of ownership calculator.
+        </p>
+      </header>
+
+      {/* === SPEC GRID === */}
+      <div class="psu-spec-grid">
+        <div class="card card-dark">
+          <h2>Technical Specifications</h2>
+          <div class="stat-stack">
+            <div class="stat-row">
+              <span class="stat-label">Brand</span>
+              <span class="stat-val">{psu.brand}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Model Name</span>
+              <span class="stat-val">{psu.name}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Wattage Rating</span>
+              <span class="stat-val tabular">{psu.wattage}W</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Efficiency Certification</span>
+              <span class="stat-val text-capitalize">{effLabelMap[psu.efficiencyTier] || psu.efficiencyTier}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">ATX Compliance Version</span>
+              <span class="stat-val">ATX {psu.atxVersion}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Modularity</span>
+              <span class="stat-val text-capitalize">{psu.modular} Modular</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Native 12V-2x6 Cable</span>
+              <span class="stat-val">{psu.has12v2x6 ? '✅ Yes (ATX 3.1)' : '❌ No'}</span>
+            </div>
+            {psu.cybeneticsRating && (
+              <div class="stat-row">
+                <span class="stat-label">Cybenetics Certified Rating</span>
+                <span class="stat-val">{psu.cybeneticsRating}</span>
+              </div>
+            )}
+            <div class="stat-row">
+              <span class="stat-label">Retail Price</span>
+              <span class="stat-val tabular" style="color:var(--color-accent-cyan); font-weight: 800;">${psu.price}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* === TCO ANALYSIS === */}
+        <div class="card card-dark">
+          <h2>Total Cost of Ownership (5-Year)</h2>
+          <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-top: 0.25rem;">
+            Estimated electricity and purchase costs based on 4hr/day gaming at a 400W load:
+          </p>
+          <div class="stat-stack" style="margin-top:1.25rem;">
+            <div class="stat-row">
+              <span class="stat-label">Purchase Price</span>
+              <span class="stat-val tabular">${psu.price}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Estimated Efficiency Rate</span>
+              <span class="stat-val tabular">{Math.round(eff * 100)}%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Annual Power Bill (PC portion)</span>
+              <span class="stat-val tabular">${annualCost} / yr</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">5-Year Electricity Bill</span>
+              <span class="stat-val tabular">${fiveYearCost}</span>
+            </div>
+            <div class="stat-row" style="border-bottom: none; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 2px solid var(--color-border-subtle);">
+              <span class="stat-label" style="font-weight: 800; color: var(--text-primary);">Total 5-Year Cost (TCO)</span>
+              <span class="stat-val tabular" style="color:var(--color-accent-cyan); font-weight: 800; font-size:1.15rem;">${totalCostOfOwnership}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Value Score (Lower is Better)</span>
+              <span class="stat-val tabular">{valueScore}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* === GPU COMPATIBILITY TABLE === */}
+      <section class="compat-section" aria-labelledby="compat-heading" style="margin-top: 3rem;">
+        <h2 id="compat-heading">GPU Compatibility Database</h2>
+        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+          How this power supply compares to transient requirements and cable standards for major graphics cards:
+        </p>
+
+        <div style="overflow-x:auto;">
+          <table class="compat-table" aria-label="GPU Compatibility table">
+            <thead>
+              <tr>
+                <th scope="col">Graphics Card</th>
+                <th scope="col" class="text-center">Verdict</th>
+                <th scope="col" class="text-right">TBP</th>
+                <th scope="col" class="text-right">Transient Peak</th>
+                <th scope="col" class="text-right">Rec. Wattage</th>
+                <th scope="col" class="text-center">PSU Headroom</th>
+                <th scope="col" class="text-center">Connector Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedCompat.map(row => {
+                const verdictClass = row.verdict === 'yes' ? 'safe' : row.verdict === 'borderline' ? 'warning' : 'danger';
+                const verdictLabel = row.verdict === 'yes' ? 'Safe' : row.verdict === 'borderline' ? 'Borderline' : 'Insufficient';
+                const connectorMatch = row.gpu.connectorType === '12v-2x6' ? psu.has12v2x6 : true;
+
+                return (
+                  <tr key={row.gpu.id}>
+                    <th scope="row">
+                      <a href={`/psu-for/${row.gpu.id}`} style="color: var(--text-primary); font-weight: 700; text-decoration: none;">
+                        {row.gpu.name}
+                      </a>
+                    </th>
+                    <td class="text-center">
+                      <span class={`badge badge-${verdictClass}`} style="font-size:0.75rem;">
+                        {verdictLabel}
+                      </span>
+                    </td>
+                    <td class="text-right tabular">{row.gpu.tbp}W</td>
+                    <td class="text-right tabular" style="color: var(--color-warning-text);">{row.transientPeak}W</td>
+                    <td class="text-right tabular">{row.recommendedWattage}W</td>
+                    <td class={`text-center tabular ${row.headroom < 0 ? 'text-danger' : 'text-success'}`} style="font-weight: 700;">
+                      {row.headroom >= 0 ? `+${row.headroom}W` : `${row.headroom}W`}
+                    </td>
+                    <td class="text-center">
+                      {connectorMatch ? (
+                        <span style="color:#22c55e;">✓ Compatible</span>
+                      ) : (
+                        <span style="color:#f59e0b; font-size:0.8125rem;">⚠ Needs Adapter</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* === COMPARISONS SECTION === */}
+      {comparisonPairings.length > 0 && (
+        <section class="comparisons-section" aria-labelledby="comparisons-heading" style="margin-top: 3rem;">
+          <h2 id="comparisons-heading">Compare {psu.name} with Alternatives</h2>
+          <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+            See side-by-side spec sheets and TCO comparisons for similar wattage power supplies:
+          </p>
+          <div class="comparisons-grid">
+            {comparisonPairings.map(pair => (
+              <a href={`/compare/psu/${psu.id}-vs-${pair.id}`} class="comparison-card card" key={pair.id}>
+                <span class="comparison-label">{psu.name} vs {pair.name}</span>
+                <span class="comparison-arrow">→</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* === RELATED GUIDES === */}
+      <section class="related-guides-section" aria-labelledby="guides-heading" style="margin-top: 3rem;">
+        <h2 id="guides-heading">Related Power Supply Guides</h2>
+        <div class="comparisons-grid">
+          <a href="/guides/psu-efficiency-guide" class="comparison-card card">
+            <span class="comparison-label">80+ Efficiency Guide — Gold vs Platinum vs Titanium</span>
+            <span class="comparison-arrow">→</span>
+          </a>
+          <a href="/guides/atx-3-1-guide" class="comparison-card card">
+            <span class="comparison-label">ATX 3.1 Guide — What is 12V-2x6?</span>
+            <span class="comparison-arrow">→</span>
+          </a>
+          <a href="/guides/psu-sizing-guide" class="comparison-card card">
+            <span class="comparison-label">PSU Sizing Guide — Sizing Your PSU Correctly</span>
+            <span class="comparison-arrow">→</span>
+          </a>
+          <a href="/guides/single-vs-multi-rail" class="comparison-card card">
+            <span class="comparison-label">Single vs Multi-Rail — Which is Better?</span>
+            <span class="comparison-arrow">→</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.psu-page {
+  padding: 3rem 0 6rem;
+}
+.psu-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.psu-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.psu-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.psu-spec-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .psu-spec-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+.card-dark {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+}
+.card-dark h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.stat-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.stat-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.stat-label {
+  color: var(--text-secondary);
+}
+.stat-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.text-danger {
+  color: var(--color-danger-text, #ef4444) !important;
+}
+.text-success {
+  color: #22c55e !important;
+}
+
+/* Compat table */
+.compat-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 600px;
+}
+.compat-table th, .compat-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--text-secondary);
+}
+.compat-table th[scope="col"] {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  font-weight: 700;
+}
+.compat-table th[scope="row"] {
+  text-align: left;
+}
+.compat-table tr:last-child th, .compat-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Comparisons section */
+.comparisons-section h2, .related-guides-section h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.comparisons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+.comparison-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.15s, transform 0.1s;
+}
+.comparison-card:hover {
+  border-color: var(--color-accent-cyan);
+  transform: translateY(-1px);
+}
+.comparison-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.comparison-arrow {
+  font-size: 1rem;
+  color: var(--color-accent-cyan);
+  font-weight: 700;
+}
+</style>

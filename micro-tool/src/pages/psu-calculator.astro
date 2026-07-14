@@ -97,6 +97,41 @@ const faqSchema = {
     </div>
   </section>
 
+  <!-- ===== ACCURACY & BRAND BIAS SECTION ===== -->
+  <section style="padding: 4rem 0 3rem; background: var(--color-bg-secondary); border-top: 1px solid var(--color-border-subtle); border-bottom: 1px solid var(--color-border-subtle);">
+    <div class="container" style="display:grid; grid-template-columns:1fr; gap:2.5rem; max-width:80ch;">
+      <div style="text-align:center;">
+        <div class="section-eyebrow">Precision Engineering</div>
+        <h2 style="font-size:clamp(1.5rem, 3.5vw, 2.25rem); font-weight:850; line-height:1.2; letter-spacing:-0.02em; margin-bottom: 0.75rem;">
+          The Problem with Brand-Biased Calculators
+        </h2>
+        <p style="color:var(--text-secondary); font-size:1rem; margin:0 auto; max-width:60ch;">
+          Why manufacturer calculators over-spec your build, and how PSUCheck calculates with mathematical rigor.
+        </p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr; gap:1.5rem;">
+        <div class="card" style="padding:1.5rem; background:var(--color-surface); border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg);">
+          <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <span style="color:#ef4444;">⚠</span> Biased Brand Calculators (Upselling)
+          </h3>
+          <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.65; margin:0;">
+            Manufacturer tools from PSU brands are legally protective and financially motivated. To cover their warranty liability and boost margins, they often add massive, arbitrary buffers—frequently recommending expensive 1000W+ models for builds that only draw 500W under load. Furthermore, they are locked to their own catalog, hiding cheaper or more efficient alternatives.
+          </p>
+        </div>
+
+        <div class="card" style="padding:1.5rem; background:var(--color-surface); border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); border-left:3px solid var(--color-accent-cyan);">
+          <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <span style="color:var(--color-accent-cyan);">✓</span> PSUCheck: Unbiased & Math-Driven Accuracy
+          </h3>
+          <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.65; margin:0;">
+            PSUCheck is completely brand-agnostic. We don't sell power supplies. We recommend the optimal wattage and models from Corsair, Seasonic, be quiet!, MSI, and others based on pure math. Our engine uses real oscilloscope data from Cybenetics and TechPowerUp to calculate sub-millisecond GPU transient spikes and ATX 3.1 compliance—giving you the most precise recommendation without the sales pitch.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== RELATED GUIDES ===== -->
   <section class="related-section" aria-labelledby="related-heading">
     <div class="container">

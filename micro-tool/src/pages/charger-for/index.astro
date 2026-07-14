@@ -1,0 +1,153 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { LaptopIndex } from '../../lib/charger-matcher';
+import laptopData from '../../data/index/laptops.index.json';
+
+const laptops = laptopData.items as LaptopIndex[];
+
+const pageTitle = "USB-C PD Charger Compatibility Database — PSUCheck";
+const pageDescription = "Find the best third-party GaN USB-C chargers for your laptop. Detailed sizing metrics for Apple MacBooks, Dell XPS, Lenovo ThinkPads, and gaming laptops.";
+
+// Group laptops by brand
+const brands = Array.from(new Set(laptops.map(l => l.brand)));
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <section class="charger-hub-page" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">PSU Finder</span>
+      </nav>
+
+      <header class="hub-header">
+        <div class="section-eyebrow">Power Sizer Database</div>
+        <h1 id="hub-heading">
+          USB-C PD Charger <span class="gradient-text">Sizing Database</span>
+        </h1>
+        <p class="hub-intro">
+          Select your laptop model below to analyze its maximum USB-C charging profile, verify compatibility with 30W-140W chargers, and browse top-rated third-party GaN chargers.
+        </p>
+      </header>
+
+      {/* === BRAND FILTERS & GRID === */}
+      <div class="brands-section">
+        {brands.map(brand => {
+          const brandLaptops = laptops.filter(l => l.brand === brand);
+          return (
+            <div class="brand-group" key={brand} style="margin-bottom: 2.5rem;">
+              <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+                {brand} Laptops
+              </h2>
+              <div class="laptop-grid">
+                {brandLaptops.map(laptop => (
+                  <div class="laptop-card card" key={laptop.id}>
+                    <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                      <span class="laptop-brand">{laptop.brand}</span>
+                      <h3 class="laptop-name">{laptop.name}</h3>
+                      <div class="laptop-specs">
+                        <span class="spec-tag">{laptop.maxChargeWatts}W Max</span>
+                        <span class="spec-tag">{laptop.connectorType}</span>
+                        <span class="spec-tag">{laptop.protocol}</span>
+                      </div>
+                    </div>
+                    <div class="laptop-action" style="margin-top: 1.5rem; display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:0.75rem; color:var(--text-tertiary); font-family:var(--font-mono);">{laptop.batteryCapacityWh}Wh Battery</span>
+                      <a href={`/charger-for/${laptop.id}`} class="btn btn-secondary btn-sm">Sizing Analysis →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* === ADDITIONAL TOOL BANNER === */}
+      <section class="comparison-banner card" style="margin-top: 3rem; padding: 2rem; border-left: 4px solid var(--color-accent-cyan); display: flex; flex-direction: column; gap: 1rem; align-items: flex-start;">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin:0;">💻 Desktop vs. Laptop Electricity Cost Calculator</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9375rem; margin: 0; line-height: 1.6;">
+          Wondering how much electricity a high-end desktop gaming PC draws compared to a gaming laptop over a year? Run a side-by-side total cost of ownership (TCO) calculation using our custom utility rates.
+        </p>
+        <a href="/compare/desktop-vs-laptop" class="btn btn-primary">Compare Desktop vs Laptop Power →</a>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.charger-hub-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.hub-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.hub-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+
+/* Laptop Grid */
+.laptop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.laptop-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.laptop-card:hover {
+  border-color: var(--color-accent-cyan);
+  transform: translateY(-1px);
+}
+.laptop-brand {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.laptop-name {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.2rem 0 0.5rem;
+}
+.laptop-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.spec-tag {
+  font-size: 0.6875rem;
+  padding: 2px 6px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+.btn-sm {
+  font-size: 0.75rem !important;
+  padding: 6px 12px !important;
+  min-height: 32px !important;
+}
+</style>

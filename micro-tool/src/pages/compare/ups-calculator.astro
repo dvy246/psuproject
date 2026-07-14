@@ -1,0 +1,147 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import UpsSizer from '../../components/calculators/UpsSizer';
+
+const pageTitle = "Uninterruptible Power Supply (UPS) Sizer & Runtime Calculator — PSUCheck";
+const pageDescription = "Determine what VA rating UPS your gaming PC requires. Estimate backup battery runtime in minutes and verify Active PFC wave compatibility.";
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What size UPS do I need for my gaming PC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a mid-range PC (RTX 4070 SUPER + Ryzen 7800X3D drawing ~380W total load), a 1000VA / 600W UPS is recommended. For high-end setups (RTX 5090 / 4090 + Intel Core i9 drawing ~750W+ total load), you require a 1500VA / 900W or 1000W UPS."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does my Active PFC PSU require a Pure Sine Wave UPS?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Active PFC (Power Factor Correction) power supplies require clean electrical signals. Cheap UPS units output a 'simulated' stepped sine wave on battery. When they switch, the Active PFC circuit detects this waveform shift as an electrical fault and shuts down instantly, causing the PC to crash instead of staying powered."
+      }
+    }
+  ]
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Comparisons", "item": "https://psucheck.com/compare/psu" },
+    { "@type": "ListItem", "position": 3, "name": "UPS Sizer" }
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schemas}
+>
+  <section class="ups-page" aria-labelledby="ups-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/compare/psu">Comparisons</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">UPS Sizer</span>
+      </nav>
+
+      <header class="ups-header">
+        <div class="section-eyebrow">Battery Backup Sizer</div>
+        <h1 id="ups-heading">
+          UPS Sizer & <span class="gradient-text">Runtime Calculator</span>
+        </h1>
+        <p class="ups-intro">
+          Analyze your PC's power load, calculate the exact Volt-Ampere (VA) battery capacity required, and find Pure Sine Wave models tested compatible with Active PFC power supplies.
+        </p>
+      </header>
+
+      {/* === PREACT UPS SIZER ISLAND === */}
+      <div style="margin-bottom: 3rem;">
+        <UpsSizer client:load />
+      </div>
+
+      {/* === SUPPORTING SEO ANALYSIS === */}
+      <section class="seo-copy-section" aria-labelledby="tech-heading">
+        <h2 id="tech-heading" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom:1rem;">
+          How to Size a UPS for a Modern Desktop PC
+        </h2>
+        <div style="display:grid; grid-template-columns: 1fr; gap: 1.5rem; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.65;">
+          <p>
+            An Uninterruptible Power Supply (UPS) is essential for protecting expensive desktop hardware from blackouts, brownouts, and voltage surges. However, sizing a UPS for a desktop system requires understanding two separate parameters: **VA (Volt-Amperes)** and **Watts (W)**.
+          </p>
+          <p>
+            Watts measure the real electrical power drawn by your components (e.g. CPU, GPU, storage), while VA measures the apparent power which includes circuit impedance. The ratio is the **Power Factor (PF)**. Modern high-quality PC power supplies incorporate Active PFC circuits, achieving a power factor of **0.90–0.98**. 
+          </p>
+          <p>
+            To calculate your minimum UPS rating:
+            <code style="display:block; padding:12px; background:var(--color-bg-secondary); border-radius:4px; margin: 10px 0; color:var(--color-accent-cyan); font-family:var(--font-mono); text-align:center;">Minimum UPS VA = Total Load Watts / 0.90</code>
+            If your gaming PC and monitor draw 540W combined, you need a UPS rated for at least **600W** and **600W / 0.9 = 667VA**. Sizing too close to the limit can cause the UPS to trip its safety overload circuit when a transient power spike occurs, so adding a 20% margin is highly recommended.
+          </p>
+          <h3>Simulated vs. Pure Sine Wave: The Active PFC Catch</h3>
+          <p>
+            Standard grid utility power is delivered as a smooth, continuous AC wave (Pure Sine Wave). Budget battery backups construct a stepped, blocky approximation (Simulated or Modified Sine Wave) when running on battery to save manufacturing costs.
+          </p>
+          <p>
+            This stepped wave is fine for basic electronics (like router bricks or simple office computers). But if you plug a high-end PSU with **Active Power Factor Correction (Active PFC)** into a simulated sine wave UPS, the PSU's line-filtering stage interprets the stepped voltage steps as a dangerous electrical anomaly. The PSU safety protection (OPP/OVP) triggers, instantly shutting down your PC—defeating the entire purpose of having a battery backup. Always buy a **Pure Sine Wave** UPS (such as CyberPower's PFC series or APC's Smart-UPS series) for gaming or creator workstations.
+          </p>
+        </div>
+      </section>
+
+      {/* === RELATED LINKS === */}
+      <section class="links-section" aria-labelledby="links-heading" style="margin-top: 3rem; padding-top: 2rem; border-top:1px solid var(--color-border-subtle);">
+        <h2 id="links-heading" style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom:1rem;">Related Power Calculators</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem;">
+          <a href="/compare/breaker-calculator" class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">Circuit Breaker Planner</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">Test if your bedroom breaker will overload.</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+          <a href="/psu-calculator" class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">Custom Desktop PSU Sizer</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">Calculate component transient peaks.</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.ups-page {
+  padding: 3rem 0 6rem;
+}
+.ups-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.ups-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.ups-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.card:hover {
+  border-color: var(--color-accent-cyan);
+}
+</style>

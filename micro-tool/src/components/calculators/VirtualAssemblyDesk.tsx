@@ -27,8 +27,9 @@ import { BayCooling } from './bays/BayCooling';
 import { BayPSU } from './bays/BayPSU';
 import { DiagnosticsHUD } from './DiagnosticsHUD';
 import { CostHUD } from './CostHUD';
+import PsuHealthHUD from './PsuHealthHUD';
 import { serializeBuild, deserializeBuild } from '../../lib/url';
-import { runFullPsuAnalysis } from '../../lib/psu';
+import { runFullPsuAnalysis, calculatePsuHealthScore } from '../../lib/psu';
 import { calculateBuildCost } from '../../lib/calculate';
 import { ShareModal } from './ShareModal';
 
@@ -460,19 +461,34 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
                 psu={selectedPsu.value}
               />
             ) : (
-              <DiagnosticsHUD
-                cpu={selectedCpu.value}
-                gpu={selectedGpu.value}
-                ram={selectedRam.value}
-                storage={selectedStorage.value}
-                cooling={selectedCooling.value}
-                psu={selectedPsu.value}
-                fans={fans.value}
-                psuAgeYears={psuAge.value}
-                cpuOcPercent={overclockingEnabled.value ? cpuOcPercent.value : 0}
-                gpuOcPercent={overclockingEnabled.value ? gpuOcPercent.value : 0}
-                safetyBufferPercent={safetyBufferPercent.value}
-              />
+              <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <DiagnosticsHUD
+                  cpu={selectedCpu.value}
+                  gpu={selectedGpu.value}
+                  ram={selectedRam.value}
+                  storage={selectedStorage.value}
+                  cooling={selectedCooling.value}
+                  psu={selectedPsu.value}
+                  fans={fans.value}
+                  psuAgeYears={psuAge.value}
+                  cpuOcPercent={overclockingEnabled.value ? cpuOcPercent.value : 0}
+                  gpuOcPercent={overclockingEnabled.value ? gpuOcPercent.value : 0}
+                  safetyBufferPercent={safetyBufferPercent.value}
+                />
+                {activePsu && (
+                  <PsuHealthHUD
+                    psuAgeYears={psuAge.value}
+                    psuWattage={activePsu.wattage}
+                    health={calculatePsuHealthScore(
+                      psuAge.value,
+                      activePsu.wattage,
+                      psuAnalysis.transientPeak,
+                      activePsu.has12v2x6,
+                      activePsu.has12v2x6 || activePsu.atxVersion === '3.1'
+                    )}
+                  />
+                )}
+              </div>
             )}
           </div>
         </aside>

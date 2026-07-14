@@ -1,0 +1,139 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PsuReplacementCalc from '../components/calculators/PsuReplacementCalc';
+
+import cpuData from '../data/index/cpus.index.json';
+import gpuData from '../data/index/gpus.index.json';
+import psuData from '../data/index/psus.index.json';
+
+const cpus = cpuData.items;
+const gpus = gpuData.items;
+const psus = psuData.items;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PSU Replacement Calculator & Health Auditor",
+  "url": "https://psucheck.com/psu-replacement-calculator",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": "Check if your PC power supply requires replacement or upgrade. Calculates capacitor aging degradation, transient peak limits, and estimates cost savings.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Should I replace my PSU after 5 years?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not necessarily. A high-quality PSU with Japanese electrolytic capacitors (rated at 105°C) can easily last 7 to 10 years. However, budget units using Taiwanese or Chinese capacitors may lose up to 10-15% of their effective capacity by year 5, necessitating a check if you are upgrading to a high-draw GPU."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does a PSU lose wattage capacity as it ages?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, capacitor aging is a real chemical process. Over years of continuous gaming heat, the electrolyte dries out, increasing Equivalent Series Resistance (ESR) and lowering the maximum wattage the unit can safely output (averaging 5% yearly capacity derating after year 3)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the signs of a failing power supply?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Signs of a failing PSU include random system resets under full gaming loads (due to transient spikes tripping OCP), loud coil whine, failed cold boots, or blue screens (BSOD) related to unstable voltage ripple on the 12V rail."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Should I Replace My PSU? — PSU Health & Replacement Calculator"
+  description="Check if your power supply requires replacement. Dynamic capacitor degradation calculator, transient peak audits, and brand-agnostic upgrade recommendations."
+  schema={[schema, faqSchema]}
+>
+  <section style="padding:3rem 0 6rem;" aria-labelledby="replacement-calc-heading">
+    <div class="container">
+      <!-- Breadcrumb -->
+      <div class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">PSU Replacement Calculator</span>
+      </div>
+
+      <!-- Header -->
+      <header style="margin-top:1.5rem; margin-bottom:2.5rem;">
+        <div class="section-eyebrow">PSU Lifecycle Management</div>
+        <h1 id="replacement-calc-heading" style="font-size:clamp(1.8rem,4vw,2.75rem); font-weight:850; line-height:1.1; letter-spacing:-0.03em; margin-top:0.5rem;">
+          Should I Replace My <span class="gradient-text">Power Supply</span>?
+        </h1>
+        <p style="font-size:1.05rem; color:var(--text-secondary); margin-top:0.75rem; max-width:70ch;">
+          Enter your current PSU specifications and target system hardware below. Our calculator models 
+          capacitor aging, transient excursions, and ATX cabling compatibility to deliver an instant, unbiased upgrade verdict.
+        </p>
+      </header>
+
+      {/* Interactive Tool Island */}
+      <PsuReplacementCalc client:load cpus={cpus} gpus={gpus} psus={psus} />
+
+      {/* Editorial Content & FAQs */}
+      <div class="methodology-info" style="margin-top:4rem; display:grid; grid-template-columns:1fr; gap:3rem; border-top:1px solid var(--border-subtle); padding-top:3rem;">
+        <div>
+          <h2 style="font-size:1.5rem; font-weight:800; color:var(--text-primary); margin-bottom:1rem;">
+            Why Power Supplies Degrade Over Time
+          </h2>
+          <p style="color:var(--text-secondary); line-height:1.7; margin-bottom:1rem;">
+            The primary driver behind power supply aging is **capacitor dry-out**. Modern PSUs rely on electrolytic capacitors 
+            to filter electrical noise and smooth out ripples. Over years of thermal stress, the liquid electrolyte inside these 
+            caps slowly evaporates, increasing their internal resistance. 
+          </p>
+          <p style="color:var(--text-secondary); line-height:1.7; margin-bottom:1rem;">
+            This chemical degradation results in two critical issues:
+          </p>
+          <ul style="color:var(--text-secondary); padding-left:1.5rem; line-height:1.7; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+            <li><strong>Reduced Output Buffer:</strong> The PSU can no longer maintain stable voltages during brief sub-millisecond power excursions, leading to instant shutdowns under load.</li>
+            <li><strong>Increased Ripple:</strong> Unfiltered electrical noise stresses your GPU's VRMs, reducing component lifespan and causing system instability.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 style="font-size:1.5rem; font-weight:800; color:var(--text-primary); margin-bottom:1.5rem;">
+            Frequently Asked Questions
+          </h2>
+          <div style="display:flex; flex-direction:column; gap:1.5rem;">
+            <div>
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;">
+                How long does a typical computer power supply last?
+              </h3>
+              <p style="color:var(--text-secondary); line-height:1.6; font-size:0.9375rem;">
+                A high-quality PSU (such as Tier A units with 10-year manufacturer warranties) typically operates safely for 8 to 12 years. Budget units with Taiwanese or Chinese capacitors should generally be audited or replaced after 5 years of regular usage to prevent degradation risks.
+              </p>
+            </div>
+            <div>
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;">
+                Can an old power supply damage my graphics card?
+              </h3>
+              <p style="color:var(--text-secondary); line-height:1.6; font-size:0.9375rem;">
+                Yes. If an old power supply suffers from severe capacitor wear, its safety protections (OCP/OPP) might fail to trigger during a power excursion, or it may release excessive voltage ripple that damages the sensitive VRM circuitry of modern GPUs.
+              </p>
+            </div>
+            <div>
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;">
+                Is it safe to run a new GPU on an old power supply?
+              </h3>
+              <p style="color:var(--text-secondary); line-height:1.6; font-size:0.9375rem;">
+                Only if the power supply has adequate rated wattage headroom and native cabling. Pairing an older ATX 2.x PSU with a modern high-TBP graphics card (like the RTX 4080 or 5080) often leads to tripping OCP due to transient spikes, even if the average power draw is below the PSU's rated output.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
