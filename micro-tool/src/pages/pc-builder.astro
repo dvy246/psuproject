@@ -3,13 +3,24 @@ import Layout from '../layouts/Layout.astro';
 import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
 
 const schema = {
+  "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "PSUCheck PC Build Cost Calculator",
   "url": "https://psucheck.com/pc-builder",
   "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
   "description": "Free PC builder and cost calculator with budget allocation visual charts, real-time optimization advice, sales tax, assembly fee, and custom OS/peripheral selectors.",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "PC build cost calculation",
+    "Budget allocation visual charts",
+    "Real-time hardware optimization advice",
+    "Sales tax and custom assembly fee inclusion",
+    "OS and peripheral load calculation"
+  ]
 };
+
 
 const faqSchema = {
   "@type": "FAQPage",

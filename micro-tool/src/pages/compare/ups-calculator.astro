@@ -38,7 +38,25 @@ const breadcrumbSchema = {
   ]
 };
 
-const schemas = [breadcrumbSchema, faqSchema];
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PSUCheck Uninterruptible Power Supply (UPS) Sizer",
+  "url": "https://psucheck.com/compare/ups-calculator",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "description": "Determine what VA rating UPS your gaming PC requires. Estimate backup battery runtime in minutes and verify Active PFC wave compatibility.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "UPS VA rating sizing",
+    "Active PFC power compatibility warning",
+    "Battery runtime minutes estimation",
+    "VA-to-watt power conversion modeling"
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema, webAppSchema];
 ---
 
 <Layout

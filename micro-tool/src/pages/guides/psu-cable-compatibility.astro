@@ -1,0 +1,132 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TableOfContents from '../../components/ui/TableOfContents';
+import MethodologyCard from '../../components/ui/MethodologyCard.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-14",
+  "dateModified": "2026-07-14",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I mix modular cables from different power supply brands?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Never mix modular cables from different power supply brands, or even different series from the same brand, unless compatibility is explicitly verified by the manufacturer. The pinouts on the power supply side are not standardized, meaning mixing cables can send 12V power to a ground wire, instantly destroying your motherboard, GPU, or SSD."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between Corsair Type 3 and Type 4 cables?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The primary difference is the 24-pin ATX cable pinout on the PSU side. Type 4 ATX cables use a 24-pin header that splits into a 18+10 pin connection, while Type 3 uses a 14+10 pin connection. Other cables (PCIe, SATA) share the same pinout, but mixing the 24-pin cable will damage components."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="Modular PSU Cable Compatibility & Pinouts Guide — PSUCheck"
+  description="Learn why modular power supply cables are not interchangeable. Understand pinout differences between Corsair, EVGA, and Seasonic, and avoid frying components."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
+          <span>Updated: July 14, 2026</span>
+        </div>
+        <h1>Modular PSU Cable Compatibility &amp; Pinout Danger</h1>
+        <p class="guide-lead">
+          Unlike components, modular power supply cables are not standard.
+          Using a cable from a different PSU can instantly destroy your hardware. Here is how to stay safe.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>The Non-Standardized Side of Modular PSUs</h2>
+          <p>
+            While the component-facing side of a PC cable (like the 24-pin motherboard plug, 8-pin PCIe connector, or SATA power connector) is strictly standardized by ATX specifications, the <strong>power supply side is not</strong>.
+          </p>
+          <p>
+            Manufacturers are free to design the pinout (which pin delivers 12V, 5V, 3.3V, or Ground) on the PSU chassis in any layout they want. Consequently, a cable that physically fits into a Corsair PSU might have a completely different wiring mapping than one designed for a Seasonic or EVGA power supply.
+          </p>
+
+          <h2>What Happens if You Mix Cables?</h2>
+          <p>
+            If you plug an EVGA modular cable into a Seasonic PSU, it might slide in perfectly. However, when you power on the system:
+          </p>
+          <ul>
+            <li>A 12V voltage rail pin on the Seasonic unit might align with a ground pin on the EVGA cable.</li>
+            <li>This creates an immediate dead short or sends high voltage directly into components expecting Ground, frying the silicon instantly.</li>
+            <li>Your GPU, SSD, motherboard, or RAM can be destroyed in a fraction of a second, often accompanied by smoke.</li>
+          </ul>
+
+          <div class="important-warning">
+            <strong>⚠ Fatal Error:</strong> Component damage caused by using incorrect modular cables is classified as user error and voids all warranties.
+          </div>
+
+          <h2>Brand Compatibility Matrices</h2>
+          <p>
+            Here is a breakdown of common modular cable types:
+          </p>
+          <ol>
+            <li><strong>Corsair:</strong> Utilizes Type 3 and Type 4 grids. The only difference is the 24-pin motherboard cable. Do not mix Type 3 and Type 4 24-pin cables.</li>
+            <li><strong>Seasonic:</strong> Most Focus, Prime, and Vertex series share cable grids, but they are incompatible with Corsair or EVGA.</li>
+            <li><strong>EVGA:</strong> Has multiple OEM suppliers (Super Flower, FSP, Seasonic). Cables for EVGA G2, G3, G5, and G6 are highly custom. Never assume cross-generation compatibility.</li>
+          </ol>
+
+          <h2>How to Safely Use Custom Cable Extensions</h2>
+          <p>
+            If you want custom-colored cables, you have two choices:
+          </p>
+          <p>
+            <strong>1. Cable Extensions (Safe):</strong> Cable extensions plug into your PSU's *original* cables. Since they attach to the standardized component-facing side, extensions are 100% universal and safe to use with any PSU.
+          </p>
+          <p>
+            <strong>2. Full Replacement Cables (Requires Validation):</strong> If you purchase full custom replacement cables that plug directly into the PSU chassis (like CableMod or custom brand kits), you must input your exact PSU model number.
+          </p>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Check cable clearance &amp; power sizing</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <TableOfContents client:load />
+          <MethodologyCard />
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul, .guide-content ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--status-warning-bg); border-left: 4px solid var(--status-warning); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

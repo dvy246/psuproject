@@ -1,0 +1,125 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TableOfContents from '../../components/ui/TableOfContents';
+import MethodologyCard from '../../components/ui/MethodologyCard.astro';
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "datePublished": "2026-07-14",
+  "dateModified": "2026-07-14",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the difference between TDP and TBP?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TDP (Thermal Design Power) refers to the maximum heat a cooling system must dissipate under normal workload, commonly used by CPU manufacturers. TBP (Total Board Power) refers to the total electrical power drawn by the entire graphics card board (including GPU core, VRMs, memory, fans, and RGB), commonly used by NVIDIA and AMD for graphics cards."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="PC Power Glossary: Technical Terms Explained — PSUCheck"
+  description="Master the terminology of PC power delivery. Definitions for TDP, TBP, Transient Spikes, Active PFC, Sine Waves, OCP/OPP, and ATX 3.1 criteria."
+  schema={faqSchema}
+>
+  <article class="guide-article">
+    <div class="container">
+      <header class="guide-header">
+        <div class="guide-meta">
+          <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
+          <span>Updated: July 14, 2026</span>
+        </div>
+        <h1>PC Power Delivery Glossary</h1>
+        <p class="guide-lead">
+          Understanding technical PC power terms is essential for building a safe, high-performance desktop. Here is a dictionary of critical industry standards.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <main class="guide-content" id="main-content">
+          <h2>TDP vs. TBP</h2>
+          <p>
+            <strong>TDP (Thermal Design Power):</strong> Measured in watts, this is the maximum thermal heat load a cooler must dissipate from a CPU under normal workload. It is not the maximum electrical draw.
+          </p>
+          <p>
+            <strong>TBP (Total Board Power):</strong> Also measured in watts, this represents the total average electrical power drawn by an entire graphics card (GPU core, memory, VRM, fans, and lighting). Often also called TDP by NVIDIA.
+          </p>
+
+          <h2>Transient Power Spikes</h2>
+          <p>
+            <strong>Transient Spike (Power Excursion):</strong> A sub-millisecond burst of current drawn by the GPU or CPU during shifts in rendering workloads. These spikes can reach 1.5× to 2.0× the component's rated TBP, requiring robust power supply filters.
+          </p>
+
+          <h2>Active PFC (Power Factor Correction)</h2>
+          <p>
+            <strong>Active PFC:</strong> An electronic circuit that adjusts the phase of the current to match the voltage, improving efficiency (reducing wall power waist) and smoothing out electrical noise. Modern high-quality PSUs require Active PFC.
+          </p>
+
+          <h2>Pure Sine Wave vs. Simulated Sine Wave</h2>
+          <p>
+            <strong>Pure Sine Wave:</strong> The smooth, continuous electrical wave supplied by household wall sockets. High-quality Active PFC PSUs require pure sine waves to operate.
+          </p>
+          <p>
+            <strong>Simulated Sine Wave (Stepped Wave):</strong> A choppy, stair-step approximation of a sine wave produced by cheap UPS battery backups. This can cause Active PFC power supplies to shut down instantly on battery switch.
+          </p>
+
+          <h2>Power Protections (OCP, OPP, SCP)</h2>
+          <p>
+            <strong>OCP (Over-Current Protection):</strong> Trips the PSU if the current draw on any individual voltage rail (+12V, +5V, +3.3V) exceeds a pre-set limit.
+          </p>
+          <p>
+            <strong>OPP (Over-Power Protection):</strong> Trips the power supply if the total system wattage draw exceeds the PSU's maximum safety threshold (typically 120-140% of rated capacity).
+          </p>
+          <p>
+            <strong>SCP (Short-Circuit Protection):</strong> Instantly shuts down the PSU if a direct connection is detected between a positive voltage line and Ground, protecting components from fire.
+          </p>
+
+          <h2>ATX 3.1 &amp; 12V-2x6 Standards</h2>
+          <p>
+            <strong>ATX 3.1:</strong> The power supply standard introduced in late 2023. It updates transient tolerance rules and mandates the safer 12V-2x6 connector.
+          </p>
+          <p>
+            <strong>12V-2x6:</strong> The revised power plug layout replacing the original 12VHPWR. It shortens the sense pins so a loose connection shuts down or limits power instead of melting port plastics.
+          </p>
+
+          <div style="margin-top:3rem;">
+            <a href="/psu-calculator" class="btn btn-primary">Calculate your build parameters</a>
+          </div>
+        </main>
+
+        <aside class="guide-sidebar">
+          <TableOfContents client:load />
+          <MethodologyCard />
+          <div class="card">
+            <h3>Calculators</h3>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
+              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
+              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+.guide-article { padding: 4rem 0; }
+.guide-header { margin-bottom: 3rem; }
+.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
+.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+@media (min-width: 1024px) {
+  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+}
+.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
+.guide-content ul, .guide-content ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.important-warning { background: var(--status-warning-bg); border-left: 4px solid var(--status-warning); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
+.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
+.guide-sidebar .card { padding: 1.25rem; }
+</style>

@@ -1,5 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import TableOfContents from '../../components/ui/TableOfContents';
+import MethodologyCard from '../../components/ui/MethodologyCard.astro';
 
 const howToSchema = {
   "@context": "https://schema.org",
@@ -67,7 +69,7 @@ const howToSchema = {
     <div class="container">
       <header class="guide-header">
         <div class="guide-meta">
-          <span class="badge badge-safe">✓ E-E-A-T Verified</span>
+          <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
           <span>Updated: July 13, 2026</span>
         </div>
         <h1>How to Build a PC: Step-by-Step Beginner's Guide</h1>
@@ -169,6 +171,8 @@ const howToSchema = {
 
         <!-- Sidebar / Cross-links -->
         <aside class="guide-sidebar">
+          <TableOfContents client:load />
+          <MethodologyCard />
           <div class="card">
             <h3>Calculators</h3>
             <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">

@@ -4,13 +4,24 @@ import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDe
 import { InteractiveTco } from '../components/calculators/InteractiveTco';
 
 const schema = {
+  "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "PSUCheck PSU Calculator",
   "url": "https://psucheck.com/psu-calculator",
   "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
   "description": "Free PC power supply calculator with transient spike analysis, ATX 3.1 compliance checking, per-rail analysis, cable safety audit, and 5-year TCO comparison.",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Transient power spike analysis",
+    "ATX 3.1 compliance checking",
+    "Per-rail load analysis",
+    "Cable safety and melt prevention audit",
+    "5-year TCO electric bill comparison"
+  ]
 };
+
 
 const faqSchema = {
   "@type": "FAQPage",

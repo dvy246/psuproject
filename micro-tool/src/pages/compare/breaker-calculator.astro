@@ -38,7 +38,25 @@ const breadcrumbSchema = {
   ]
 };
 
-const schemas = [breadcrumbSchema, faqSchema];
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PSUCheck Circuit Breaker Load Calculator",
+  "url": "https://psucheck.com/compare/breaker-calculator",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "description": "Analyze household electrical circuit loads. Check if running your gaming PC alongside room appliances will overload 15A or 20A breakers.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Amperage load capacity checking",
+    "Household appliance load addition presets",
+    "Overload trip threshold detection",
+    "Electric current calculations (W to A)"
+  ]
+};
+
+const schemas = [breadcrumbSchema, faqSchema, webAppSchema];
 ---
 
 <Layout
