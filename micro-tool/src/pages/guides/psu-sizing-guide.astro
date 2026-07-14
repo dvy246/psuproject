@@ -7,22 +7,38 @@ const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-07-13",
+  "dateModified": "2026-07-14",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How do I calculate the correct power supply size?",
+      "name": "How much wattage headroom is recommended for a PSU?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Add up the TDP/TBP of all components (primarily CPU and GPU), then apply a safety headroom factor (20% for ATX 3.1, or 35% for ATX 2.x) to absorb transient power spikes. For high-end gaming rigs, an 850W or 1000W power supply is standard."
+        "text": "We recommend leaving a safety buffer of at least 15% to 20% above your system's calculated peak transient draw. This ensures stability, efficiency, and quiet operation."
       }
     },
     {
       "@type": "Question",
-      "name": "Is a larger PSU wattage bad for system efficiency?",
+      "name": "What happens if I under-size my PSU?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. Modern power supplies are highly efficient across a wide load range. Most PSUs hit their peak efficiency between 40% and 60% load. Having a larger capacity means your unit operates cooler, quieter, and closer to its efficiency sweet spot."
+        "text": "Under-sizing your PSU will cause sudden, instant system shutdowns during intensive workloads or gaming when transient power spikes exceed the PSU's OCP or OPP protection limits."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate my system's peak transient draw?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Multiply your GPU's rated board power by 1.5 (its transient factor), then add the CPU's peak boost wattage and 50W for secondary system components."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does a larger PSU draw more electricity?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. A power supply only draws the wattage demanded by your components, plus conversion loss. A larger PSU will not increase your electricity bill, and may lower it by running more efficiently."
       }
     }
   ]
@@ -30,91 +46,88 @@ const faqSchema = {
 ---
 
 <Layout
-  title="PC PSU Sizing Guide: Wattage Headroom & Myths — PSUCheck"
-  description="How to size your power supply correctly. Learn about sustained draw vs transient spikes, safety buffers, and debunking wattage calculator myths."
+  title="PSU Sizing Guide: How to Calculate Wattage Headroom — PSUCheck"
+  description="Step-by-step sizing guide to calculate your gaming PC's power supply requirements. Learn how to map steady loads, transient spikes, and safety buffers."
   schema={faqSchema}
 >
   <article class="guide-article">
     <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 1.5rem;">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/guides/">Guides</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">PSU Sizing Guide</span>
+      </nav>
+
       <header class="guide-header">
         <div class="guide-meta">
           <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
-          <span>Updated: July 13, 2026</span>
+          <span>Updated: July 14, 2026</span>
           <span style="margin: 0 0.5rem; opacity: 0.5;">•</span>
-          <span>1 min read</span>
+          <span class="reading-time-badge">12 min read</span>
         </div>
-        <h1>PC PSU Sizing Guide: Wattage Headroom &amp; Myths</h1>
-        <p class="guide-lead">
-          Why do wattage calculators recommend wildly different power supply sizes?
-          This guide cuts through the marketing and outlines the real physics of PSU sizing.
-        </p>
+        <h1>PSU Sizing Guide: How to Calculate Wattage Headroom </h1>
       </header>
 
       <div class="guide-layout">
         <main class="guide-content" id="main-content">
-          <h2>Sustained Draw vs. Transient Spikes</h2>
-          <p>
-            When a GPU manufacturer lists a <strong>TBP (Total Board Power)</strong> or TDP of 250W,
-            that represents the *average* power consumed over several minutes. It does not represent
-            the maximum current the card demands.
-          </p>
-          <p>
-            Modern graphics cards experience microsecond transient excursions that draw up to
-            <strong>1.5× to 1.7×</strong> of their rated power. Sizing your PSU based solely on
-            an average TDP sum will result in a system that trips OCP/OPP protections and shuts
-            down under load.
-          </p>
-
-          <h2>Standard Sizing Calculations</h2>
-          <p>
-            PSUCheck uses an engineering-first formula based on Cybenetics metrics:
-          </p>
-          <pre class="code-block">Recommended PSU = (CPU PL2 × 1.20) + (GPU TBP × Tier Multiplier) + Other Components + Safety Headroom</pre>
-          <p>
-            Where the Tier Multiplier represents the observed transient behavior of the GPU class.
-            Halo-class cards like the RTX 5090 demand a larger multiplier (1.57×) due to aggressive
-            boost clocks.
-          </p>
-
-          <h2>Debunking PSU Sizing Myths</h2>
-          <h3>Myth 1: "I need a 1200W PSU for any gaming rig"</h3>
-          <p>
-            <strong>False.</strong> A standard gaming setup (e.g., Ryzen 7 7800X3D + RTX 4070 Ti SUPER)
-            runs comfortably on a high-quality 750W or 850W power supply. You only need 1000W+ if
-            you are pairing flagship components (Intel Core i9 + RTX 5090) or running custom liquid cooling loops.
-          </p>
-
-          <h3>Myth 2: "Buying an oversized PSU wastes power"</h3>
-          <p>
-            <strong>False.</strong> Under 80 PLUS standards, PSUs are most efficient at 50% load.
-            If your PC draws 400W under gaming loads, a 850W PSU will operate closer to its efficiency
-            sweet spot than a 500W unit running near its limit. Oversized units also generate less heat,
-            meaning their fans spin slower and quieter.
-          </p>
-
-          <div style="margin-top:3rem;">
-            <a href="/psu-calculator" class="btn btn-primary">Check your build requirements</a>
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — RECOMMENDED SPONSOR
           </div>
+
+          <h2 id="intro">1. Introduction &amp; Context</h2>
+          
+  <p>Sizing your power supply correctly represents the absolute foundation of PC building. The power supply unit (PSU) is responsible for delivering stable voltage to all internal system components under varying operational loads. Buying a PSU with too little capacity leads to random shutdowns, system instability, and component degradation, while over-sizing too much represents wasted budget. This guide walks you through the step-by-step process of calculating your PC's power requirements.</p>
+  <p>We explain how to map sustained power consumption, calculate sub-millisecond transient peak draws, and determine the appropriate safety headroom factor for a stable, long-lasting system. By planning your power budget in advance, you can select a PSU that operates efficiently and quietly under all workloads.</p>
+  <p>Many builders rely on simple wattage calculators that add together the TDP ratings of the CPU and GPU. However, these calculators often omit the power requirements of secondary components and ignore transient power spikes, leading to under-sized configurations. When building high-performance workstations or gaming PCs, under-estimating your cooling fan arrays or storage configurations can lead to stability problems.</p>
+  <p>Furthermore, builders must evaluate the power requirements of all external USB accessories and audio interfaces. These accessories draw power directly from the motherboard's USB rails, which are supplied by the PSU's +5V and +3.3V lines. Adding a 20W to 30W allowance for these external peripherals is highly recommended for complete sizing accuracy.</p>
+  
+
+          <h2 id="section1">2. Technical Analysis &amp; Sizing Equations</h2>
+          
+  <p>To calculate your PC's power budget, start by listing the sustained power consumption of your primary components. The CPU and GPU represent approximately 90% of your system's overall power draw. For example, an AMD Ryzen 7 7800X3D CPU draws about 80W during gaming, while an NVIDIA GeForce RTX 4070 SUPER GPU draws 220W. Combined, these primary components draw 300W.</p>
+  <p>Next, add the power requirements for secondary components: motherboard (15W-25W), RAM DIMMs (3W-5W per stick), NVMe SSDs (5W-8W under read/write cycles), AIO liquid cooling pump (5W-10W), case fans (2W-3W each), and RGB controllers (2W-5W). Combining these yields your system's sustained baseline draw, which is approximately 380W for a standard gaming build.</p>
+  <p>Always verify the boost settings of your processor. While a CPU may have a rated TDP of 65W, it can boost to 120W or more during startup or heavy compilation tasks. Ensure you use the maximum boost wattage in your calculations to maintain safety margins. Also, check if your system uses multiple high-capacity mechanical drives, which draw up to 10W each during active spinning.</p>
+  <p>Additionally, remember that AIO liquid cooling pumps and addressable RGB setups add significant electrical loads. A typical 360mm AIO liquid cooler features a pump motor and three high-static pressure fans, drawing up to 25W of total power at full speed. Omitting this from your sizing calculations can quickly erode your planned safety headroom.</p>
+  
+
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — IN-CONTENT BANNER
+          </div>
+
+          <h2 id="section2">3. Detailed Architecture, Rails &amp; Standards</h2>
+          
+  <p>Sustained draw only represents half of the power equation. Modern graphics cards experience rapid, sub-millisecond transient power spikes that can exceed their rated power by 1.5x to 2.0x. A GPU rated for 250W can spike to 400W or 500W for fractions of a millisecond. If your PSU cannot buffer these spikes, its Over-Current Protection (OCP) will trigger, instantly crashing the system.</p>
+  <p>To size your power supply correctly, you must calculate the system's transient peak. Multiply your GPU's TBP by its transient factor (typically 1.5x for modern cards) and add the CPU's sustained boost TDP along with the secondary component baselines. This peak value represents the maximum power load your PSU must handle without tripping its safety limits. For an RTX 4070 SUPER build, the transient peak is approximately 530W.</p>
+  <p>ATX 3.0 and ATX 3.1 power supplies are specifically designed to handle these spikes, mandating that the PSU must tolerate 200% transient power excursions for 100 microseconds, ensuring system stability during gaming. Additionally, you must account for the power consumption of all storage drives, fans, and accessories, which add up under full load.</p>
+  <p>Cooling pump motors and case fans also contribute to startup surge currents (inrush currents) which can trigger sensitive OCP settings on older PSUs. Ensuring that your power supply has independent rails or high current tolerances is vital to prevent shutdowns.</p>
+  
+
+          <h2 id="section3">4. Sizing Guides &amp; Real-World Recommendations</h2>
+          
+  <p>Once you have calculated the transient peak, apply a safety headroom buffer. We recommend a safety margin of at least 15% to 20% above the peak draw. Headroom is critical for several reasons: it keeps the PSU operating in its most efficient conversion zone (around 50% load), minimizes heat generation, keeps fan speeds quiet, and accounts for capacitor degradation over years of thermal stress.</p>
+  <p>For example, if your system's calculated transient peak is 600W, applying a 15% safety buffer (600W × 1.15) yields a recommended minimum PSU capacity of 690W, pointing you toward a standard 750W or 850W power supply. This extra capacity ensures your system remains quiet and cool under heavy loads.</p>
+  <p>Capacitor aging is a physical reality: over years of thermal cycles, the electrolyte inside the capacitors dries out, reducing their capacitance. A PSU loses approximately 5% of its effective capacity annually after the third year, making safety headroom essential for long-term stability. If you intend to run your system for over 5 years, adding a 20% buffer is highly recommended to protect your hardware.</p>
+  <p>Furthermore, running a power supply with ample headroom keeps the unit from running hot, which decreases the rate of capacitor degradation. By operating at lower temperatures, the liquid electrolyte inside the capacitors evaporates slower, maintaining the PSU's efficiency and voltage stability over a longer service life.</p>
+  
+
+          <h2 id="section4">5. Verdict &amp; Long-Term Total Cost of Ownership (TCO)</h2>
+          
+  <p>In conclusion, sizing your power supply correctly is vital to building a stable, high-performance PC. By mapping sustained draws, calculating transient peaks, and adding a safe operational margin, you can find the perfect PSU capacity for your build. Always invest in a high-quality, certified Tier-A power supply to protect your hardware and ensure years of trouble-free gaming.</p>
+  <p>By monitoring system stability, maintaining clean dust filters, and applying derating math when planning component upgrades, you can manage the impact of capacitor aging and build a stable, long-lasting custom PC.</p>
+  
+
+          <h2 id="faq">6. Frequently Asked Questions (FAQ)</h2>
+          <h3>How much wattage headroom is recommended for a PSU?</h3><p>We recommend leaving a safety buffer of at least 15% to 20% above your system's calculated peak transient draw. This ensures stability, efficiency, and quiet operation.</p>
+<h3>What happens if I under-size my PSU?</h3><p>Under-sizing your PSU will cause sudden, instant system shutdowns during intensive workloads or gaming when transient power spikes exceed the PSU's OCP or OPP protection limits.</p>
+<h3>How do I calculate my system's peak transient draw?</h3><p>Multiply your GPU's rated board power by 1.5 (its transient factor), then add the CPU's peak boost wattage and 50W for secondary system components.</p>
+<h3>Does a larger PSU draw more electricity?</h3><p>No. A power supply only draws the wattage demanded by your components, plus conversion loss. A larger PSU will not increase your electricity bill, and may lower it by running more efficiently.</p>
         </main>
 
         <aside class="guide-sidebar">
           <TableOfContents client:load />
           <MethodologyCard />
-          <div class="card">
-            <h3>Calculators</h3>
-            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
-              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
-              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Other Guides</h3>
-            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
-              <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide</a></li>
-              <li><a href="/guides/psu-efficiency-guide">80+ Efficiency Guide</a></li>
-              <li><a href="/guides/budget-guide">PC Budget Guide</a></li>
-            </ul>
-          </div>
         </aside>
       </div>
     </div>
@@ -122,18 +135,18 @@ const faqSchema = {
 </Layout>
 
 <style>
-.guide-article { padding: 4rem 0; }
-.guide-header { margin-bottom: 3rem; }
-.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
-.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
-.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
-@media (min-width: 1024px) {
-  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
-}
-.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
-.guide-content h3 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-size:1.1rem; }
-.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
-.code-block { background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); overflow-x:auto; font-family:var(--font-mono); font-size:0.75rem; margin-bottom:1.5rem; }
-.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
-.guide-sidebar .card { padding: 1.25rem; }
+  .guide-article { padding: 3rem 0; }
+  .guide-header { margin-bottom: 2.5rem; }
+  .guide-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-top: 0.5rem; }
+  .guide-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+  @media (min-width: 992px) {
+    .guide-layout { grid-template-columns: 3fr 1fr; }
+  }
+  .guide-content { font-size: 1.05rem; line-height: 1.7; color: var(--color-text-secondary); }
+  .guide-content h2 { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
+  .guide-content h3 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  .guide-content p { margin-bottom: 1.5rem; }
+  .guide-content ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+  .guide-content li { margin-bottom: 0.5rem; }
+  .guide-sidebar { display: flex; flex-direction: column; gap: 2rem; }
 </style>

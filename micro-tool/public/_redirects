@@ -1,7 +1,6 @@
 # Cloudflare Pages redirects
 # Redirect legacy/common paths
 
-/psu  /psu-calculator  301
 /builder  /pc-builder  301
 /checker  /psu-checker  301
 /calculator  /psu-calculator  301

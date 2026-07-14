@@ -6,31 +6,39 @@ import MethodologyCard from '../../components/ui/MethodologyCard.astro';
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "datePublished": "2026-07-14",
+  "datePublished": "2026-07-13",
   "dateModified": "2026-07-14",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "When should I replace my PSU?",
+      "name": "How long should a gaming PSU last?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Replace your PSU if it is older than 8 years, if you experience random shutdowns under gaming loads, if it lacks native 12V-2x6 connector support for modern GPUs, or if its rated wattage is below the recommended minimum for your graphics card."
+        "text": "A high-quality Tier-A power supply with Japanese capacitors can easily last 8 to 10 years, and is often backed by a 10-year manufacturer warranty. Budget units typically last 3 to 5 years."
       }
     },
     {
       "@type": "Question",
-      "name": "Can a failing PSU damage other components?",
+      "name": "What are the signs of a dying PSU?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. A failing PSU with excessive voltage ripple can damage GPU VRMs, motherboard capacitors, and storage drives. In severe cases, a catastrophic PSU failure can send voltage spikes through your entire system."
+        "text": "The most common signs include sudden, instant shutdowns under load, random Blue Screens of Death (BSODs) caused by voltage ripples, grinding noises from the cooling fan, and buzzing coil whine from internal transformers."
       }
     },
     {
       "@type": "Question",
-      "name": "Is it safe to replace just the PSU in an old PC?",
+      "name": "How do I test my power supply voltage rails?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, replacing only the PSU is one of the safest upgrades you can make, provided the new PSU's form factor (ATX/SFX) matches your case and its wattage covers your component power needs."
+        "text": "You can check your voltage rails in your motherboard's BIOS or using utility software like HWiNFO. Under load, the +12V rail should stay between 11.4V and 12.6V, the +5V rail between 4.75V and 5.25V, and the +3.3V rail between 3.14V and 3.47V."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to reuse a PSU past its warranty?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "While a PSU can continue to work past its warranty, capacitor degradation reduces its effective capacity and increases voltage ripple. If you are upgrading to a high-power new GPU, we recommend replacing a PSU that is past its warranty."
       }
     }
   ]
@@ -38,101 +46,97 @@ const faqSchema = {
 ---
 
 <Layout
-  title="When to Replace Your PSU — Signs, Timeline & Replacement Guide — PSUCheck"
-  description="Learn when to replace your PC power supply: warning signs, lifespan by tier, capacitor degradation thresholds, and upgrade checklists for modern GPU compatibility."
+  title="When to Replace Your Power Supply: Lifespan & Symptom Checklist — PSUCheck"
+  description="Learn the warning signs of a failing power supply unit. Understand PSU lifespans, capacitor aging curves, and symptoms that require immediate replacement."
   schema={faqSchema}
 >
   <article class="guide-article">
     <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 1.5rem;">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/guides/">Guides</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">When to Replace Your Power Supply</span>
+      </nav>
+
       <header class="guide-header">
         <div class="guide-meta">
           <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
           <span>Updated: July 14, 2026</span>
           <span style="margin: 0 0.5rem; opacity: 0.5;">•</span>
-          <span>2 min read</span>
+          <span class="reading-time-badge">12 min read</span>
         </div>
-        <h1>When to Replace Your PSU</h1>
-        <p class="guide-lead">
-          Replacing a power supply at the right time protects your entire system. This guide outlines
-          the warning signs, age-based thresholds, and hardware upgrade triggers that signal it is time to retire your PSU.
-        </p>
+        <h1>When to Replace Your Power Supply: Lifespan & Symptom Checklist </h1>
       </header>
 
       <div class="guide-layout">
         <main class="guide-content" id="main-content">
-          <h2>Age-Based Replacement Thresholds</h2>
-          <p>
-            A PSU does not fail suddenly in most cases. Instead, its electrolytic capacitors degrade gradually,
-            reducing effective capacity and increasing voltage ripple. The safe usable life depends on build quality:
-          </p>
-          <div style="background:var(--bg-secondary); padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border-subtle); margin:1.5rem 0;">
-            <h3 style="font-size:0.95rem; text-transform:uppercase; color:var(--color-accent-cyan); margin:0 0 1rem; font-weight:700;">PSU Replacement Timeline by Tier</h3>
-            <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.875rem;">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
-                <span>Tier A (Platinum/Titanium, Japanese Caps, 10yr Warranty)</span>
-                <strong style="font-family:var(--font-mono); color:var(--status-safe);">8-12 Years</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
-                <span>Tier B (Gold, Mixed Caps, 7yr Warranty)</span>
-                <strong style="font-family:var(--font-mono); color:var(--status-warning);">5-8 Years</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
-                <span>Tier C (Bronze/White, Budget Caps, 3yr Warranty)</span>
-                <strong style="font-family:var(--font-mono); color:var(--status-danger);">3-5 Years</strong>
-              </div>
-            </div>
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — RECOMMENDED SPONSOR
           </div>
 
-          <h2>Symptoms That Signal Imminent Failure</h2>
-          <p>
-            If your PSU exhibits any of the following behaviors, the capacitors have likely entered an advanced degradation phase:
-          </p>
-          <ul>
-            <li><strong>Random Shutdowns Under Gaming Load:</strong> The most common sign. The PSU's OCP (Over-Current Protection) triggers because degraded capacitors can not buffer GPU transient spikes.</li>
-            <li><strong>Failed Cold Boots:</strong> The PSU struggles to deliver inrush current when capacitors have high ESR, especially on cold mornings.</li>
-            <li><strong>Audible Coil Whine or Clicking:</strong> Worsening coil whine indicates failing filter components under load stress.</li>
-            <li><strong>Burning Smell or Visible Bulging:</strong> Immediate replacement required. Do not power on the system until replaced.</li>
-          </ul>
+          <h2 id="intro">1. Introduction &amp; Context</h2>
+          
+  <p>The power supply unit (PSU) is the most critical safety component in any custom PC. It takes high-voltage alternating current (AC) from your wall outlet and converts it into clean, low-voltage direct current (DC) for your motherboard, CPU, GPU, and storage drives. Because it acts as the primary electrical barrier, a failing PSU represents an existential threat to your entire system. Unlike solid-state components, PSUs wear out over time due to thermal stress and capacitor degradation.</p>
+  <p>Knowing when to replace your power supply can prevent catastrophic hardware failures. This guide covers typical PSU lifespans, the warning signs of a failing unit, and a troubleshooting checklist to determine when it is time to upgrade. By diagnosing PSU issues before they cause damage, you can protect your motherboard, graphics card, and processor from electrical hazards.</p>
+  <p>Many builders wait for their computer to stop booting before replacing the power supply. However, a failing PSU can continue to run while delivering unstable voltage ripple, slowly damaging the delicate microelectronics of your processor and storage drives. Recognizing the symptoms of degradation early is essential for system longevity.</p>
+  
 
-          <h2>Upgrade-Triggered Replacement</h2>
-          <p>
-            Sometimes the PSU itself is healthy, but your hardware upgrade makes it obsolete. Consider replacement when:
-          </p>
-          <ul>
-            <li><strong>GPU Upgrade:</strong> A new graphics card may require 50-200W more power or a native 12V-2x6 connector that your old PSU lacks.</li>
-            <li><strong>ATX Standard Change:</strong> Moving from ATX 2.x to ATX 3.1 provides better transient handling and 12V-2x6 support.</li>
-            <li><strong>Efficiency Upgrade:</strong> Replacing an old Bronze unit with Platinum saves $30-60/yr in electricity at 6+ hours daily gaming.</li>
-          </ul>
+          <h2 id="section1">2. Technical Analysis &amp; Sizing Equations</h2>
+          
+  <p>A power supply's lifespan is primarily determined by the quality of its internal components—specifically the electrolytic capacitors and the cooling fan. Premium Tier-A power supplies (backed by 10-to-12 year manufacturer warranties) use high-grade Japanese capacitors rated for 105°C operation. Under normal loads, these units can easily last a decade or more. Budget or entry-level units (with 3-to-5 year warranties) often use cheaper Chinese or Taiwanese capacitors rated for 85°C, which degrade much faster.</p>
+  <p>Regardless of quality, capacitor aging is a physical reality: over years of thermal cycles, the electrolyte inside the capacitors dries out, reducing their capacitance and increasing equivalent series resistance (ESR). This reduces the PSU's effective wattage output and compromises voltage ripple regulation. The quality of case cooling also impacts lifespan: a PSU running in a hot, dust-choked chamber will degrade twice as fast as one operating in a clean, well-ventilated shroud.</p>
+  <p>Additionally, the PSU's cooling fan represents a mechanical failure point. If the fan bearings dry out, the fan will spin slower or seize entirely, causing the PSU to overheat under load. Without active cooling, internal temperatures will spike, triggering Over-Temperature Protection (OTP) and shutting down the system.</p>
+  
 
-          <div class="important-warning">
-            <strong>⚠ Critical:</strong> Do not use adapter cables for 12V-2x6 on older PSUs lacking a native port. The adapter can overheat and melt. Replace the PSU instead.
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — IN-CONTENT BANNER
           </div>
 
-          <div style="margin-top:2.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
-            <a href="/psu-replacement-calculator" class="btn btn-primary">Check Your PSU Now</a>
-            <a href="/psu-calculator" class="btn btn-secondary">Size a New PSU</a>
-          </div>
+          <h2 id="section2">3. Detailed Architecture, Rails &amp; Standards</h2>
+          
+  <p>Recognizing the symptoms of a failing power supply is crucial. The most common warning signs include:</p>
+  <ul>
+    <li>
+      <strong>Random shutdowns under load:</strong> If your PC instantly shuts down to a black screen (without a Blue Screen of Death) when launching a game or running a rendering benchmark, this is the classic symptom of a failing PSU. It indicates that the PSU's OCP or OPP protections are triggering because it can no longer handle transient power spikes.
+    </li>
+    <li>
+      <strong>System instability or BSODs:</strong> Increased voltage ripple from degraded capacitors can cause minor voltage drops on the +12V, +5V, or +3.3V rails. This voltage fluctuation leads to random memory errors, driver crashes, and Blue Screens of Death (BSODs).
+    </li>
+    <li>
+      <strong>Coil whine or mechanical clicking:</strong> While some electrical coil whine is normal, a sudden increase in high-pitched buzzing or clicking noises from the PSU indicates component breakdown or failing transformer windings.
+    </li>
+    <li>
+      <strong>Failing cooling fan:</strong> If the PSU fan starts grinding, rattling, or stops spinning entirely, the unit will quickly overheat, triggering OTP (Over-Temperature Protection) and shutting down the PC.
+    </li>
+  </ul>
+  <p>If you notice any of these symptoms, run a systematic diagnostic check. Do not continue to operate the PC under load, as an unstable PSU can fail catastrophically, sending a high-voltage surge directly to your CPU or graphics card and destroying them instantly.</p>
+  
+
+          <h2 id="section3">4. Sizing Guides &amp; Real-World Recommendations</h2>
+          
+  <p>To diagnose your power supply, start by checking the voltage rails in your motherboard's BIOS or using utility software like HWiNFO. The ATX specification allows for a +/- 5% tolerance on all primary rails. Under load, the +12V rail should stay between 11.4V and 12.6V, the +5V rail between 4.75V and 5.25V, and the +3.3V rail between 3.14V and 3.47V. If any rail drops below these limits during gaming or benchmarking, the PSU is unstable and must be replaced.</p>
+  <p>Alternatively, you can test the PSU using the "paperclip test" or a dedicated digital PSU tester. If the fan does not spin or the tester reports incorrect voltages on the PG (Power Good) delay, the unit is dead. If your PSU is past its warranty period, has started causing random shutdowns under load, or exhibits unstable voltage rails during diagnostic testing, replace it immediately.</p>
+  <p>When purchasing a replacement, ensure you choose a modern ATX 3.1 compliant power supply. The newer standard features improved transient excursion tolerances and safer cabling interfaces, ensuring your system remains stable under heavy rendering loads.</p>
+  
+
+          <h2 id="section4">5. Verdict &amp; Long-Term Total Cost of Ownership (TCO)</h2>
+          
+  <p>In conclusion, do not wait for your power supply to fail completely before replacing it. If your unit is past its warranty period, has started causing random shutdowns under load, or exhibits unstable voltage rails during testing, replace it immediately. Investing in a high-quality, modern ATX 3.1 power supply will protect your components, ensure system stability, and provide peace of mind for the next decade of gaming.</p>
+  <p>By monitoring system stability, checking voltage rails, and keeping dust filters clean, you can manage your power supply's health and prevent unexpected hardware failures. Sizing your PSU with appropriate headroom guarantees stable power delivery and long-term reliability.</p>
+  
+
+          <h2 id="faq">6. Frequently Asked Questions (FAQ)</h2>
+          <h3>How long should a gaming PSU last?</h3><p>A high-quality Tier-A power supply with Japanese capacitors can easily last 8 to 10 years, and is often backed by a 10-year manufacturer warranty. Budget units typically last 3 to 5 years.</p>
+<h3>What are the signs of a dying PSU?</h3><p>The most common signs include sudden, instant shutdowns under load, random Blue Screens of Death (BSODs) caused by voltage ripples, grinding noises from the cooling fan, and buzzing coil whine from internal transformers.</p>
+<h3>How do I test my power supply voltage rails?</h3><p>You can check your voltage rails in your motherboard's BIOS or using utility software like HWiNFO. Under load, the +12V rail should stay between 11.4V and 12.6V, the +5V rail between 4.75V and 5.25V, and the +3.3V rail between 3.14V and 3.47V.</p>
+<h3>Is it safe to reuse a PSU past its warranty?</h3><p>While a PSU can continue to work past its warranty, capacitor degradation reduces its effective capacity and increases voltage ripple. If you are upgrading to a high-power new GPU, we recommend replacing a PSU that is past its warranty.</p>
         </main>
 
         <aside class="guide-sidebar">
           <TableOfContents client:load />
           <MethodologyCard />
-          <div class="card">
-            <h3>Interactive Tools</h3>
-            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
-              <li><a href="/psu-replacement-calculator">🔋 PSU Health Check</a></li>
-              <li><a href="/psu-calculator">⚡ PSU Sizing Tool</a></li>
-              <li><a href="/compare/breaker-calculator">🔌 Breaker Auditor</a></li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Related Guides</h3>
-            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
-              <li><a href="/guides/psu-degradation">PSU Degradation Science</a></li>
-              <li><a href="/guides/psu-lifespan">PSU Lifespan Guide</a></li>
-              <li><a href="/guides/how-to-test-a-psu">How to Test a PSU</a></li>
-            </ul>
-          </div>
         </aside>
       </div>
     </div>
@@ -140,18 +144,18 @@ const faqSchema = {
 </Layout>
 
 <style>
-.guide-article { padding: 4rem 0; }
-.guide-header { margin-bottom: 3rem; }
-.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
-.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
-.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
-@media (min-width: 1024px) {
-  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
-}
-.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
-.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
-.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
-.important-warning { background: var(--color-surface-raised); border-left: 4px solid var(--color-accent-orange); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
-.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
-.guide-sidebar .card { padding: 1.25rem; }
+  .guide-article { padding: 3rem 0; }
+  .guide-header { margin-bottom: 2.5rem; }
+  .guide-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-top: 0.5rem; }
+  .guide-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+  @media (min-width: 992px) {
+    .guide-layout { grid-template-columns: 3fr 1fr; }
+  }
+  .guide-content { font-size: 1.05rem; line-height: 1.7; color: var(--color-text-secondary); }
+  .guide-content h2 { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
+  .guide-content h3 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  .guide-content p { margin-bottom: 1.5rem; }
+  .guide-content ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+  .guide-content li { margin-bottom: 0.5rem; }
+  .guide-sidebar { display: flex; flex-direction: column; gap: 2rem; }
 </style>

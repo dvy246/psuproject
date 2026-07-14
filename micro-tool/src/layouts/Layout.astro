@@ -109,11 +109,15 @@ export interface Props {
 const {
   title,
   description,
-  canonicalUrl = Astro.url.origin + Astro.url.pathname,
+  canonicalUrl: propCanonicalUrl,
   ogImage = '/pc-hero.png',
   schema,
   noIndex = false,
 } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const normalizedPathname = pathname.endsWith('/') ? pathname : pathname + '/';
+const canonicalUrl = propCanonicalUrl || (Astro.url.origin + normalizedPathname);
 
 const siteTitle = title.includes('PSUCheck') ? title : `${title} | PSUCheck`;
 
@@ -125,7 +129,7 @@ const techArticleSchema = isGuidePage ? {
   "description": description,
   "image": [Astro.url.origin + ogImage],
   "datePublished": "2026-01-15T08:00:00Z",
-  "dateModified": new Date().toISOString(),
+  "dateModified": "2026-07-13T08:00:00Z",
   "author": {
     "@type": "Organization",
     "name": "PSUCheck Engineering Team",
@@ -241,8 +245,10 @@ const schemaStr = finalSchemas.length > 0
         </ul>
         <div class="nav-right">
           <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode" type="button">
-            <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-            <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <span class="theme-slider-thumb">
+              <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+              <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </span>
           </button>
           <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-links" type="button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -386,18 +392,12 @@ const schemaStr = finalSchemas.length > 0
   <script is:inline>
     const toggle = document.getElementById('theme-toggle');
     const html = document.documentElement;
-    const sunIcon = document.getElementById('icon-sun');
-    const moonIcon = document.getElementById('icon-moon');
     function applyTheme(theme) {
       html.setAttribute('data-theme', theme);
       localStorage.setItem('vf-theme', theme);
       if (theme === 'dark') {
-        sunIcon.style.display = '';
-        moonIcon.style.display = 'none';
         toggle.setAttribute('aria-label', 'Switch to light mode');
       } else {
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = '';
         toggle.setAttribute('aria-label', 'Switch to dark mode');
       }
     }

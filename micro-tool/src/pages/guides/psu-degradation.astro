@@ -7,30 +7,38 @@ const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "datePublished": "2026-07-13",
-  "dateModified": "2026-07-13",
+  "dateModified": "2026-07-14",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Does a PSU lose wattage over time?",
+      "name": "Why do PC power supplies degrade over time?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Computer power supplies degrade due to electrolytic capacitor aging. Over time, heat and continuous electrical load cause the liquid electrolyte inside the capacitors to dry out, reducing the maximum power capacity and efficiency of the PSU."
+        "text": "Power supplies degrade because the liquid electrolyte inside their aluminum capacitors slowly evaporates over years of thermal cycles, reducing capacitance and increasing resistance."
       }
     },
     {
       "@type": "Question",
-      "name": "What is capacitor aging in power supplies?",
+      "name": "How do you calculate PSU capacity loss?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Capacitor aging is the gradual chemical breakdown of a capacitor's dielectric properties. In a PSU, it leads to an increase in Equivalent Series Resistance (ESR) and a reduction in capacitance, making it harder for the PSU to buffer transient power spikes from high-end components."
+        "text": "For premium units, deduct 5% of the original wattage rating annually for every year past year 3. For budget units, deduct 8% to 10% annually starting from the first year."
       }
     },
     {
       "@type": "Question",
-      "name": "How much wattage capacity does a PSU lose per year?",
+      "name": "How does operating temperature affect PSU lifespan?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Under typical operating conditions, a high-quality PSU loses negligible capacity during the first 3 years. After year 3, capacity derates at an estimated 2% to 5% annually, depending on temperature, usage density, and component quality (e.g. Japanese 105°C capacitors degrade much slower than budget alternatives)."
+        "text": "According to chemical laws, every 10°C increase in operating temperature doubles the rate of electrolyte evaporation, cutting the capacitor's lifespan in half."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the symptoms of a degraded power supply?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Common symptoms include random shutdowns during gaming, increased voltage ripple causing system crashes (BSODs), and increased fan noise as the unit struggles to stay cool."
       }
     }
   ]
@@ -38,107 +46,91 @@ const faqSchema = {
 ---
 
 <Layout
-  title="Does a PSU Lose Wattage Over Time? Capacitor Aging Explained — PSUCheck"
-  description="Understand how and why computer power supplies lose wattage capacity over time. The science of capacitor dry-out, degradation curves, and when to replace."
+  title="PSU Capacitor Aging & Power Degradation Guide — PSUCheck"
+  description="Understand how power supply capacitors degrade over time. Learn about capacitor drying, thermal stress, and how to calculate effective PSU capacity loss."
   schema={faqSchema}
 >
   <article class="guide-article">
     <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 1.5rem;">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/guides/">Guides</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">PSU Capacitor Aging & Power Degradation Guide — PSUCheck</span>
+      </nav>
+
       <header class="guide-header">
         <div class="guide-meta">
           <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
-          <span>Updated: July 13, 2026</span>
+          <span>Updated: July 14, 2026</span>
           <span style="margin: 0 0.5rem; opacity: 0.5;">•</span>
-          <span>2 min read</span>
+          <span class="reading-time-badge">12 min read</span>
         </div>
-        <h1>Does a PSU Lose Wattage Over Time? The Science of Capacitor Aging</h1>
-        <p class="guide-lead">
-          PC power supplies are chemical and electrical systems that degrade with age. 
-          This technical guide explains why PSUs lose capacity, how capacitor aging affects performance, and how to verify if your unit is safe.
-        </p>
+        <h1>PSU Capacitor Aging & Power Degradation Guide </h1>
       </header>
 
       <div class="guide-layout">
         <main class="guide-content" id="main-content">
-          <h2>The Core Mechanism: Capacitor Dry-out</h2>
-          <p>
-            Inside every desktop power supply, electrolytic capacitors are used to filter voltage fluctuations and output smooth 12V, 5V, and 3.3V DC power. 
-            These capacitors contain a liquid electrolyte gel. Over years of gaming heat, this gel slowly escapes through the seals, causing the capacitor to dry out.
-          </p>
-          <p>
-            When a capacitor dries out:
-          </p>
-          <ul>
-            <li><strong>Capacitance Drops:</strong> The capacitor loses its ability to store energy, leaving the PSU with less energy buffer during power spikes.</li>
-            <li><strong>ESR Rises:</strong> Equivalent Series Resistance increases, converting electrical energy into excess heat and further accelerating the degradation cycle.</li>
-          </ul>
-
-          <h2>Typical PSU Capacity Loss Curve</h2>
-          <p>
-            PSU capacity loss is non-linear. High-quality power supplies utilize Japanese capacitors rated at 105°C, which show virtually zero degradation for the first three years. 
-            After this initial period, capacity begins to decline:
-          </p>
-          <div style="background:var(--bg-secondary); padding:1.25rem; border-radius:var(--radius-lg); border:1px solid var(--border-subtle); margin:1.5rem 0;">
-            <h3 style="font-size:0.95rem; text-transform:uppercase; color:var(--color-accent-cyan); margin:0 0 1rem; font-weight:700;">Capacitor Sizing Loss Timeline</h3>
-            <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.875rem;">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
-                <span>Years 1-3 (Brand New / Healthy)</span>
-                <strong style="font-family:var(--font-mono); color:var(--status-safe);">100% Capacity</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
-                <span>Year 5 (Initial Aging)</span>
-                <strong style="font-family:var(--font-mono); color:var(--text-primary);">~90% Capacity</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
-                <span>Year 8 (Warning Phase)</span>
-                <strong style="font-family:var(--font-mono); color:var(--status-warning);">~75% Capacity</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:0.4rem;">
-                <span>Year 10 (Critical Zone)</span>
-                <strong style="font-family:var(--font-mono); color:var(--status-danger);">~65% Capacity</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; padding-bottom:0.4rem;">
-                <span>Year 15 (End of Safe Life)</span>
-                <strong style="font-family:var(--font-mono); color:var(--text-tertiary);">~40% Capacity</strong>
-              </div>
-            </div>
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — RECOMMENDED SPONSOR
           </div>
 
-          <h2>Why Age Matters for Modern GPU Upgrades</h2>
-          <p>
-            Even if an old 750W PSU can power an office desktop, pairing it with a modern graphics card like the RTX 4070 Ti SUPER or RTX 5080 poses serious risks. 
-            Modern GPUs pull microsecond-duration power spikes (transients) that can exceed their rated Total Board Power (TBP) by 1.5× or more. 
-          </p>
-          <p>
-            An old, degraded PSU lacks the filter capacity to smooth out these transient excursions. 
-            When a spike hits, the voltage on the 12V rail drops instantly, triggering the PSU's Over-Current Protection (OCP) and shutting down the PC to prevent hardware damage.
-          </p>
+          <h2 id="intro">1. Introduction &amp; Context</h2>
+          
+  <p>Power supply units (PSUs) are static electrical components, but they are subject to physical degradation. Over years of operation, the internal components of a power supply experience chemical and structural changes that reduce their electrical performance. This process, commonly referred to as capacitor aging or PSU degradation, directly impacts the maximum wattage a PSU can safely deliver. Understanding capacitor degradation is critical for anyone planning to reuse an older power supply in a new PC build.</p>
+  <p>A PSU that was rated for 750W five years ago will not deliver 750W of clean power today. This guide analyzes the chemical causes of capacitor aging, the mathematical derating formulas, and how to protect your PC components. We explain how thermal stress accelerates capacitor drying, and how to calculate the effective wattage limits of your aging power supply, helping you maintain a stable system.</p>
+  <p>Capacitor degradation represents a slow, silent decline. A degraded PSU may continue to power a PC during idle web browsing, but trigger instant over-power shutdowns when launched into a demanding game. Understanding the chemistry behind this wear helps builders decide when it is time to upgrade.</p>
+  
 
-          <div style="margin-top:2.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
-            <a href="/psu-replacement-calculator" class="btn btn-primary">Check your PSU Health Now</a>
-            <a href="/psu-calculator" class="btn btn-secondary">Analyze Custom PC build Draw</a>
+          <h2 id="section1">2. Technical Analysis &amp; Sizing Equations</h2>
+          
+  <p>The primary driver of PSU degradation is the chemical breakdown of its electrolytic capacitors. Aluminum electrolytic capacitors contain a liquid electrolyte that conducts charge between anode and cathode plates. Over hours of operation, especially at high temperatures, this liquid electrolyte slowly evaporates or diffuses through the rubber seals of the capacitor housing, a process known as capacitor drying.</p>
+  <p>As the electrolyte evaporates, the capacitor loses capacitance (the ability to store electrical charge) and its Equivalent Series Resistance (ESR) increases. High ESR generates more internal heat as current passes through the capacitor, creating a thermal feedback loop that accelerates degradation. Eventually, the capacitor can no longer smooth voltage ripples, leading to electrical noise and instability on the PSU's voltage rails. Ripple voltage can cause memory corruption, CPU stability issues, and graphics driver crashes.</p>
+  <p>In addition to electrolytic capacitors, the magnetic coils and transformers inside the PSU experience insulation degradation over time. Thermal expansion and contraction cycles can create micro-cracks in the enamel coating of transformer wire coils, leading to minor short circuits between windings and reducing conversion efficiency.</p>
+  
+
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — IN-CONTENT BANNER
           </div>
+
+          <h2 id="section2">3. Detailed Architecture, Rails &amp; Standards</h2>
+          
+  <p>To prevent system crashes, builders must apply a capacitor aging derating factor when sizing older power supplies. Under normal operating conditions, a quality PSU using 105°C-rated Japanese capacitors loses approximately 5% of its effective power capacity annually after the third year of operation. Cheap or budget-focused units using 85°C-rated Chinese or Taiwanese capacitors can degrade at a rate of 8% to 10% annually starting from year one.</p>
+  <p>Let's calculate the effective capacity of an 850W PSU over its lifespan:
+  </p>
+  <ul>
+    <li><strong>Years 1 to 3:</strong> 850W effective capacity (no significant degradation yet).</li>
+    <li><strong>Year 5 (2 years of active degradation):</strong> 850W × (1 - 0.10) = 765W effective capacity.</li>
+    <li><strong>Year 8 (5 years of active degradation):</strong> 850W × (1 - 0.25) = 637.5W effective capacity.</li>
+    <li><strong>Year 10 (7 years of active degradation):</strong> 850W × (1 - 0.35) = 552.5W effective capacity.</li>
+  </ul>
+  <p>If you pair a modern graphics card requiring a minimum of 750W of power with a 10-year-old 850W PSU, the unit will quickly trigger its OCP or OPP safety limits, causing instant shutdowns under load. Operating a degraded PSU at its absolute limit also increases thermal output and fan noise, compromising system aesthetics.</p>
+  
+
+          <h2 id="section3">4. Sizing Guides &amp; Real-World Recommendations</h2>
+          
+  <p>Thermal stress is the single largest factor accelerating capacitor degradation. The Arrhenius law of chemical reactions applies directly: for every 10°C increase in operating temperature, the evaporation rate of the capacitor electrolyte doubles, cutting the capacitor's lifespan in half. This is why case airflow and PSU placement are so critical.</p>
+  <p>Power supplies mounted in cases with poor airflow, or units running with their fan intake blocked by dust filters, operate at elevated ambient temperatures. Running a PSU near 50°C instead of 30°C dramatically accelerates degradation, causing premium units to fail years before their warranty expires. Regularly cleaning dust filters and ensuring the PSU fan intake is clear represents crucial maintenance.</p>
+  <p>Opting for a high-efficiency PSU (such as Gold or Platinum) also reduces thermal stress. High-efficiency units lose less power as heat during conversion, reducing internal case temperatures and allowing the PSU to run with lower fan speeds or in a passive fanless mode, extending component lifespans.</p>
+  
+
+          <h2 id="section4">5. Verdict &amp; Long-Term Total Cost of Ownership (TCO)</h2>
+          
+  <p>In conclusion, capacitor aging is a physical reality that all PC builders must plan for. When reusing a power supply that is more than 3 to 4 years old, always calculate its effective degraded capacity using a 5% annual reduction factor. If the degraded capacity falls near your system's transient peak draws, replace the unit with a modern, high-quality ATX 3.1 power supply to guarantee system stability and protect your hardware investment.</p>
+  <p>By monitoring system stability, maintaining clean dust filters, and applying derating math when planning component upgrades, you can manage the impact of capacitor aging and build a stable, long-lasting custom PC.</p>
+  
+
+          <h2 id="faq">6. Frequently Asked Questions (FAQ)</h2>
+          <h3>Why do PC power supplies degrade over time?</h3><p>Power supplies degrade because the liquid electrolyte inside their aluminum capacitors slowly evaporates over years of thermal cycles, reducing capacitance and increasing resistance.</p>
+<h3>How do you calculate PSU capacity loss?</h3><p>For premium units, deduct 5% of the original wattage rating annually for every year past year 3. For budget units, deduct 8% to 10% annually starting from the first year.</p>
+<h3>How does operating temperature affect PSU lifespan?</h3><p>According to chemical laws, every 10°C increase in operating temperature doubles the rate of electrolyte evaporation, cutting the capacitor's lifespan in half.</p>
+<h3>What are the symptoms of a degraded power supply?</h3><p>Common symptoms include random shutdowns during gaming, increased voltage ripple causing system crashes (BSODs), and increased fan noise as the unit struggles to stay cool.</p>
         </main>
 
         <aside class="guide-sidebar">
           <TableOfContents client:load />
           <MethodologyCard />
-          <div class="card">
-            <h3>Interactive Tools</h3>
-            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
-              <li><a href="/psu-replacement-calculator">🔋 PSU Replacement Calculator</a></li>
-              <li><a href="/psu-calculator">⚡ PSU Sizing Tool</a></li>
-              <li><a href="/compare/ups-calculator">🔋 UPS Battery Sizer</a></li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Related Guides</h3>
-            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
-              <li><a href="/guides/how-to-test-a-psu">How to Test a PSU</a></li>
-              <li><a href="/guides/atx-3-1-guide">ATX 3.1 Connector Guide</a></li>
-              <li><a href="/guides/psu-lifespan">General PSU Lifespan</a></li>
-            </ul>
-          </div>
         </aside>
       </div>
     </div>
@@ -146,17 +138,18 @@ const faqSchema = {
 </Layout>
 
 <style>
-.guide-article { padding: 4rem 0; }
-.guide-header { margin-bottom: 3rem; }
-.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
-.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
-.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
-@media (min-width: 1024px) {
-  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
-}
-.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
-.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
-.guide-content ul { padding-left: 1.5rem; margin-bottom: 1.5rem; }
-.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
-.guide-sidebar .card { padding: 1.25rem; }
+  .guide-article { padding: 3rem 0; }
+  .guide-header { margin-bottom: 2.5rem; }
+  .guide-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-top: 0.5rem; }
+  .guide-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+  @media (min-width: 992px) {
+    .guide-layout { grid-template-columns: 3fr 1fr; }
+  }
+  .guide-content { font-size: 1.05rem; line-height: 1.7; color: var(--color-text-secondary); }
+  .guide-content h2 { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
+  .guide-content h3 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  .guide-content p { margin-bottom: 1.5rem; }
+  .guide-content ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+  .guide-content li { margin-bottom: 0.5rem; }
+  .guide-sidebar { display: flex; flex-direction: column; gap: 2rem; }
 </style>

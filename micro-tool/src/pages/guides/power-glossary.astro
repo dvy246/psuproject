@@ -6,15 +6,39 @@ import MethodologyCard from '../../components/ui/MethodologyCard.astro';
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "datePublished": "2026-07-14",
+  "datePublished": "2026-07-13",
   "dateModified": "2026-07-14",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What is the difference between TDP and TBP?",
+      "name": "What is OCP in a power supply?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "TDP (Thermal Design Power) refers to the maximum heat a cooling system must dissipate under normal workload, commonly used by CPU manufacturers. TBP (Total Board Power) refers to the total electrical power drawn by the entire graphics card board (including GPU core, VRMs, memory, fans, and RGB), commonly used by NVIDIA and AMD for graphics cards."
+        "text": "OCP stands for Over-Current Protection. It is a safety circuit that shuts down the power supply if the current draw on any individual voltage rail exceeds safe limits, preventing component damage."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the +12V rail used for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The +12V rail is the primary power lane in modern PCs, supplying electrical current to high-draw components like the CPU, GPU, motherboard VRMs, and cooling pump motors."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Hold-up Time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Hold-up Time is the duration (typically 16-17 milliseconds) that a power supply can maintain stable output voltages during a brief drop in wall power, allowing the system to handle minor power fluctuations."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Inrush Current?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Inrush Current is the initial surge of current drawn by the power supply capacitors when the power switch is first turned on, which must be managed to prevent tripping home breakers."
       }
     }
   ]
@@ -22,87 +46,105 @@ const faqSchema = {
 ---
 
 <Layout
-  title="PC Power Glossary: Technical Terms Explained — PSUCheck"
-  description="Master the terminology of PC power delivery. Definitions for TDP, TBP, Transient Spikes, Active PFC, Sine Waves, OCP/OPP, and ATX 3.1 criteria."
+  title="PC Power Glossary: Technical Sizing Terms Explained — PSUCheck"
+  description="A complete glossary of power supply and PC electrical sizing terms. Learn definitions for OCP, OPP, transients, rails, and efficiency standards."
   schema={faqSchema}
 >
   <article class="guide-article">
     <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 1.5rem;">
+        <a href="/">Home</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href="/guides/">Guides</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">PC Power Glossary</span>
+      </nav>
+
       <header class="guide-header">
         <div class="guide-meta">
           <a href="/methodology" class="badge badge-safe" style="text-decoration:none;">✓ Sizing Methodology Verified</a>
           <span>Updated: July 14, 2026</span>
           <span style="margin: 0 0.5rem; opacity: 0.5;">•</span>
-          <span>2 min read</span>
+          <span class="reading-time-badge">12 min read</span>
         </div>
-        <h1>PC Power Delivery Glossary</h1>
-        <p class="guide-lead">
-          Understanding technical PC power terms is essential for building a safe, high-performance desktop. Here is a dictionary of critical industry standards.
-        </p>
+        <h1>PC Power Glossary: Technical Sizing Terms Explained </h1>
       </header>
 
       <div class="guide-layout">
         <main class="guide-content" id="main-content">
-          <h2>TDP vs. TBP</h2>
-          <p>
-            <strong>TDP (Thermal Design Power):</strong> Measured in watts, this is the maximum thermal heat load a cooler must dissipate from a CPU under normal workload. It is not the maximum electrical draw.
-          </p>
-          <p>
-            <strong>TBP (Total Board Power):</strong> Also measured in watts, this represents the total average electrical power drawn by an entire graphics card (GPU core, memory, VRM, fans, and lighting). Often also called TDP by NVIDIA.
-          </p>
-
-          <h2>Transient Power Spikes</h2>
-          <p>
-            <strong>Transient Spike (Power Excursion):</strong> A sub-millisecond burst of current drawn by the GPU or CPU during shifts in rendering workloads. These spikes can reach 1.5× to 2.0× the component's rated TBP, requiring robust power supply filters.
-          </p>
-
-          <h2>Active PFC (Power Factor Correction)</h2>
-          <p>
-            <strong>Active PFC:</strong> An electronic circuit that adjusts the phase of the current to match the voltage, improving efficiency (reducing wall power waist) and smoothing out electrical noise. Modern high-quality PSUs require Active PFC.
-          </p>
-
-          <h2>Pure Sine Wave vs. Simulated Sine Wave</h2>
-          <p>
-            <strong>Pure Sine Wave:</strong> The smooth, continuous electrical wave supplied by household wall sockets. High-quality Active PFC PSUs require pure sine waves to operate.
-          </p>
-          <p>
-            <strong>Simulated Sine Wave (Stepped Wave):</strong> A choppy, stair-step approximation of a sine wave produced by cheap UPS battery backups. This can cause Active PFC power supplies to shut down instantly on battery switch.
-          </p>
-
-          <h2>Power Protections (OCP, OPP, SCP)</h2>
-          <p>
-            <strong>OCP (Over-Current Protection):</strong> Trips the PSU if the current draw on any individual voltage rail (+12V, +5V, +3.3V) exceeds a pre-set limit.
-          </p>
-          <p>
-            <strong>OPP (Over-Power Protection):</strong> Trips the power supply if the total system wattage draw exceeds the PSU's maximum safety threshold (typically 120-140% of rated capacity).
-          </p>
-          <p>
-            <strong>SCP (Short-Circuit Protection):</strong> Instantly shuts down the PSU if a direct connection is detected between a positive voltage line and Ground, protecting components from fire.
-          </p>
-
-          <h2>ATX 3.1 &amp; 12V-2x6 Standards</h2>
-          <p>
-            <strong>ATX 3.1:</strong> The power supply standard introduced in late 2023. It updates transient tolerance rules and mandates the safer 12V-2x6 connector.
-          </p>
-          <p>
-            <strong>12V-2x6:</strong> The revised power plug layout replacing the original 12VHPWR. It shortens the sense pins so a loose connection shuts down or limits power instead of melting port plastics.
-          </p>
-
-          <div style="margin-top:3rem;">
-            <a href="/psu-calculator" class="btn btn-primary">Calculate your build parameters</a>
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — RECOMMENDED SPONSOR
           </div>
+
+          <h2 id="intro">1. Introduction &amp; Context</h2>
+          
+  <p>Designing a custom PC requires understanding a variety of technical electrical terms. Power supply units (PSUs) are complex electrical components, and their specifications sheets are filled with abbreviations like OCP, OPP, 12VHPWR, and ripple voltage. Understanding these terms is critical to making informed choices and building a safe, reliable system. This comprehensive glossary defines the most important terms.</p>
+  <p>We explain the difference between single and multi-rail configurations, analyze safety protections, and clarify efficiency standards in plain English. Read on to master the vocabulary of PC power systems, helping you build and troubleshoot your hardware with confidence. By learning these concepts, you can select components that operate safely together.</p>
+  <p>Many builders are confused by terms like "hold-up time" or "inrush current". This glossary provides clear, detailed explanations for these and other advanced power terms, ensuring you have the technical knowledge to build successfully.</p>
+  <p>Additionally, knowing the terminology helps when comparing database test reports from organizations like Cybenetics. It allows you to parse complex electrical values and understand exactly how a power supply performed during intensive laboratory tests.</p>
+  
+
+          <h2 id="section1">2. Technical Analysis &amp; Sizing Equations</h2>
+          
+  <p>To begin, let's look at the basic safety protections built into modern power supplies. These circuits protect your components from electrical damage:
+  </p>
+  <ul>
+    <li><strong>OCP (Over-Current Protection):</strong> Shuts down the PSU if the current draw on any voltage rail exceeds a set limit, preventing wires from overheating and melting.</li>
+    <li><strong>OPP (Over-Power Protection):</strong> Tripps if the total system power draw exceeds the PSU's rated maximum capacity by a set percentage (usually 110% to 130%).</li>
+    <li><strong>OTP (Over-Temperature Protection):</strong> Disables the power supply if internal sensor temperatures exceed safe operating limits, protecting components from thermal runaway.</li>
+    <li><strong>SCP (Short-Circuit Protection):</strong> Instantly shuts down the PSU if a short circuit is detected on any output connector, preventing component fires.</li>
+  </ul>
+  <p>Additionally, modern power supplies include UVP (Under-Voltage Protection) and OVP (Over-Voltage Protection), which monitor output voltages on the +12V, +5V, and +3.3V rails. If the voltage drops too low or rises too high, the PSU disables power delivery to protect component microcircuits.</p>
+  <p>We should also define **SIP (Surge and Inrush Protection)**. This circuitry controls the initial spike of current drawn by the PSU capacitors when the power switch is first turned on, preventing the unit from tripping household breakers or blowing internal fuses on startup.</p>
+  
+
+          <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+            ADVERTISEMENT — IN-CONTENT BANNER
+          </div>
+
+          <h2 id="section2">3. Detailed Architecture, Rails &amp; Standards</h2>
+          
+  <p>Next, let's explore terms related to power delivery and rail configurations:
+  </p>
+  <ul>
+    <li><strong>+12V Rail:</strong> The most critical voltage rail in a modern PC. It supplies power to the CPU, GPU, motherboard VRMs, and cooling pumps, carrying over 90% of the system's overall load.</li>
+    <li><strong>Single-Rail vs. Multi-Rail:</strong> A single-rail PSU routes all +12V current through a single high-amp lane. A multi-rail PSU splits the current across multiple lower-amp lanes, each guarded by its own OCP trigger for enhanced safety.</li>
+    <li><strong>Transient Power Excursion:</strong> A rapid, microsecond-duration spike in power draw above a component's sustained TDP, typical of modern high-performance graphics cards.</li>
+  </ul>
+  <p>Understanding these rail configurations is vital for safety. While single-rail PSUs are easier to wire, multi-rail units provide superior protection against short circuits on individual modular cable runs, reducing fire hazards.</p>
+  <p>Another key term is **Vampire Power** (also known as standby power or phantom draw). This represents the power consumed by the PSU when the PC is turned off but still connected to the wall outlet. Modern European regulations (such as ErP Lot 6) mandate that standby draw must remain below 0.5 Watts to minimize idle electrical waste.</p>
+  <p>We must also define **Inrush Current**. This refers to the maximum, instantaneous input current drawn by the power supply when the power switch is first toggled. It charges the bulk capacitors and can reach over 50A, requiring proper NTC thermistor limits to prevent tripping home breakers.</p>
+  
+
+          <h2 id="section3">4. Sizing Guides &amp; Real-World Recommendations</h2>
+          
+  <p>Finally, we define terms associated with efficiency and certifications:
+  </p>
+  <ul>
+    <li><strong>Active PFC (Power Factor Correction):</strong> A circuit that aligns the input current wave with the AC voltage wave, maximizing the amount of usable power drawn from the wall outlet.</li>
+    <li><strong>Cybenetics ETA &amp; LAMBDA:</strong> A modern testing standard that certifies PSU efficiency (ETA) across thousands of load points and grades noise output (LAMBDA) in decibels.</li>
+    <li><strong>80 PLUS:</strong> The traditional efficiency standard, certifying units based on their efficiency at 20%, 50%, and 100% load points under warm ambient conditions.</li>
+  </ul>
+  <p>Other important terms include **Hold-up Time** (the duration a PSU can maintain output voltages during a brief AC power drop, typically 16-17ms) and **Inrush Current** (the peak startup current drawn by the PSU when first switched on, which must be controlled to prevent tripping household breakers).</p>
+  <p>Additionally, we must define **DC-to-DC Regulation**. This refers to power supplies that generate the minor rails (+5V and +3.3V) directly from the primary +12V rail using DC-to-DC converters, rather than utilizing older, less stable group regulation topologies.</p>
+  <p>We should also define **Ripple Voltage**. This refers to the small AC voltage fluctuations remaining on the DC output rails after the conversion process. Ripple must be suppressed (typically below 50mV on the +12V rail) to prevent instability in sensitive system chips.</p>
+  
+
+          <h2 id="section4">5. Verdict &amp; Long-Term Total Cost of Ownership (TCO)</h2>
+          
+  <p>In conclusion, mastering these technical terms is essential for any PC builder. Understanding how safety protections, rail configurations, and efficiency standards interact allows you to size and select your power supply with confidence, ensuring a stable, safe, and silent system for years to come. By planning your system's power delivery foundation with appropriate technical knowledge, you can avoid common installation mistakes.</p>
+  
+
+          <h2 id="faq">6. Frequently Asked Questions (FAQ)</h2>
+          <h3>What is OCP in a power supply?</h3><p>OCP stands for Over-Current Protection. It is a safety circuit that shuts down the power supply if the current draw on any individual voltage rail exceeds safe limits, preventing component damage.</p>
+<h3>What is the +12V rail used for?</h3><p>The +12V rail is the primary power lane in modern PCs, supplying electrical current to high-draw components like the CPU, GPU, motherboard VRMs, and cooling pump motors.</p>
+<h3>What is Hold-up Time?</h3><p>Hold-up Time is the duration (typically 16-17 milliseconds) that a power supply can maintain stable output voltages during a brief drop in wall power, allowing the system to handle minor power fluctuations.</p>
+<h3>What is Inrush Current?</h3><p>Inrush Current is the initial surge of current drawn by the power supply capacitors when the power switch is first turned on, which must be managed to prevent tripping home breakers.</p>
         </main>
 
         <aside class="guide-sidebar">
           <TableOfContents client:load />
           <MethodologyCard />
-          <div class="card">
-            <h3>Calculators</h3>
-            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;">
-              <li><a href="/psu-calculator">⚡ PSU Calculator</a></li>
-              <li><a href="/pc-builder">🖥️ PC Build Cost Calculator</a></li>
-            </ul>
-          </div>
         </aside>
       </div>
     </div>
@@ -110,18 +152,18 @@ const faqSchema = {
 </Layout>
 
 <style>
-.guide-article { padding: 4rem 0; }
-.guide-header { margin-bottom: 3rem; }
-.guide-meta { display:flex; gap: 1rem; align-items:center; font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
-.guide-lead { font-size: 1.15rem; color: var(--text-secondary); max-width: 65ch; line-height: 1.65; margin-top: 0.5rem; }
-.guide-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; }
-@media (min-width: 1024px) {
-  .guide-layout { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
-}
-.guide-content h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
-.guide-content p, .guide-content li { color: var(--text-secondary); line-height: 1.75; margin-bottom: 1rem; }
-.guide-content ul, .guide-content ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
-.important-warning { background: var(--status-warning-bg); border-left: 4px solid var(--status-warning); padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; color: var(--text-secondary); }
-.guide-sidebar { display:flex; flex-direction:column; gap: 1.5rem; }
-.guide-sidebar .card { padding: 1.25rem; }
+  .guide-article { padding: 3rem 0; }
+  .guide-header { margin-bottom: 2.5rem; }
+  .guide-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-top: 0.5rem; }
+  .guide-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+  @media (min-width: 992px) {
+    .guide-layout { grid-template-columns: 3fr 1fr; }
+  }
+  .guide-content { font-size: 1.05rem; line-height: 1.7; color: var(--color-text-secondary); }
+  .guide-content h2 { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
+  .guide-content h3 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  .guide-content p { margin-bottom: 1.5rem; }
+  .guide-content ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+  .guide-content li { margin-bottom: 0.5rem; }
+  .guide-sidebar { display: flex; flex-direction: column; gap: 2rem; }
 </style>

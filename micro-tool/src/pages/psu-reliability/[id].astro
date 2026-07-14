@@ -84,6 +84,7 @@ const faqSchema = {
     : `Collecting real-world reliability data for the ${psu.name} (${psu.wattage}W ${(psu.efficiencyTier ?? '').toUpperCase()}). Submit your experience and help the PC building community.`
   }
   schema={[schema, faqSchema]}
+  noIndex={!hasStats}
 >
   <section style="padding:3rem 0 6rem;" aria-labelledby="psu-rel-heading">
     <div class="container">

@@ -10,7 +10,7 @@ import psuData from '../../data/index/psus.index.json';
 export async function getStaticPaths() {
   const cpus = cpuData.items as CpuIndex[];
   const gpus = gpuData.items as GpuIndex[];
-  const wattages = [550, 650, 750, 850, 1000];
+  const wattages = [550, 650, 750, 850, 1000, 1200];
 
   const paths = [];
 
@@ -34,27 +34,6 @@ export async function getStaticPaths() {
         paths.push({
           params: { slug: `is-${wattage}w-enough-for-${gpu.id}-with-${cpu.id}` },
           props: { gpu, cpu, wattage, psuAgeYears: 0 }
-        });
-      }
-    }
-  }
-
-  // P3: Age-aware oracle pages
-  // Expanded: all GPUs × 5 age buckets (3, 5, 8, 10, 12yr) = maximize long-tail SEO reach
-  const ageBuckets = [
-    { years: 3,  label: 'age-3'  }, // 3yr:  no derating yet, but targets common search query
-    { years: 5,  label: 'age-5'  }, // 5yr:  10% derating (capacitorAgingPerYear: 0.05 * 2yr)
-    { years: 8,  label: 'age-8'  }, // 8yr:  25% derating (0.05 * 5yr)
-    { years: 10, label: 'age-10' }, // 10yr: 35% derating (0.05 * 7yr)
-    { years: 12, label: 'age-12' }, // 12yr: 45% derating (0.05 * 9yr)
-  ];
-
-  for (const gpu of gpus) {
-    for (const wattage of wattages) {
-      for (const bucket of ageBuckets) {
-        paths.push({
-          params: { slug: `is-${wattage}w-enough-for-${gpu.id}-${bucket.label}` },
-          props: { gpu, cpu: null, wattage, psuAgeYears: bucket.years }
         });
       }
     }

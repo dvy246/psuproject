@@ -12,13 +12,7 @@ export async function getStaticPaths() {
   const cpus = cpuData.items as CpuIndex[];
   const psus = psuData.items as PsuIndex[];
 
-  const wattages = [550, 650, 750, 850, 1000];
-  const ageBuckets = [
-    { years: 3, label: 'age-3' },
-    { years: 5, label: 'age-5' },
-    { years: 8, label: 'age-8' },
-    { years: 10, label: 'age-10' },
-  ];
+  const wattages = [550, 650, 750, 850, 1000, 1200];
 
   const refCpu = (cpus as CpuIndex[]).find(c => c.id === 'ryzen-7-7800x3d') || (cpus as CpuIndex[])[0];
 
@@ -28,12 +22,10 @@ export async function getStaticPaths() {
     for (const wattage of wattages) {
       if (wattage < gpu.minPsuWattage) continue;
 
-      for (const bucket of ageBuckets) {
-        paths.push({
-          params: { slug: `should-i-replace-my-${wattage}w-psu-for-${gpu.id}-${bucket.label}` },
-          props: { gpu, refCpu, wattage, psuAgeYears: bucket.years, psus }
-        });
-      }
+      paths.push({
+        params: { slug: `should-i-replace-my-${wattage}w-psu-for-${gpu.id}` },
+        props: { gpu, refCpu, wattage, psuAgeYears: 5, psus }
+      });
     }
   }
 
