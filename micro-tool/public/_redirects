@@ -1,3 +1,6 @@
+# Canonical host: force www → non-www to prevent duplicate content
+https://www.psucheck.com/*  https://psucheck.com/:splat  301
+
 # Cloudflare Pages redirects
 # Redirect legacy/common paths
 

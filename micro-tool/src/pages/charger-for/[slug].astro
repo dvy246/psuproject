@@ -49,15 +49,26 @@ const faqSchema = {
   ]
 };
 
-const productSchema = {
+const articleSchema = {
   "@context": "https://schema.org",
-  "@type": "Product",
-  "name": `${laptop.name} USB-C Charging Guide`,
+  "@type": "TechArticle",
+  "headline": `${laptop.name} USB-C Charging Guide`,
   "description": `Charging specifications, charger compatibility matrices, and GaN power adapter picks for the ${laptop.name}.`,
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
+  "image": ["https://psucheck.com/pc-hero.png"],
+  "datePublished": "2026-01-15T08:00:00Z",
+  "dateModified": "2026-07-14T08:00:00Z",
+  "author": {
+    "@type": "Organization",
+    "name": "PSUCheck Engineering Team",
+    "url": "https://psucheck.com/about"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PSUCheck",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://psucheck.com/favicon.svg"
+    }
   }
 };
 
@@ -71,7 +82,7 @@ const breadcrumbSchema = {
   ]
 };
 
-const schemas = [breadcrumbSchema, faqSchema, productSchema];
+const schemas = [breadcrumbSchema, faqSchema, articleSchema];
 
 const verdictLabels: Record<string, string> = {
   fast: '⚡ Fast Charging',

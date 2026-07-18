@@ -65,6 +65,18 @@ const { type, gpu, cpu, psuWattage } = Astro.props as {
 const psus = psuData.items as PsuIndex[];
 const gpus = gpuData.items as GpuIndex[];
 
+function findComparePartner(current: PsuIndex, tiers: { premium: any[]; mid: any[]; budget: any[] }): PsuIndex | null {
+  const all = [...tiers.premium, ...tiers.mid, ...tiers.budget];
+  for (const entry of all) {
+    const p = entry.psu as PsuIndex;
+    if (p.id === current.id) continue;
+    if (p.brand === current.brand) continue;
+    if (Math.abs(p.wattage - current.wattage) > 150) continue;
+    return p;
+  }
+  return null;
+}
+
 // Run analysis
 const analysis = runMatchmakerAnalysis(gpu, cpu);
 const insight = generateUniqueInsight(gpu, cpu, analysis);
@@ -160,6 +172,14 @@ if (type === 'gpu-hub') {
   );
 }
 
+faqEntries.push(
+  { q: `What does the "${gpu.tier}" transient tier mean for ${gpu.name}?`, a: `${gpu.name} is classified as a ${gpu.tier}-tier GPU for transient power behavior. ${gpu.tier === 'halo' ? 'Halo-tier GPUs like the RTX 5090 can spike to 180-200% of rated TBP. This requires a PSU rated well above the GPU TBP.' : gpu.tier === 'ultra' ? 'Ultra-tier GPUs spike to approximately 160-175% of rated TBP.' : gpu.tier === 'high' ? 'High-tier GPUs spike to approximately 150-160% of rated TBP.' : gpu.tier === 'mid' ? 'Mid-tier GPUs spike to approximately 135-150% of rated TBP.' : 'Budget-tier GPUs have milder transient spikes, generally under 135% of rated TBP.'} This is why we factor GPU tier into our PSU recommendations.` },
+  { q: `Should I get a Gold or Platinum PSU for my build?`, a: `80+ Gold is the best value for most builds, offering 87-90% efficiency under typical loads. Platinum adds 2-3% efficiency but costs 30-50% more. For gaming systems running 4-6 hours daily, Gold saves money overall. Platinum makes sense for 24/7 operation or high-end builds where the premium is marginal relative to total cost.` },
+  { q: `Why do you recommend ATX 3.1 PSUs for ${gpu.name}?`, a: `ATX 3.1 PSUs are designed to handle transient power spikes up to 200% of rated capacity for under 100 microseconds. This is critical for ${gpu.name}${gpu.connectorType === '12v-2x6' ? ', which uses the 12V-2x6 connector that provides better pin sensing and load distribution than previous standards.' : ', which can produce significant transient spikes despite not using the 12V-2x6 connector.'}` },
+  { q: `What is PSU headroom and why does it matter?`, a: `Headroom is the difference between your system's peak power draw and your PSU's rated capacity. More headroom means your PSU runs cooler, quieter, and more efficiently. It also provides room for future upgrades. We recommend at least 20% headroom above transient peaks for ATX 3.1 PSUs.` },
+  { q: `How do I measure PSU quality?`, a: `We evaluate PSUs by efficiency certification (80+), Cybenetics noise rating, build quality tier (from A+ to Avoid), warranty length, and component quality. Our tier rating methodology is documented on the PSU reliability page and based on published Cybenetics reports and industry teardowns.` },
+);
+
 const faqSchema = faqEntries.length > 0 ? {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -208,7 +228,12 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
             <>Best PSU for the <span class="gradient-text">{gpu.name}</span></>
           )}
         </h1>
-        <p class="matchmaker-intro">{insight}</p>
+        <p class="matchmaker-intro">
+          {insight}
+          <span style="display:block; margin-top:0.5rem; font-size:0.875rem;">
+            🔍 <strong><a href={`/power-consumption/${gpu.id}/`} style="color:var(--accent-primary); text-decoration:underline;">View actual measured power draw specs and peak transient details for the {gpu.name}</a></strong>.
+          </span>
+        </p>
       </header>
 
       {/* === UPGRADE CHECK VERDICT === */}
@@ -396,7 +421,9 @@ const schemas = [breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
                     </div>
                     <div class="psu-card-footer">
                       <span class="psu-price">${r.psu.price}</span>
-                      <a href={`/compare/psu/${r.psu.id}-vs-${tiered.premium[0]?.psu.id !== r.psu.id ? tiered.premium[0]?.psu.id : (tiered.mid[0]?.psu.id || '')}`} class="btn btn-secondary btn-sm">Compare →</a>
+                      {findComparePartner(r.psu, tiered) && (
+                        <a href={`/compare/psu/${r.psu.id}-vs-${findComparePartner(r.psu, tiered)!.id}`} class="btn btn-secondary btn-sm">Compare →</a>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -1,0 +1,1866 @@
+[
+  {
+    "id": "psu-calculator",
+    "name": "PSU Sizing Calculator",
+    "type": "tool",
+    "url": "/psu-calculator/",
+    "brand": "VoltForge",
+    "subtitle": "Calculate steady load & transient spikes"
+  },
+  {
+    "id": "pc-builder",
+    "name": "PC Builder & Cost Estimator",
+    "type": "tool",
+    "url": "/pc-builder/",
+    "brand": "VoltForge",
+    "subtitle": "Build a custom PC and estimate costs"
+  },
+  {
+    "id": "psu-checker",
+    "name": "PSU Upgrade Headroom Checker",
+    "type": "tool",
+    "url": "/psu-checker/",
+    "brand": "VoltForge",
+    "subtitle": "Check compatibility for GPU upgrades"
+  },
+  {
+    "id": "psu-replacement-calculator",
+    "name": "PSU Replacement Calculator",
+    "type": "tool",
+    "url": "/psu-replacement-calculator/",
+    "brand": "VoltForge",
+    "subtitle": "Check if aging PSU can run new GPU"
+  },
+  {
+    "id": "breaker-calculator",
+    "name": "Circuit Breaker Auditor",
+    "type": "tool",
+    "url": "/compare/breaker-calculator/",
+    "brand": "VoltForge",
+    "subtitle": "Calculate breaker load limits for your PC"
+  },
+  {
+    "id": "ups-calculator",
+    "name": "UPS Battery Sizer",
+    "type": "tool",
+    "url": "/compare/ups-calculator/",
+    "brand": "VoltForge",
+    "subtitle": "Size backup battery UPS runtime"
+  },
+  {
+    "id": "gpu-upgrade-checker",
+    "name": "GPU Upgrade Checker",
+    "type": "tool",
+    "url": "/compare/gpu-upgrade-checker/",
+    "brand": "VoltForge",
+    "subtitle": "Select from-to GPUs and verify PSU safety"
+  },
+  {
+    "id": "best-psu",
+    "name": "Best PSU Recommendations",
+    "type": "tool",
+    "url": "/best-psu/",
+    "brand": "VoltForge",
+    "subtitle": "Premium, mid-range & budget PSU tier list"
+  },
+  {
+    "id": "psu-reliability",
+    "name": "Reliability & Longevity Database",
+    "type": "tool",
+    "url": "/psu-reliability/",
+    "brand": "VoltForge",
+    "subtitle": "Real community failure rates by PSU model"
+  },
+  {
+    "id": "diagnose",
+    "name": "PSU Fail Symptoms & Diagnostic Triage Wizard",
+    "type": "tool",
+    "url": "/diagnose/",
+    "brand": "VoltForge",
+    "subtitle": "Diagnose shutdowns, boot loops, coil whine, or BSODs"
+  },
+  {
+    "id": "ryzen-9-9950x",
+    "name": "AMD Ryzen 9 9950X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-9-9950x",
+    "brand": "AMD",
+    "subtitle": "CPU · 16 Cores · 170W TDP"
+  },
+  {
+    "id": "ryzen-9-9950x-power",
+    "name": "AMD Ryzen 9 9950X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-9-9950x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-9-9900x",
+    "name": "AMD Ryzen 9 9900X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-9-9900x",
+    "brand": "AMD",
+    "subtitle": "CPU · 12 Cores · 120W TDP"
+  },
+  {
+    "id": "ryzen-9-9900x-power",
+    "name": "AMD Ryzen 9 9900X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-9-9900x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-7-9800x3d",
+    "name": "AMD Ryzen 7 9800X3D",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-7-9800x3d",
+    "brand": "AMD",
+    "subtitle": "CPU · 8 Cores · 120W TDP"
+  },
+  {
+    "id": "ryzen-7-9800x3d-power",
+    "name": "AMD Ryzen 7 9800X3D Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-7-9800x3d/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-7-9700x",
+    "name": "AMD Ryzen 7 9700X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-7-9700x",
+    "brand": "AMD",
+    "subtitle": "CPU · 8 Cores · 65W TDP"
+  },
+  {
+    "id": "ryzen-7-9700x-power",
+    "name": "AMD Ryzen 7 9700X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-7-9700x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-5-9600x",
+    "name": "AMD Ryzen 5 9600X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-5-9600x",
+    "brand": "AMD",
+    "subtitle": "CPU · 6 Cores · 65W TDP"
+  },
+  {
+    "id": "ryzen-5-9600x-power",
+    "name": "AMD Ryzen 5 9600X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-5-9600x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-9-7950x",
+    "name": "AMD Ryzen 9 7950X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-9-7950x",
+    "brand": "AMD",
+    "subtitle": "CPU · 16 Cores · 170W TDP"
+  },
+  {
+    "id": "ryzen-9-7950x-power",
+    "name": "AMD Ryzen 9 7950X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-9-7950x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-9-7900x",
+    "name": "AMD Ryzen 9 7900X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-9-7900x",
+    "brand": "AMD",
+    "subtitle": "CPU · 12 Cores · 170W TDP"
+  },
+  {
+    "id": "ryzen-9-7900x-power",
+    "name": "AMD Ryzen 9 7900X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-9-7900x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-7-7800x3d",
+    "name": "AMD Ryzen 7 7800X3D",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-7-7800x3d",
+    "brand": "AMD",
+    "subtitle": "CPU · 8 Cores · 120W TDP"
+  },
+  {
+    "id": "ryzen-7-7800x3d-power",
+    "name": "AMD Ryzen 7 7800X3D Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-7-7800x3d/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-7-7700x",
+    "name": "AMD Ryzen 7 7700X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-7-7700x",
+    "brand": "AMD",
+    "subtitle": "CPU · 8 Cores · 105W TDP"
+  },
+  {
+    "id": "ryzen-7-7700x-power",
+    "name": "AMD Ryzen 7 7700X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-7-7700x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-5-7600x",
+    "name": "AMD Ryzen 5 7600X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-5-7600x",
+    "brand": "AMD",
+    "subtitle": "CPU · 6 Cores · 105W TDP"
+  },
+  {
+    "id": "ryzen-5-7600x-power",
+    "name": "AMD Ryzen 5 7600X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-5-7600x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-5-7600",
+    "name": "AMD Ryzen 5 7600",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-5-7600",
+    "brand": "AMD",
+    "subtitle": "CPU · 6 Cores · 65W TDP"
+  },
+  {
+    "id": "ryzen-5-7600-power",
+    "name": "AMD Ryzen 5 7600 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-5-7600/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-ultra-9-285k",
+    "name": "Intel Core Ultra 9 285K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-ultra-9-285k",
+    "brand": "Intel",
+    "subtitle": "CPU · 24 Cores · 125W TDP"
+  },
+  {
+    "id": "core-ultra-9-285k-power",
+    "name": "Intel Core Ultra 9 285K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-ultra-9-285k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-ultra-7-265k",
+    "name": "Intel Core Ultra 7 265K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-ultra-7-265k",
+    "brand": "Intel",
+    "subtitle": "CPU · 20 Cores · 125W TDP"
+  },
+  {
+    "id": "core-ultra-7-265k-power",
+    "name": "Intel Core Ultra 7 265K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-ultra-7-265k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-ultra-7-265kf",
+    "name": "Intel Core Ultra 7 265KF",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-ultra-7-265kf",
+    "brand": "Intel",
+    "subtitle": "CPU · 20 Cores · 125W TDP"
+  },
+  {
+    "id": "core-ultra-7-265kf-power",
+    "name": "Intel Core Ultra 7 265KF Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-ultra-7-265kf/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-ultra-5-245k",
+    "name": "Intel Core Ultra 5 245K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-ultra-5-245k",
+    "brand": "Intel",
+    "subtitle": "CPU · 14 Cores · 125W TDP"
+  },
+  {
+    "id": "core-ultra-5-245k-power",
+    "name": "Intel Core Ultra 5 245K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-ultra-5-245k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-ultra-5-245kf",
+    "name": "Intel Core Ultra 5 245KF",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-ultra-5-245kf",
+    "brand": "Intel",
+    "subtitle": "CPU · 14 Cores · 125W TDP"
+  },
+  {
+    "id": "core-ultra-5-245kf-power",
+    "name": "Intel Core Ultra 5 245KF Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-ultra-5-245kf/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i9-14900k",
+    "name": "Intel Core i9-14900K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i9-14900k",
+    "brand": "Intel",
+    "subtitle": "CPU · 24 Cores · 125W TDP"
+  },
+  {
+    "id": "core-i9-14900k-power",
+    "name": "Intel Core i9-14900K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i9-14900k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i7-14700k",
+    "name": "Intel Core i7-14700K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i7-14700k",
+    "brand": "Intel",
+    "subtitle": "CPU · 20 Cores · 125W TDP"
+  },
+  {
+    "id": "core-i7-14700k-power",
+    "name": "Intel Core i7-14700K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i7-14700k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i5-14600k",
+    "name": "Intel Core i5-14600K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i5-14600k",
+    "brand": "Intel",
+    "subtitle": "CPU · 14 Cores · 125W TDP"
+  },
+  {
+    "id": "core-i5-14600k-power",
+    "name": "Intel Core i5-14600K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i5-14600k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i5-14400f",
+    "name": "Intel Core i5-14400F",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i5-14400f",
+    "brand": "Intel",
+    "subtitle": "CPU · 10 Cores · 65W TDP"
+  },
+  {
+    "id": "core-i5-14400f-power",
+    "name": "Intel Core i5-14400F Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i5-14400f/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i3-14100f",
+    "name": "Intel Core i3-14100F",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i3-14100f",
+    "brand": "Intel",
+    "subtitle": "CPU · 4 Cores · 58W TDP"
+  },
+  {
+    "id": "core-i3-14100f-power",
+    "name": "Intel Core i3-14100F Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i3-14100f/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-9-9950x3d",
+    "name": "AMD Ryzen 9 9950X3D",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-9-9950x3d",
+    "brand": "AMD",
+    "subtitle": "CPU · 16 Cores · 170W TDP"
+  },
+  {
+    "id": "ryzen-9-9950x3d-power",
+    "name": "AMD Ryzen 9 9950X3D Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-9-9950x3d/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-9-9900x3d",
+    "name": "AMD Ryzen 9 9900X3D",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-9-9900x3d",
+    "brand": "AMD",
+    "subtitle": "CPU · 12 Cores · 120W TDP"
+  },
+  {
+    "id": "ryzen-9-9900x3d-power",
+    "name": "AMD Ryzen 9 9900X3D Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-9-9900x3d/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-7-5800x3d",
+    "name": "AMD Ryzen 7 5800X3D",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-7-5800x3d",
+    "brand": "AMD",
+    "subtitle": "CPU · 8 Cores · 105W TDP"
+  },
+  {
+    "id": "ryzen-7-5800x3d-power",
+    "name": "AMD Ryzen 7 5800X3D Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-7-5800x3d/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-7-5700x3d",
+    "name": "AMD Ryzen 7 5700X3D",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-7-5700x3d",
+    "brand": "AMD",
+    "subtitle": "CPU · 8 Cores · 105W TDP"
+  },
+  {
+    "id": "ryzen-7-5700x3d-power",
+    "name": "AMD Ryzen 7 5700X3D Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-7-5700x3d/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-9-5950x",
+    "name": "AMD Ryzen 9 5950X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-9-5950x",
+    "brand": "AMD",
+    "subtitle": "CPU · 16 Cores · 105W TDP"
+  },
+  {
+    "id": "ryzen-9-5950x-power",
+    "name": "AMD Ryzen 9 5950X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-9-5950x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-9-5900x",
+    "name": "AMD Ryzen 9 5900X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-9-5900x",
+    "brand": "AMD",
+    "subtitle": "CPU · 12 Cores · 105W TDP"
+  },
+  {
+    "id": "ryzen-9-5900x-power",
+    "name": "AMD Ryzen 9 5900X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-9-5900x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "ryzen-5-5600x",
+    "name": "AMD Ryzen 5 5600X",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=ryzen-5-5600x",
+    "brand": "AMD",
+    "subtitle": "CPU · 6 Cores · 65W TDP"
+  },
+  {
+    "id": "ryzen-5-5600x-power",
+    "name": "AMD Ryzen 5 5600X Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/ryzen-5-5600x/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i9-13900k",
+    "name": "Intel Core i9-13900K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i9-13900k",
+    "brand": "Intel",
+    "subtitle": "CPU · 24 Cores · 125W TDP"
+  },
+  {
+    "id": "core-i9-13900k-power",
+    "name": "Intel Core i9-13900K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i9-13900k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i7-13700k",
+    "name": "Intel Core i7-13700K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i7-13700k",
+    "brand": "Intel",
+    "subtitle": "CPU · 16 Cores · 125W TDP"
+  },
+  {
+    "id": "core-i7-13700k-power",
+    "name": "Intel Core i7-13700K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i7-13700k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i5-13600k",
+    "name": "Intel Core i5-13600K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i5-13600k",
+    "brand": "Intel",
+    "subtitle": "CPU · 14 Cores · 125W TDP"
+  },
+  {
+    "id": "core-i5-13600k-power",
+    "name": "Intel Core i5-13600K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i5-13600k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i9-12900k",
+    "name": "Intel Core i9-12900K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i9-12900k",
+    "brand": "Intel",
+    "subtitle": "CPU · 16 Cores · 125W TDP"
+  },
+  {
+    "id": "core-i9-12900k-power",
+    "name": "Intel Core i9-12900K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i9-12900k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "core-i7-12700k",
+    "name": "Intel Core i7-12700K",
+    "type": "cpu",
+    "url": "/pc-builder?cpu=core-i7-12700k",
+    "brand": "Intel",
+    "subtitle": "CPU · 12 Cores · 125W TDP"
+  },
+  {
+    "id": "core-i7-12700k-power",
+    "name": "Intel Core i7-12700K Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/core-i7-12700k/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5090",
+    "name": "NVIDIA GeForce RTX 5090",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5090/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 575W TBP"
+  },
+  {
+    "id": "rtx-5090-power",
+    "name": "NVIDIA GeForce RTX 5090 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5090/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5080",
+    "name": "NVIDIA GeForce RTX 5080",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5080/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 360W TBP"
+  },
+  {
+    "id": "rtx-5080-power",
+    "name": "NVIDIA GeForce RTX 5080 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5080/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5070-ti",
+    "name": "NVIDIA GeForce RTX 5070 Ti",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5070-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 300W TBP"
+  },
+  {
+    "id": "rtx-5070-ti-power",
+    "name": "NVIDIA GeForce RTX 5070 Ti Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5070-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5070",
+    "name": "NVIDIA GeForce RTX 5070",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5070/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 250W TBP"
+  },
+  {
+    "id": "rtx-5070-power",
+    "name": "NVIDIA GeForce RTX 5070 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5070/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5060-ti",
+    "name": "NVIDIA GeForce RTX 5060 Ti",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5060-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 180W TBP"
+  },
+  {
+    "id": "rtx-5060-ti-power",
+    "name": "NVIDIA GeForce RTX 5060 Ti Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5060-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5060",
+    "name": "NVIDIA GeForce RTX 5060",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5060/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 150W TBP"
+  },
+  {
+    "id": "rtx-5060-power",
+    "name": "NVIDIA GeForce RTX 5060 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5060/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4090",
+    "name": "NVIDIA GeForce RTX 4090",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4090/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 450W TBP"
+  },
+  {
+    "id": "rtx-4090-power",
+    "name": "NVIDIA GeForce RTX 4090 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4090/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4080-super",
+    "name": "NVIDIA GeForce RTX 4080 SUPER",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4080-super/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 320W TBP"
+  },
+  {
+    "id": "rtx-4080-super-power",
+    "name": "NVIDIA GeForce RTX 4080 SUPER Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4080-super/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4070-ti-super",
+    "name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4070-ti-super/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 285W TBP"
+  },
+  {
+    "id": "rtx-4070-ti-super-power",
+    "name": "NVIDIA GeForce RTX 4070 Ti SUPER Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4070-ti-super/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4070-super",
+    "name": "NVIDIA GeForce RTX 4070 SUPER",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4070-super/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 220W TBP"
+  },
+  {
+    "id": "rtx-4070-super-power",
+    "name": "NVIDIA GeForce RTX 4070 SUPER Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4070-super/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4070",
+    "name": "NVIDIA GeForce RTX 4070",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4070/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 200W TBP"
+  },
+  {
+    "id": "rtx-4070-power",
+    "name": "NVIDIA GeForce RTX 4070 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4070/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4060-ti",
+    "name": "NVIDIA GeForce RTX 4060 Ti",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4060-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 160W TBP"
+  },
+  {
+    "id": "rtx-4060-ti-power",
+    "name": "NVIDIA GeForce RTX 4060 Ti Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4060-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4060",
+    "name": "NVIDIA GeForce RTX 4060",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4060/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 115W TBP"
+  },
+  {
+    "id": "rtx-4060-power",
+    "name": "NVIDIA GeForce RTX 4060 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4060/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-9070-xt",
+    "name": "AMD Radeon RX 9070 XT",
+    "type": "gpu",
+    "url": "/psu-for/rx-9070-xt/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 300W TBP"
+  },
+  {
+    "id": "rx-9070-xt-power",
+    "name": "AMD Radeon RX 9070 XT Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-9070-xt/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-9070",
+    "name": "AMD Radeon RX 9070",
+    "type": "gpu",
+    "url": "/psu-for/rx-9070/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 250W TBP"
+  },
+  {
+    "id": "rx-9070-power",
+    "name": "AMD Radeon RX 9070 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-9070/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-7900-xtx",
+    "name": "AMD Radeon RX 7900 XTX",
+    "type": "gpu",
+    "url": "/psu-for/rx-7900-xtx/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 355W TBP"
+  },
+  {
+    "id": "rx-7900-xtx-power",
+    "name": "AMD Radeon RX 7900 XTX Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-7900-xtx/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-7900-xt",
+    "name": "AMD Radeon RX 7900 XT",
+    "type": "gpu",
+    "url": "/psu-for/rx-7900-xt/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 315W TBP"
+  },
+  {
+    "id": "rx-7900-xt-power",
+    "name": "AMD Radeon RX 7900 XT Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-7900-xt/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-7800-xt",
+    "name": "AMD Radeon RX 7800 XT",
+    "type": "gpu",
+    "url": "/psu-for/rx-7800-xt/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 263W TBP"
+  },
+  {
+    "id": "rx-7800-xt-power",
+    "name": "AMD Radeon RX 7800 XT Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-7800-xt/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-7700-xt",
+    "name": "AMD Radeon RX 7700 XT",
+    "type": "gpu",
+    "url": "/psu-for/rx-7700-xt/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 245W TBP"
+  },
+  {
+    "id": "rx-7700-xt-power",
+    "name": "AMD Radeon RX 7700 XT Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-7700-xt/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-7600",
+    "name": "AMD Radeon RX 7600",
+    "type": "gpu",
+    "url": "/psu-for/rx-7600/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 165W TBP"
+  },
+  {
+    "id": "rx-7600-power",
+    "name": "AMD Radeon RX 7600 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-7600/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "arc-b580",
+    "name": "Intel Arc B580",
+    "type": "gpu",
+    "url": "/psu-for/arc-b580/",
+    "brand": "Intel",
+    "subtitle": "GPU · undefined VRAM · 190W TBP"
+  },
+  {
+    "id": "arc-b580-power",
+    "name": "Intel Arc B580 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/arc-b580/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "arc-b570",
+    "name": "Intel Arc B570",
+    "type": "gpu",
+    "url": "/psu-for/arc-b570/",
+    "brand": "Intel",
+    "subtitle": "GPU · undefined VRAM · 150W TBP"
+  },
+  {
+    "id": "arc-b570-power",
+    "name": "Intel Arc B570 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/arc-b570/",
+    "brand": "Intel",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5080-super",
+    "name": "NVIDIA GeForce RTX 5080 SUPER",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5080-super/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 415W TBP"
+  },
+  {
+    "id": "rtx-5080-super-power",
+    "name": "NVIDIA GeForce RTX 5080 SUPER Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5080-super/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5070-ti-super",
+    "name": "NVIDIA GeForce RTX 5070 Ti SUPER",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5070-ti-super/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 350W TBP"
+  },
+  {
+    "id": "rtx-5070-ti-super-power",
+    "name": "NVIDIA GeForce RTX 5070 Ti SUPER Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5070-ti-super/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-5070-super",
+    "name": "NVIDIA GeForce RTX 5070 SUPER",
+    "type": "gpu",
+    "url": "/psu-for/rtx-5070-super/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 275W TBP"
+  },
+  {
+    "id": "rtx-5070-super-power",
+    "name": "NVIDIA GeForce RTX 5070 SUPER Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-5070-super/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4080",
+    "name": "NVIDIA GeForce RTX 4080",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4080/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 320W TBP"
+  },
+  {
+    "id": "rtx-4080-power",
+    "name": "NVIDIA GeForce RTX 4080 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4080/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-4070-ti",
+    "name": "NVIDIA GeForce RTX 4070 Ti",
+    "type": "gpu",
+    "url": "/psu-for/rtx-4070-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 285W TBP"
+  },
+  {
+    "id": "rtx-4070-ti-power",
+    "name": "NVIDIA GeForce RTX 4070 Ti Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-4070-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-7900-gre",
+    "name": "AMD Radeon RX 7900 GRE",
+    "type": "gpu",
+    "url": "/psu-for/rx-7900-gre/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 260W TBP"
+  },
+  {
+    "id": "rx-7900-gre-power",
+    "name": "AMD Radeon RX 7900 GRE Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-7900-gre/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rx-7600-xt",
+    "name": "AMD Radeon RX 7600 XT",
+    "type": "gpu",
+    "url": "/psu-for/rx-7600-xt/",
+    "brand": "AMD",
+    "subtitle": "GPU · undefined VRAM · 190W TBP"
+  },
+  {
+    "id": "rx-7600-xt-power",
+    "name": "AMD Radeon RX 7600 XT Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rx-7600-xt/",
+    "brand": "AMD",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-3090-ti",
+    "name": "NVIDIA GeForce RTX 3090 Ti",
+    "type": "gpu",
+    "url": "/psu-for/rtx-3090-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 450W TBP"
+  },
+  {
+    "id": "rtx-3090-ti-power",
+    "name": "NVIDIA GeForce RTX 3090 Ti Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-3090-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-3090",
+    "name": "NVIDIA GeForce RTX 3090",
+    "type": "gpu",
+    "url": "/psu-for/rtx-3090/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 350W TBP"
+  },
+  {
+    "id": "rtx-3090-power",
+    "name": "NVIDIA GeForce RTX 3090 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-3090/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-3080-ti",
+    "name": "NVIDIA GeForce RTX 3080 Ti",
+    "type": "gpu",
+    "url": "/psu-for/rtx-3080-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 350W TBP"
+  },
+  {
+    "id": "rtx-3080-ti-power",
+    "name": "NVIDIA GeForce RTX 3080 Ti Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-3080-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-3080",
+    "name": "NVIDIA GeForce RTX 3080",
+    "type": "gpu",
+    "url": "/psu-for/rtx-3080/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 320W TBP"
+  },
+  {
+    "id": "rtx-3080-power",
+    "name": "NVIDIA GeForce RTX 3080 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-3080/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-3070-ti",
+    "name": "NVIDIA GeForce RTX 3070 Ti",
+    "type": "gpu",
+    "url": "/psu-for/rtx-3070-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 290W TBP"
+  },
+  {
+    "id": "rtx-3070-ti-power",
+    "name": "NVIDIA GeForce RTX 3070 Ti Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-3070-ti/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "rtx-3070",
+    "name": "NVIDIA GeForce RTX 3070",
+    "type": "gpu",
+    "url": "/psu-for/rtx-3070/",
+    "brand": "NVIDIA",
+    "subtitle": "GPU · undefined VRAM · 220W TBP"
+  },
+  {
+    "id": "rtx-3070-power",
+    "name": "NVIDIA GeForce RTX 3070 Actual Power Draw",
+    "type": "tool",
+    "url": "/power-consumption/rtx-3070/",
+    "brand": "NVIDIA",
+    "subtitle": "Measured Power Draw Specs & Headroom Verdict"
+  },
+  {
+    "id": "corsair-rm1000x-2024",
+    "name": "Corsair RM1000x (2024)",
+    "type": "psu",
+    "url": "/psu/corsair-rm1000x-2024/",
+    "brand": "Corsair",
+    "subtitle": "PSU · 1000W · Tier A"
+  },
+  {
+    "id": "corsair-rm850x-2024",
+    "name": "Corsair RM850x (2024)",
+    "type": "psu",
+    "url": "/psu/corsair-rm850x-2024/",
+    "brand": "Corsair",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "corsair-rm750x-2024",
+    "name": "Corsair RM750x (2024)",
+    "type": "psu",
+    "url": "/psu/corsair-rm750x-2024/",
+    "brand": "Corsair",
+    "subtitle": "PSU · 750W · Tier A"
+  },
+  {
+    "id": "corsair-hx1500i",
+    "name": "Corsair HX1500i",
+    "type": "psu",
+    "url": "/psu/corsair-hx1500i/",
+    "brand": "Corsair",
+    "subtitle": "PSU · 1500W · Tier A"
+  },
+  {
+    "id": "corsair-hx1200i",
+    "name": "Corsair HX1200i",
+    "type": "psu",
+    "url": "/psu/corsair-hx1200i/",
+    "brand": "Corsair",
+    "subtitle": "PSU · 1200W · Tier A"
+  },
+  {
+    "id": "seasonic-prime-tx-1000",
+    "name": "Seasonic PRIME TX-1000",
+    "type": "psu",
+    "url": "/psu/seasonic-prime-tx-1000/",
+    "brand": "Seasonic",
+    "subtitle": "PSU · 1000W · Tier A"
+  },
+  {
+    "id": "seasonic-prime-px-850",
+    "name": "Seasonic PRIME PX-850",
+    "type": "psu",
+    "url": "/psu/seasonic-prime-px-850/",
+    "brand": "Seasonic",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "seasonic-focus-gx-850",
+    "name": "Seasonic FOCUS GX-850",
+    "type": "psu",
+    "url": "/psu/seasonic-focus-gx-850/",
+    "brand": "Seasonic",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "seasonic-focus-gx-750",
+    "name": "Seasonic FOCUS GX-750",
+    "type": "psu",
+    "url": "/psu/seasonic-focus-gx-750/",
+    "brand": "Seasonic",
+    "subtitle": "PSU · 750W · Tier A"
+  },
+  {
+    "id": "seasonic-focus-gx-650",
+    "name": "Seasonic FOCUS GX-650",
+    "type": "psu",
+    "url": "/psu/seasonic-focus-gx-650/",
+    "brand": "Seasonic",
+    "subtitle": "PSU · 650W · Tier A"
+  },
+  {
+    "id": "bequiet-dark-power-13-1000",
+    "name": "be quiet! Dark Power Pro 13 1000W",
+    "type": "psu",
+    "url": "/psu/bequiet-dark-power-13-1000/",
+    "brand": "be quiet!",
+    "subtitle": "PSU · 1000W · Tier A"
+  },
+  {
+    "id": "bequiet-dark-power-13-850",
+    "name": "be quiet! Dark Power Pro 13 850W",
+    "type": "psu",
+    "url": "/psu/bequiet-dark-power-13-850/",
+    "brand": "be quiet!",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "bequiet-straight-power-12-850",
+    "name": "be quiet! Straight Power 12 850W",
+    "type": "psu",
+    "url": "/psu/bequiet-straight-power-12-850/",
+    "brand": "be quiet!",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "bequiet-straight-power-12-750",
+    "name": "be quiet! Straight Power 12 750W",
+    "type": "psu",
+    "url": "/psu/bequiet-straight-power-12-750/",
+    "brand": "be quiet!",
+    "subtitle": "PSU · 750W · Tier A"
+  },
+  {
+    "id": "bequiet-pure-power-12-m-750",
+    "name": "be quiet! Pure Power 12 M 750W",
+    "type": "psu",
+    "url": "/psu/bequiet-pure-power-12-m-750/",
+    "brand": "be quiet!",
+    "subtitle": "PSU · 750W · Tier B"
+  },
+  {
+    "id": "evga-supernova-1000-g7",
+    "name": "EVGA SuperNOVA 1000 G7",
+    "type": "psu",
+    "url": "/psu/evga-supernova-1000-g7/",
+    "brand": "EVGA",
+    "subtitle": "PSU · 1000W · Tier A"
+  },
+  {
+    "id": "evga-supernova-850-g7",
+    "name": "EVGA SuperNOVA 850 G7",
+    "type": "psu",
+    "url": "/psu/evga-supernova-850-g7/",
+    "brand": "EVGA",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "msi-meg-ai1300p",
+    "name": "MSI MEG Ai1300P PCIE5",
+    "type": "psu",
+    "url": "/psu/msi-meg-ai1300p/",
+    "brand": "MSI",
+    "subtitle": "PSU · 1300W · Tier A"
+  },
+  {
+    "id": "msi-mpg-a1000g",
+    "name": "MSI MPG A1000G PCIE5",
+    "type": "psu",
+    "url": "/psu/msi-mpg-a1000g/",
+    "brand": "MSI",
+    "subtitle": "PSU · 1000W · Tier A"
+  },
+  {
+    "id": "msi-mag-a850gl",
+    "name": "MSI MAG A850GL PCIE5",
+    "type": "psu",
+    "url": "/psu/msi-mag-a850gl/",
+    "brand": "MSI",
+    "subtitle": "PSU · 850W · Tier B"
+  },
+  {
+    "id": "asus-rog-thor-1200p2",
+    "name": "ASUS ROG Thor 1200P2",
+    "type": "psu",
+    "url": "/psu/asus-rog-thor-1200p2/",
+    "brand": "ASUS",
+    "subtitle": "PSU · 1200W · Tier A"
+  },
+  {
+    "id": "asus-rog-strix-1000g",
+    "name": "ASUS ROG Strix 1000G",
+    "type": "psu",
+    "url": "/psu/asus-rog-strix-1000g/",
+    "brand": "ASUS",
+    "subtitle": "PSU · 1000W · Tier A"
+  },
+  {
+    "id": "asus-tuf-gaming-850g",
+    "name": "ASUS TUF Gaming 850G",
+    "type": "psu",
+    "url": "/psu/asus-tuf-gaming-850g/",
+    "brand": "ASUS",
+    "subtitle": "PSU · 850W · Tier B"
+  },
+  {
+    "id": "thermaltake-toughpower-gf3-850",
+    "name": "Thermaltake Toughpower GF3 850W",
+    "type": "psu",
+    "url": "/psu/thermaltake-toughpower-gf3-850/",
+    "brand": "Thermaltake",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "thermaltake-toughpower-gf3-1000",
+    "name": "Thermaltake Toughpower GF3 1000W",
+    "type": "psu",
+    "url": "/psu/thermaltake-toughpower-gf3-1000/",
+    "brand": "Thermaltake",
+    "subtitle": "PSU · 1000W · Tier A"
+  },
+  {
+    "id": "fractal-ion-gold-850",
+    "name": "Fractal Design Ion Gold 850W",
+    "type": "psu",
+    "url": "/psu/fractal-ion-gold-850/",
+    "brand": "Fractal Design",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "nzxt-c1200-gold",
+    "name": "NZXT C1200 Gold",
+    "type": "psu",
+    "url": "/psu/nzxt-c1200-gold/",
+    "brand": "NZXT",
+    "subtitle": "PSU · 1200W · Tier A"
+  },
+  {
+    "id": "nzxt-c850-gold",
+    "name": "NZXT C850 Gold",
+    "type": "psu",
+    "url": "/psu/nzxt-c850-gold/",
+    "brand": "NZXT",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "silverstone-hela-850r",
+    "name": "SilverStone HELA 850R Platinum",
+    "type": "psu",
+    "url": "/psu/silverstone-hela-850r/",
+    "brand": "SilverStone",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "coolermaster-v850-sfx",
+    "name": "Cooler Master V850 SFX Gold",
+    "type": "psu",
+    "url": "/psu/coolermaster-v850-sfx/",
+    "brand": "Cooler Master",
+    "subtitle": "PSU · 850W · Tier A"
+  },
+  {
+    "id": "corsair-sf750",
+    "name": "Corsair SF750 Platinum",
+    "type": "psu",
+    "url": "/psu/corsair-sf750/",
+    "brand": "Corsair",
+    "subtitle": "PSU · 750W · Tier A"
+  },
+  {
+    "id": "evga-supernova-650-g6",
+    "name": "EVGA SuperNOVA 650 G6",
+    "type": "psu",
+    "url": "/psu/evga-supernova-650-g6/",
+    "brand": "EVGA",
+    "subtitle": "PSU · 650W · Tier A"
+  },
+  {
+    "id": "corsair-cv650",
+    "name": "Corsair CV650",
+    "type": "psu",
+    "url": "/psu/corsair-cv650/",
+    "brand": "Corsair",
+    "subtitle": "PSU · 650W · Tier C"
+  },
+  {
+    "id": "evga-600-ba",
+    "name": "EVGA 600 BA",
+    "type": "psu",
+    "url": "/psu/evga-600-ba/",
+    "brand": "EVGA",
+    "subtitle": "PSU · 600W · Tier C"
+  },
+  {
+    "id": "thermaltake-smart-500",
+    "name": "Thermaltake Smart 500W",
+    "type": "psu",
+    "url": "/psu/thermaltake-smart-500/",
+    "brand": "Thermaltake",
+    "subtitle": "PSU · 500W · Tier Avoid"
+  },
+  {
+    "id": "fractal-north",
+    "name": "Fractal Design North",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "Fractal Design",
+    "subtitle": "PC Case · Max GPU 355mm"
+  },
+  {
+    "id": "corsair-4000d",
+    "name": "Corsair 4000D Airflow",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "Corsair",
+    "subtitle": "PC Case · Max GPU 360mm"
+  },
+  {
+    "id": "nzxt-h5-flow",
+    "name": "NZXT H5 Flow (2024)",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "NZXT",
+    "subtitle": "PC Case · Max GPU 365mm"
+  },
+  {
+    "id": "lianli-o11d-evo",
+    "name": "Lian Li O11 Dynamic EVO",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "Lian Li",
+    "subtitle": "PC Case · Max GPU 422mm"
+  },
+  {
+    "id": "fractal-meshify-2",
+    "name": "Fractal Design Meshify 2",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "Fractal Design",
+    "subtitle": "PC Case · Max GPU 450mm"
+  },
+  {
+    "id": "lianli-lancool-216",
+    "name": "Lian Li Lancool 216",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "Lian Li",
+    "subtitle": "PC Case · Max GPU 392mm"
+  },
+  {
+    "id": "nzxt-h9-flow",
+    "name": "NZXT H9 Flow",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "NZXT",
+    "subtitle": "PC Case · Max GPU 435mm"
+  },
+  {
+    "id": "nr200p",
+    "name": "Cooler Master NR200P",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "Cooler Master",
+    "subtitle": "PC Case · Max GPU 330mm"
+  },
+  {
+    "id": "nzxt-h1",
+    "name": "NZXT H1 V2",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "NZXT",
+    "subtitle": "PC Case · Max GPU 324mm"
+  },
+  {
+    "id": "ssupd-meshlicious",
+    "name": "SSUPD Meshlicious",
+    "type": "case",
+    "url": "/pc-builder",
+    "brand": "SSUPD",
+    "subtitle": "PC Case · Max GPU 336mm"
+  },
+  {
+    "id": "nh-d15",
+    "name": "Noctua NH-D15 chromax.black",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "Noctua",
+    "subtitle": "Cooler · Type air-tower · undefinedmm"
+  },
+  {
+    "id": "peerless-assassin-120",
+    "name": "Thermalright Peerless Assassin 120 SE",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "Thermalright",
+    "subtitle": "Cooler · Type air-tower · undefinedmm"
+  },
+  {
+    "id": "dark-rock-pro-5",
+    "name": "be quiet! Dark Rock Pro 5",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "be quiet!",
+    "subtitle": "Cooler · Type air-tower · undefinedmm"
+  },
+  {
+    "id": "nh-l9i",
+    "name": "Noctua NH-L9i chromax.black",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "Noctua",
+    "subtitle": "Cooler · Type air-low-profile · undefinedmm"
+  },
+  {
+    "id": "arctic-liquid-freezer-iii-360",
+    "name": "Arctic Liquid Freezer III 360 AIO",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "Arctic",
+    "subtitle": "Cooler · Type aio · undefinedmm"
+  },
+  {
+    "id": "corsair-h150i-elite",
+    "name": "Corsair iCUE H150i ELITE LCD XT",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "Corsair",
+    "subtitle": "Cooler · Type aio · undefinedmm"
+  },
+  {
+    "id": "nzxt-kraken-360",
+    "name": "NZXT Kraken Elite 360",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "NZXT",
+    "subtitle": "Cooler · Type aio · undefinedmm"
+  },
+  {
+    "id": "arctic-liquid-freezer-iii-240",
+    "name": "Arctic Liquid Freezer III 240 AIO",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "Arctic",
+    "subtitle": "Cooler · Type aio · undefinedmm"
+  },
+  {
+    "id": "nzxt-kraken-240",
+    "name": "NZXT Kraken 240",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "NZXT",
+    "subtitle": "Cooler · Type aio · undefinedmm"
+  },
+  {
+    "id": "ek-nucleus-360",
+    "name": "EK-Nucleus AIO CR360 Lux D-RGB",
+    "type": "cooler",
+    "url": "/pc-builder",
+    "brand": "EKWB",
+    "subtitle": "Cooler · Type aio · undefinedmm"
+  },
+  {
+    "id": "750w-vs-850w-psu",
+    "name": "750W vs 850W PSU",
+    "type": "guide",
+    "url": "/guides/750w-vs-850w-psu/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "aio-cooler-power-draw",
+    "name": "AIO Liquid Cooler Power Consumption",
+    "type": "guide",
+    "url": "/guides/aio-cooler-power-draw/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "atx-3-1-guide",
+    "name": "ATX 3.1 vs ATX 3.0",
+    "type": "guide",
+    "url": "/guides/atx-3-1-guide/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "best-psu-for-gaming",
+    "name": "Best PSU for Gaming 2026",
+    "type": "guide",
+    "url": "/guides/best-psu-for-gaming/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "budget-guide",
+    "name": "PC Build Budget Allocation Guide ($500 to $2500)",
+    "type": "guide",
+    "url": "/guides/budget-guide/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "building-tips",
+    "name": "PC Building Tips",
+    "type": "guide",
+    "url": "/guides/building-tips/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "cybenetics-vs-80-plus",
+    "name": "Cybenetics vs 80 PLUS",
+    "type": "guide",
+    "url": "/guides/cybenetics-vs-80-plus/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "fanless-psu-guide",
+    "name": "Fanless & Passive PSUs",
+    "type": "guide",
+    "url": "/guides/fanless-psu-guide/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "gpu-power-connectors",
+    "name": "GPU Power Connectors",
+    "type": "guide",
+    "url": "/guides/gpu-power-connectors/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "how-to-build-a-pc",
+    "name": "How to Build a PC 2026",
+    "type": "guide",
+    "url": "/guides/how-to-build-a-pc/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "how-to-test-a-psu",
+    "name": "How to Test a PSU",
+    "type": "guide",
+    "url": "/guides/how-to-test-a-psu/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "modular-vs-non-modular-psu",
+    "name": "Modular vs Non-Modular PSU",
+    "type": "guide",
+    "url": "/guides/modular-vs-non-modular-psu/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "older-psu-new-gpu",
+    "name": "Can You Use an Older PSU with a New Graphics Card?",
+    "type": "guide",
+    "url": "/guides/older-psu-new-gpu/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "overclocking-power-draw",
+    "name": "Overclocking Power Consumption",
+    "type": "guide",
+    "url": "/guides/overclocking-power-draw/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "pc-bottleneck-guide",
+    "name": "PC Hardware Bottlenecks",
+    "type": "guide",
+    "url": "/guides/pc-bottleneck-guide/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "pc-idle-power",
+    "name": "PC Idle Power Consumption",
+    "type": "guide",
+    "url": "/guides/pc-idle-power/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "power-glossary",
+    "name": "PC Power Glossary",
+    "type": "guide",
+    "url": "/guides/power-glossary/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "psu-cable-compatibility",
+    "name": "PSU Modular Cable Compatibility",
+    "type": "guide",
+    "url": "/guides/psu-cable-compatibility/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "psu-cable-extensions",
+    "name": "Custom PSU Cables & Extensions",
+    "type": "guide",
+    "url": "/guides/psu-cable-extensions/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "psu-coil-whine",
+    "name": "PSU Coil Whine",
+    "type": "guide",
+    "url": "/guides/psu-coil-whine/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "psu-degradation",
+    "name": "PSU Capacitor Aging & Power Degradation Guide",
+    "type": "guide",
+    "url": "/guides/psu-degradation/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "psu-efficiency-guide",
+    "name": "PSU Efficiency Guide",
+    "type": "guide",
+    "url": "/guides/psu-efficiency-guide/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "psu-fan-direction",
+    "name": "PSU Fan Direction",
+    "type": "guide",
+    "url": "/guides/psu-fan-direction/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "psu-lifespan",
+    "name": "How Long Does a PSU Last? PSU Lifespan & Aging Guide",
+    "type": "guide",
+    "url": "/guides/psu-lifespan/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "psu-sizing-guide",
+    "name": "PSU Sizing Guide",
+    "type": "guide",
+    "url": "/guides/psu-sizing-guide/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "quiet-psu-guide",
+    "name": "Quiet PC Power Supplies",
+    "type": "guide",
+    "url": "/guides/quiet-psu-guide/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "server-vs-desktop-psu",
+    "name": "Server vs Desktop PSU",
+    "type": "guide",
+    "url": "/guides/server-vs-desktop-psu/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "sfx-l-psu-guide",
+    "name": "SFX-L PSU Clearance & Sizing Guide",
+    "type": "guide",
+    "url": "/guides/sfx-l-psu-guide/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "sfx-vs-atx-psu",
+    "name": "SFX vs ATX PSU",
+    "type": "guide",
+    "url": "/guides/sfx-vs-atx-psu/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "single-vs-multi-rail",
+    "name": "Single Rail vs Multi Rail PSU",
+    "type": "guide",
+    "url": "/guides/single-vs-multi-rail/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "ups-backup-power",
+    "name": "UPS & Surge Protectors",
+    "type": "guide",
+    "url": "/guides/ups-backup-power/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  },
+  {
+    "id": "when-to-replace-psu",
+    "name": "When to Replace Your Power Supply",
+    "type": "guide",
+    "url": "/guides/when-to-replace-psu/",
+    "brand": "",
+    "subtitle": "Article · Sizing Guide"
+  }
+]

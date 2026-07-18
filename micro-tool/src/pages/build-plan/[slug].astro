@@ -1,0 +1,421 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { generateBlueprint } from '../../lib/blueprint';
+import type { BlueprintOutput } from '../../lib/blueprint';
+import type { CpuIndex, GpuIndex, CaseIndex } from '../../types/components';
+
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+import caseData from '../../data/index/cases.index.json';
+import psuData from '../../data/index/psus.index.json';
+
+export async function getStaticPaths() {
+  const cpus = (cpuData.items as CpuIndex[]).filter(c => c.confirmed);
+  const gpus = (gpuData.items as GpuIndex[]).filter(g => g.confirmed);
+  const cases = (caseData as any).items as CaseIndex[];
+
+  // Take top confirmed components for combinatorial pages (same pattern as oracle pages)
+  const topCpus = cpus.slice(0, 8);
+  const topGpus = gpus.slice(0, 8);
+
+  const paths: any[] = [];
+
+  for (const gpu of topGpus) {
+    for (const cpu of topCpus) {
+      for (const caseItem of cases) {
+        const slug = `${gpu.id}-${cpu.id}-${caseItem.id}`;
+        paths.push({
+          params: { slug },
+          props: { gpu, cpu, case: caseItem }
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { gpu, cpu, case: caseItem } = Astro.props as {
+  gpu: GpuIndex;
+  cpu: CpuIndex;
+  case: CaseIndex;
+};
+
+const psu = (psuData.items as any[]).find(
+  (p: any) => p.wattage >= (gpu.minPsuWattage || 750) && p.atxVersion === '3.1' && p.qualityTier === 'A'
+) || null;
+
+// Generate blueprint at build time from real data
+const analysis = generateBlueprint({
+  cpu,
+  gpu,
+  ram: { capacity: 32, speed: 6000, type: 'DDR5', sticks: 2, price: 99, typicalWatts: 10 },
+  storage: [{ type: 'NVMe', capacity: 1000, price: 69, typicalWatts: 7 }],
+  cooling: { type: 'air-tower', price: 39, typicalWatts: 5 },
+  psu,
+  caseModel: caseItem,
+  fans: 3,
+  psuAgeYears: 0,
+  cpuOcPercent: 0,
+  gpuOcPercent: 0,
+  safetyBufferPercent: 10,
+});
+
+const checksPassed = analysis.summary.checksPassed;
+const checksTotal = analysis.summary.totalChecks;
+const checksFailed = analysis.summary.checksFailed;
+
+const pageTitle = `Build Blueprint: ${gpu.name} + ${cpu.name} in ${caseItem.name} — PSUCheck`;
+const pageDesc = `Complete PC build blueprint for ${gpu.name} and ${cpu.name} in the ${caseItem.name} case. ${checksPassed}/${checksTotal} compatibility checks passed${checksFailed > 0 ? `, ${checksFailed} warning${checksFailed > 1 ? 's' : ''}` : ''}. Step-by-step build order, power analysis, and tool checklist.`;
+
+const relatedLinks: { name: string; href: string; desc: string }[] = [
+  { name: 'How to Build a PC', href: '/guides/how-to-build-a-pc', desc: 'Step-by-step build walkthrough' },
+  { name: 'Building Tips', href: '/guides/building-tips', desc: 'Expert assembly and cable routing advice' },
+  { name: 'PSU Sizing Guide', href: '/guides/psu-sizing-guide', desc: 'How to calculate the right wattage for your build' },
+];
+
+if (gpu.tier === 'halo' || gpu.tier === 'ultra') {
+  relatedLinks.push({ name: 'GPU Power Connectors Guide', href: '/guides/gpu-power-connectors', desc: 'Safe cabling for high-end GPUs' });
+}
+if (gpu.connectorType === '12v-2x6') {
+  relatedLinks.push({ name: 'ATX 3.1 Guide', href: '/guides/atx-3-1-guide', desc: 'Why ATX 3.1 matters for modern GPUs' });
+}
+if (cpu.brand === 'Intel' && cpu.tdpSustained > cpu.tdp) {
+  relatedLinks.push({ name: 'Overclocking Power Guide', href: '/guides/overclocking-power-draw', desc: 'Power draw and PSU implications of CPU overclocking' });
+}
+
+const faqList = [
+  {
+    q: `Will the ${gpu.name} fit in the ${caseItem.name}?`,
+    a: (() => {
+      const gpuLen = gpu.dimensions?.length;
+      if (gpuLen && gpuLen <= caseItem.maxGpuLength) {
+        return `Yes. The ${gpu.name} is ${gpuLen}mm long, and the ${caseItem.name} supports GPUs up to ${caseItem.maxGpuLength}mm. You have ${caseItem.maxGpuLength - gpuLen}mm of clearance.`;
+      }
+      return `The ${gpu.name} length must be checked against the ${caseItem.name}'s maximum GPU length of ${caseItem.maxGpuLength}mm. Verify GPU dimensions from the manufacturer.`;
+    })()
+  },
+  {
+    q: `What power supply do I need for ${gpu.name} and ${cpu.name}?`,
+    a: analysis.powerAnalysis
+      ? `For the ${gpu.name} (${gpu.tbp}W TBP) paired with a ${cpu.name} (${cpu.tdp}W TDP), we recommend at least a ${analysis.powerAnalysis.recommendedWattage}W power supply. The peak transient draw is estimated at ${analysis.powerAnalysis.transientPeak}W. An ATX 3.1 compliant PSU is recommended for transient spike handling.`
+      : `For the ${gpu.name} (${gpu.tbp}W TBP) paired with a ${cpu.name} (${cpu.tdp}W TDP), a PSU rated at least ${gpu.minPsuWattage}W is recommended.`
+  },
+  {
+    q: `Will an air tower cooler fit in the ${caseItem.name}?`,
+    a: `The ${caseItem.name} supports CPU coolers up to ${caseItem.maxCoolerHeight}mm. Most standard air tower coolers (155-168mm) will fit. Measure your specific cooler height against this limit.`
+  },
+  {
+    q: `Is the ${caseItem.name} good for this build?`,
+    a: `The ${caseItem.name} is a ${caseItem.formFactor} case with support for GPUs up to ${caseItem.maxGpuLength}mm and coolers up to ${caseItem.maxCoolerHeight}mm${caseItem.maxPsuLength ? `, with PSU clearance up to ${caseItem.maxPsuLength}mm` : ''}. It ${checksPassed === checksTotal ? 'passes all' : `passes ${checksPassed}/${checksTotal}`} compatibility checks for this component selection.`
+  },
+  {
+    q: `What is the build order for this ${gpu.name} + ${cpu.name} build?`,
+    a: `The standard build order for a ${caseItem.formFactor} build is: pre-assemble the ${cpu.name} and RAM on the motherboard outside the case → install SSD → prepare the ${caseItem.name} with I/O shield and standoffs → mount PSU and route cables → install motherboard → mount cooler → install ${gpu.name} → connect all power cables → first boot and verification. Mini-ITX builds should mount the PSU before the motherboard.`
+  },
+  {
+    q: `What tools do I need to build this PC?`,
+    a: `Essential: magnetic Phillips #2 screwdriver, zip ties or Velcro straps for cable management, and a clean workspace. Recommended: anti-static wrist strap, isopropyl alcohol for thermal paste cleanup, flush cutters for zip ties, magnetic parts tray, and a flashlight for tight spaces inside the ${caseItem.name}.`
+  },
+  {
+    q: `Does this build need thermal paste?`,
+    a: `Yes. If the cooler is new, thermal paste is often pre-applied. If using a separate thermal compound, apply a pea-size dot (4-5mm diameter) on the center of the ${cpu.name} IHS. Do not spread it manually — the cooler mounting pressure will distribute it evenly. For AMD sockets, the paste should cover the entire IHS area.`
+  },
+  {
+    q: `How long will this build take?`,
+    a: `This ${caseItem.formFactor} build with a ${gpu.name} typically takes 1.5 to 2.5 hours for a first-time builder and 45 to 90 minutes for an experienced builder. Cable management in the ${caseItem.name} may add 15-30 minutes for a clean professional result.`
+  },
+  {
+    q: `Can I use an existing PSU from my old build?`,
+    a: `Only if the PSU meets the minimum ${gpu.minPsuWattage}W requirement for the ${gpu.name}. The ${cpu.name} has a ${cpu.tdp}W TDP.${gpu.connectorType === '12v-2x6' ? ' The RTX 5090 requires a native 12V-2x6 cable — older PSUs without this connector will need an adapter.' : ''} Verify connector compatibility and PSU condition before reusing.`
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDesc}
+  canonicalUrl={`https://psucheck.com/build-plan/${gpu.id}-${cpu.id}-${caseItem.id}/`}
+  schema={{
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "headline": pageTitle,
+        "description": pageDesc,
+        "image": ["https://psucheck.com/pc-hero.png"],
+        "datePublished": "2026-07-18T08:00:00Z",
+        "dateModified": "2026-07-18T08:00:00Z",
+        "author": {
+          "@type": "Organization",
+          "name": "PSUCheck Engineering Team",
+          "url": "https://psucheck.com/about"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "PSUCheck",
+          "logo": { "@type": "ImageObject", "url": "https://psucheck.com/favicon.svg" }
+        },
+        "mainEntityOfPage": { "@type": "WebPage", "@id": `https://psucheck.com/build-plan/${gpu.id}-${cpu.id}-${caseItem.id}/` }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": faqList.map(faq => ({
+          "@type": "Question",
+          "name": faq.q,
+          "acceptedAnswer": { "@type": "Answer", "text": faq.a }
+        }))
+      }
+    ]
+  }}
+>
+  <section class="bp-page" aria-labelledby="bp-heading">
+    <div class="container">
+      <div class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <a href="/build-plan">Build Blueprint</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{gpu.name} + {cpu.name}</span>
+      </div>
+
+      <header class="bp-header">
+        <h1 id="bp-heading">
+          Build Blueprint: <span class="gradient-text">{gpu.name}</span> + <span class="gradient-text">{cpu.name}</span> in <span class="gradient-text">{caseItem.name}</span>
+        </h1>
+        <p class="bp-intro">
+          A complete, verified build plan for this specific combination. 
+          <strong>{checksPassed}/{checksTotal}</strong> compatibility checks passed.
+          {checksFailed > 0 && (
+            <span style="color:var(--status-danger);"> <strong>{checksFailed} issue{checksFailed > 1 ? 's' : ''}</strong> need{checksFailed === 1 ? 's' : ''} attention.</span>
+          )}
+        </p>
+      </header>
+
+      <div class="bp-meta-grid">
+        <div class="card card-dark">
+          <h2>Components</h2>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;">
+            <div class="stat-row">
+              <span class="stat-label">GPU</span>
+              <span class="stat-val">{gpu.name}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">CPU</span>
+              <span class="stat-val">{cpu.name}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Case</span>
+              <span class="stat-val">{caseItem.name}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Form Factor</span>
+              <span class="stat-val" style="text-transform:capitalize;">{caseItem.formFactor}</span>
+            </div>
+            {psu && (
+              <div class="stat-row">
+                <span class="stat-label">Recommended PSU</span>
+                <span class="stat-val">{psu.name}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div class="card card-dark">
+          <h2>Clearance Summary</h2>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;">
+            {analysis.clearanceChecks.map((check, i) => (
+              <div key={i} class="stat-row">
+                <span class="stat-label">{check.label}</span>
+                <span class={`badge ${check.result === 'pass' ? 'badge-safe' : check.result === 'fail' ? 'badge-danger' : 'badge-warning'}`}>
+                  {check.result === 'pass' ? 'PASS' : check.result === 'fail' ? 'FAIL' : '?'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {analysis.powerAnalysis && (
+        <div class="card card-dark" style="margin-top:2rem;">
+          <h2>Power Analysis</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1.5rem;">
+            <div>
+              <div style="font-size:0.6875rem;text-transform:uppercase;color:var(--text-tertiary);font-weight:700;">Sustained Draw</div>
+              <div style="font-size:1.5rem;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums;">{analysis.powerAnalysis.baseDraw}W</div>
+            </div>
+            <div>
+              <div style="font-size:0.6875rem;text-transform:uppercase;color:var(--text-tertiary);font-weight:700;">Transient Peak</div>
+              <div style="font-size:1.5rem;font-weight:800;color:var(--status-warning);font-variant-numeric:tabular-nums;">{analysis.powerAnalysis.transientPeak}W</div>
+            </div>
+            <div>
+              <div style="font-size:0.6875rem;text-transform:uppercase;color:var(--text-tertiary);font-weight:700;">Recommended PSU</div>
+              <div style="font-size:1.5rem;font-weight:800;color:var(--color-accent-cyan);font-variant-numeric:tabular-nums;">&ge;{analysis.powerAnalysis.recommendedWattage}W</div>
+            </div>
+            <div>
+              <div style="font-size:0.6875rem;text-transform:uppercase;color:var(--text-tertiary);font-weight:700;">Headroom</div>
+              <div style="font-size:1.5rem;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums;">{analysis.powerAnalysis.headroom}W</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <section style="margin-top:2.5rem;" aria-labelledby="bp-build-order-heading">
+        <h2 id="bp-build-order-heading">Build Order</h2>
+        <p style="font-size:0.875rem;color:var(--text-tertiary);margin-bottom:1.5rem;">
+          Recommended assembly sequence for a {caseItem.formFactor} build.
+        </p>
+        <ol style="display:flex;flex-direction:column;gap:0.75rem;padding-left:1.25rem;">
+          {analysis.buildOrder.map(step => (
+            <li key={step.order} style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.5;">
+              <strong style="color:var(--text-primary);">{step.task}:</strong> {step.detail}
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {analysis.thermalPasteAdvice && (
+        <section class="card card-dark" style="margin-top:2.5rem;" aria-labelledby="bp-paste-heading">
+          <h2 id="bp-paste-heading">Thermal Paste Guidance</h2>
+          <p style="font-size:0.9375rem;font-weight:600;color:var(--text-primary);margin-top:0.75rem;">
+            {analysis.thermalPasteAdvice.pattern}
+          </p>
+          <p style="font-size:0.8125rem;color:var(--text-secondary);margin-top:0.5rem;">
+            {analysis.thermalPasteAdvice.rationale}
+          </p>
+          <p style="font-size:0.75rem;color:var(--text-tertiary);margin-top:0.5rem;">
+            Source: {analysis.thermalPasteAdvice.source}
+          </p>
+        </section>
+      )}
+
+      <section style="margin-top:2.5rem;" aria-labelledby="bp-tools-heading">
+        <h2 id="bp-tools-heading">Tools Required</h2>
+        <ul style="display:flex;flex-direction:column;gap:0.5rem;padding-left:1.25rem;margin-top:1rem;">
+          {analysis.toolChecklist.filter(t => t.essential).map(tool => (
+            <li key={tool.tool} style="font-size:0.875rem;color:var(--text-secondary);">
+              <span style="color:var(--status-safe);">✓</span> {tool.tool}
+            </li>
+          ))}
+          {analysis.toolChecklist.filter(t => !t.essential).map(tool => (
+            <li key={tool.tool} style="font-size:0.875rem;color:var(--text-tertiary);">
+              <span style="color:var(--status-warning);">○</span> {tool.tool}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div style="margin-top:2.5rem;display:flex;flex-wrap:wrap;gap:1rem;">
+        <a href={`/build-plan?cpu=${cpu.id}&gpu=${gpu.id}`} class="btn btn-primary" style="text-decoration:none;min-height:44px;padding:0.75rem 1.5rem;">
+          Customize This Blueprint →
+        </a>
+        <a href={`/compare/upgrade/gpu/${encodeURIComponent(gpu.id.split('-').slice(0, -1).join('-'))}/${encodeURIComponent(gpu.id)}`} class="btn btn-secondary" style="text-decoration:none;min-height:44px;padding:0.75rem 1.5rem;">
+          Compare GPU Upgrades
+        </a>
+      </div>
+
+      <section aria-labelledby="bp-related-heading" style="margin-top:3rem;">
+        <h2 id="bp-related-heading">Related Guides</h2>
+        <div class="related-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:1.5rem;">
+          {relatedLinks.map(link => (
+            <a href={link.href} class="related-card card" key={link.href} style="display:block;padding:1.25rem;text-decoration:none;">
+              <h3 style="font-size:1rem;font-weight:700;color:var(--color-text-primary);margin-bottom:0.35rem;">{link.name}</h3>
+              <p style="font-size:0.8125rem;color:var(--color-text-secondary);margin:0;">{link.desc}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="bp-faq-title" style="margin-top:3.5rem;">
+        <h2 id="bp-faq-title" style="font-size:1.5rem;font-weight:900;color:var(--color-text-primary);margin-bottom:1.5rem;">Frequently Asked Questions</h2>
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          {faqList.map((faq, index) => (
+            <details class="card" key={index} style="padding:1rem;cursor:pointer;background:var(--color-surface-raised);border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);">
+              <summary style="font-weight:700;color:var(--color-text-primary);list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                <span>{faq.q}</span>
+                <span class="chevron" style="color:var(--color-accent-cyan);font-size:0.75rem;">▼</span>
+              </summary>
+              <p style="margin-top:0.75rem;font-size:0.875rem;color:var(--color-text-secondary);line-height:1.5;cursor:default;" onclick="event.stopPropagation()">{faq.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <div style="margin-top:2.5rem;text-align:center;">
+        <a href="/build-plan" class="btn btn-primary" style="text-decoration:none;min-height:44px;padding:0.75rem 1.5rem;">
+          Build Your Own Blueprint →
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.bp-page {
+  padding: 2rem 0 5rem;
+}
+.bp-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.bp-header h1 {
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.bp-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.bp-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 768px) {
+  .bp-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.card-dark {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1.5rem;
+}
+.card-dark h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.stat-row:last-child {
+  border-bottom: none;
+}
+.stat-label {
+  color: var(--text-secondary);
+}
+.stat-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.related-card { text-decoration: none; color: inherit; transition: transform 0.15s; }
+.related-card:hover { transform: translateY(-2px); border-color: var(--border-accent); text-decoration: none; }
+.related-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+.related-card p { font-size: 0.875rem; color: var(--text-secondary); }
+</style>

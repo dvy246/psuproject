@@ -1116,7 +1116,7 @@ var onRequest = /* @__PURE__ */ __name(async (context2) => {
     });
   }
   const origin = context2.request.headers.get("Origin") || "";
-  const allowedOrigins = ["https://psucheck.com", "http://localhost:4321", "http://localhost:3000"];
+  const allowedOrigins = ["https://psucheck.com", "https://www.psucheck.com", "http://localhost:4321", "http://localhost:3000"];
   const corsOrigin = allowedOrigins.includes(origin) ? origin : "https://psucheck.com";
   try {
     const body = await context2.request.json();
@@ -1167,7 +1167,7 @@ var onRequest = /* @__PURE__ */ __name(async (context2) => {
   }
 }, "onRequest");
 
-// ../.wrangler/tmp/pages-GV1G8D/functionsRoutes-0.9449111424635686.mjs
+// ../.wrangler/tmp/pages-vrnqfZ/functionsRoutes-0.05099120305729188.mjs
 var routes = [
   {
     routePath: "/api/psu-report",

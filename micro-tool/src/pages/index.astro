@@ -117,6 +117,142 @@ const faqSchema = {
         "@type": "Answer",
         "text": "Warning signs of a failing PSU include: random system shutdowns under load, PC refusing to power on, coil whine that worsens over time, visible burn marks or melted connectors, burning smell, BSOD errors correlated with GPU-intensive tasks, or voltage readings outside ±5% of rated values. PSUs typically last 5–10 years; replace any unit over 7 years old proactively."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "What PSU do I need for the RTX 5080?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The RTX 5080 has a 360W TBP with transient spikes reaching approximately 540W. NVIDIA recommends a minimum 850W PSU. For pairing with a high-TDP CPU like the Intel Core Ultra 9 285K or AMD Ryzen 9 9950X, a 1000W ATX 3.1 PSU with a native 12V-2x6 connector provides safer headroom."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What PSU do I need for the RTX 5070 Ti?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The RTX 5070 Ti has a 300W TBP with transient spikes reaching approximately 450W. NVIDIA recommends a minimum 750W PSU. For most mid-range builds, a quality 750W to 850W ATX 3.1 PSU provides sufficient power and future upgrade room."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does a PSU last?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A quality PSU typically lasts 7 to 12 years under normal use. Budget PSUs (3-5 year warranty) last 3-5 years. Mid-range units (7-10 year warranty) last 7-10 years. Premium PSUs (10-12 year warranty) can last 10-12+ years. Factors affecting lifespan include operating temperature, electrical load, power quality, and capacitor age. Replace any PSU showing signs of failure regardless of age."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to use a higher wattage PSU than I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, it is completely safe. A PSU only delivers the power your components demand, not its full rated capacity. In fact, a higher-wattage PSU often runs in its peak efficiency sweet spot (40–60% load), runs cooler, and its fan spins slower. The only downside is the higher upfront cost. Oversizing by 200-300W over your estimated load is a common and recommended practice."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I mix PSU cables from different brands?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Never mix PSU cables from different brands or even different model lines from the same brand. Pin layouts vary between manufacturers — using an incompatible cable can short-circuit your components, causing permanent damage to your GPU, motherboard, or drives. Always use the cables that came with your specific PSU. When replacing a PSU, replace all cables."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if my PSU is too weak for my GPU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An underpowered PSU can cause random shutdowns during gaming or GPU-intensive tasks when transient power spikes exceed the PSU's capacity. The PSU's Over Current Protection (OCP) may trip, cutting power abruptly. Sustained operation near maximum capacity accelerates capacitor aging and can lead to voltage instability. Quality PSUs shut down safely; cheap PSUs may fail destructively."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does 80 PLUS mean on a power supply?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "80 PLUS is a voluntary certification program that guarantees a PSU is at least 80% energy efficient at 20%, 50%, and 100% load. Higher tiers (Bronze, Silver, Gold, Platinum, Titanium) require progressively higher efficiency. Gold (87-90%) is the best value for most builds. The certification does not measure build quality, voltage regulation, or noise performance."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will a PSU fit in my case?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PSU compatibility depends on form factor and physical size. ATX is the standard size for most mid and full-tower cases. SFX and SFX-L are compact sizes for small form factor (SFF) and mini-ITX cases. Always check your case's maximum PSU length — standard ATX PSUs range from 130mm to 200mm+ long. Our compatibility checker verifies PSU-to-case clearance."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much electricity does a gaming PC use per hour?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A typical gaming PC uses 200–500 watts per hour during gaming depending on components. Mid-range builds draw 250-350W, high-end builds with RTX 5080 or RTX 4090 draw 400-600W, and flagship builds with RTX 5090 can exceed 700W. At US average rates ($0.13/kWh), 4 hours of gaming per day costs roughly $40-100 per year depending on your system's power draw."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the best PSU brand for reliability?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Reliability varies by specific model, not just brand. Seasonic, Corsair (RMx/AX/HX series), be quiet! (Dark Power, Straight Power), EVGA (SuperNOVA G6/P6), Super Flower (Leadex), and MSI (MEG AI series) consistently receive top marks in independent testing. Check the Cultists PSU Tier List for model-specific quality ratings. A PSU from a reputable brand with a 10+ year warranty is a strong reliability indicator."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need a new PSU when upgrading my GPU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not necessarily. Check if your existing PSU meets the new GPU's minimum wattage requirement and has the correct power connectors. Modern GPUs like the RTX 5080/5090 require ATX 3.1 native 12V-2x6 cables — older PSUs may need adapters. If your PSU is over 5-7 years old or lacks sufficient wattage/connectors for the new card, replacement is recommended for reliability and safety."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a PSU in a PC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A PSU (Power Supply Unit) converts AC power from your wall outlet into stable DC power at various voltages (12V, 5V, 3.3V) required by your computer components. It powers the CPU, GPU, motherboard, RAM, storage drives, and cooling fans. The PSU is the foundation of system stability — a low-quality or underpowered unit can cause crashes, component damage, or fire risk."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I check my PSU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "To check a PSU, start with a visual inspection — look for bulging capacitors, burn marks, or melted connectors. Listen for unusual noises like grinding or excessive coil whine. For functional testing, use the paperclip test (jump green wire to ground on the 24-pin connector) to check if the PSU fan spins. Voltage readings can be checked with a multimeter on the 24-pin and PCIe connectors. For comprehensive testing, use a dedicated PSU tester."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a PSU tester?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, dedicated PSU testers are available for under $20–$50. These devices plug into the 24-pin motherboard connector and optionally into CPU/GPU power connectors, displaying voltage readings for each rail (12V, 5V, 3.3V) on an LCD screen. Some advanced models include load testing and report if voltages fall outside ATX specification (±5%). A multimeter can also test PSU voltages without a dedicated tester."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How to check PSU requirements?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Check PSU requirements by identifying your GPU's TBP and CPU's TDP, then adding a safety buffer for transient spikes. Use PSUCheck's PSU Calculator — it sums component power draws, applies GPU transient multipliers, and recommends a minimum wattage. For RTX 5080 class GPUs, expect 750W-850W minimum. For RTX 5090, 1000W minimum. Always add 20-30% headroom above estimated peak draw."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How to choose a PSU for a PC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Choose a PSU by matching wattage to your components (use PSUCheck's calculator for precision), selecting 80+ Gold efficiency for best value, choosing modular cabling for clean builds, verifying ATX 3.1 compliance for modern GPU support, and checking the Cultists PSU Tier List for quality. Match the PSU form factor to your case (ATX for standard builds, SFX for small form factor). A 10-year warranty signals manufacturer confidence."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which PSU is best for gaming?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The best PSU for gaming depends on your GPU tier. For RTX 5090 builds, a 1200W ATX 3.1 Platinum unit like the Corsair HX1500i or Seasonic Prime TX-1600. For RTX 5080/4090, an 850W-1000W Gold unit like the Corsair RM1000x or be quiet! Dark Power 13. For RTX 5070/5060, a 650W-750W Gold unit from Corsair RMx, EVGA SuperNOVA, or Seasonic Focus GX series suffices."
+      }
     }
   ]
 };

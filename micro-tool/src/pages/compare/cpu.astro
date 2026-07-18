@@ -54,12 +54,83 @@ const schema = {
     "name": `${pair.a.name} vs ${pair.b.name} Spec Comparison`
   }))
 };
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I compare two CPUs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Start by looking at socket compatibility, core count, thread count, base and boost clock speeds, TDP (thermal design power), and sustained power limits (PL2/PBP). For gaming, single-thread performance matters most. For productivity tasks like video editing or compiling, multi-thread performance and core count are more important. Always check that the CPU is compatible with your motherboard chipset and BIOS version before purchasing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does TDP mean and how does it differ from actual power draw?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TDP (Thermal Design Power) is the wattage a cooling system must dissipate under typical workloads — it is not the CPU's maximum electrical draw. Actual power draw can be significantly higher, especially under all-core boost or transient spikes. Intel's PL2 (Power Limit 2) and AMD's PPT (Package Power Target) ratings better reflect real-world peak draw. A CPU rated at 65W TDP can briefly draw 100W or more."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is sustained TDP and why does it matter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sustained TDP is the average power a CPU maintains under continuous heavy load after boost periods expire. It is typically lower than peak boost power but higher than the base TDP. This value determines your cooler requirements for extended workloads like video rendering or gaming marathons. A CPU with a high peak but low sustained TDP may throttle under prolonged load, reducing performance."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between single-thread and multi-thread performance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Single-thread performance measures how fast a single core executes tasks and is critical for gaming, everyday apps, and legacy software. Multi-thread performance reflects how well the CPU handles parallel workloads across all cores, which matters for video editing, 3D rendering, code compilation, and scientific simulations. A CPU may excel at one but lag at the other — always match benchmarks to your primary use case."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does CPU power draw affect my power supply choice?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "CPU power draw directly determines the minimum PSU wattage you need. A high-end CPU drawing 200W+ under load, combined with a GPU, can push a 650W PSU to its limit. Factor in transient spikes (brief power surges that can exceed rated draw by 30-50%), plus GPU requirements, and add 20-30% headroom for longevity and efficiency. Use a PSU calculator that accounts for CPU transient loads, not just TDP."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between boost clock and base clock?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Base clock is the guaranteed minimum frequency a CPU runs at under normal load. Boost clock is the maximum frequency a single core can reach under ideal conditions (good cooling, sufficient power, light workload). Not all cores can hit max boost simultaneously — all-core boost is usually lower than single-core boost. The gap between base and boost indicates thermal and power headroom. A small gap suggests the CPU already runs near its limit at stock settings."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does the CPU binding constraint matter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "CPU binding constraints define which instruction sets, microarchitectures, or vendor families a software build targets. Choosing the wrong constraint can cause runtime crashes, missing performance optimizations (like AVX-512 or AVX2), or complete incompatibility. For game emulators, virtual machines, and high-performance computing, matching the CPU binding to the host's capabilities is essential for stability and peak performance."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need integrated graphics if I have a discrete GPU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "If you have a discrete GPU, integrated graphics (iGPU) is not needed for display output, but it remains useful for troubleshooting — if your GPU fails or needs drivers installed, the iGPU lets you access the system. Intel Quick Sync and AMD VCN hardware encoders on the iGPU can also accelerate video transcoding in apps like HandBrake, often with better quality-per-watt than the discrete GPU's encoder. For troubleshooting and media encoding, an iGPU-capable CPU (non-F SKU for Intel) is worth the small premium."
+      }
+    }
+  ]
+};
 ---
 
 <Layout
   title="Compare PC Processors: CPU Power & Spec Comparison Hub — PSUCheck"
   description="Compare power draw, sustained TDP, transient spikes, and core specs of popular AMD Ryzen and Intel Core CPUs side-by-side."
-  schema={schema}
+  schema={[schema, faqSchema]}
 >
   <section class="calc-hero" aria-labelledby="compare-hero-heading">
     <div class="container">

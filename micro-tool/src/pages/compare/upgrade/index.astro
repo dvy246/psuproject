@@ -14,11 +14,82 @@ const cases = caseData.items;
 
 const pageTitle = "Universal Upgrade Impact Simulator — PSUCheck";
 const pageDescription = "Swap components in your virtual build. Run clearance checks, connector checks, capacitor aging, and transient peak calculations.";
+
+const faqSchema = {
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I check if my GPU can be upgraded?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Check three things: physical clearance (length, width, slot alignment), power delivery (PSU wattage and available PCIe connectors), and CPU bottleneck risk. Our Upgrade Impact Simulator checks all three at once — enter your current build and target GPU to see compatibility instantly."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What PSU wattage do I need for a GPU upgrade?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NVIDIA recommends 750W for RTX 5070/5070 Ti, 850W for RTX 5080, and 1000W+ for RTX 5090. AMD recommends 700W for RX 9070 XT and 800W for RX 9070. These include headroom for transient spikes. Always check the PSU's +12V rail rating — a cheap 850W unit may deliver less than a quality 750W unit."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will my new GPU fit in my case?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Measure your case's maximum GPU length (clearance from the rear PCIe slot to the drive cage or front fan), check width clearance against the side panel, and verify the expansion slot height. High-end GPUs are 300–360 mm long and often 3+ slots thick. Our simulator compares your case specs against the target GPU dimensions automatically."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does upgrading GPU require a new PSU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not always. If your current PSU has sufficient wattage headroom, the correct PCIe connectors (6+2 pin or 12VHPWR), and is a quality unit from a reputable brand, you can keep it. However, if the PSU is over 5–7 years old, lacks the needed connectors, or doesn't have enough capacity for transient spikes, upgrading the PSU alongside the GPU is recommended."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are GPU transient spikes and why do they matter for upgrades?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Transient spikes are brief (microsecond-scale) power surges that can exceed a GPU's rated TDP by 2–3x. For example, an RTX 4090 rated at 450W can spike to 600W+. If your PSU lacks sufficient transient tolerance, these spikes can trigger OCP (over-current protection) shutdowns, causing crashes during gaming. Our simulator applies a 1.5× derating factor to test spike tolerance."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What connector do I need for modern GPUs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Modern GPUs use either traditional 6+2 pin PCIe power connectors or the newer 12VHPWR (12+4 pin, H+) connector introduced with ATX 3.0/3.1. The RTX 40/50 series and RX 9000 series use 12VHPWR or standard PCIe 8-pin depending on model. Check your PSU's available connectors — if it lacks the required type, you may need adapter cables or a new PSU."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much performance gain does a GPU upgrade give?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Performance gain depends on your CPU, resolution, and the generational gap. A jump from RTX 3070 to RTX 5070 roughly doubles raster performance at 1440p. Gains are largest at higher resolutions (1440p/4K) where the GPU is the bottleneck. At 1080p, CPU limitations may reduce the uplift significantly."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to upgrade my CPU when upgrading GPU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It depends on your current CPU and target resolution. At 4K, GPU upgrades almost always improve performance regardless of CPU. At 1080p, an older CPU can bottleneck a new GPU, wasting performance. A good rule: if your CPU is more than 3 generations old or has fewer than 8 cores, consider upgrading it alongside the GPU."
+      }
+    }
+  ]
+};
 ---
 
 <Layout
   title={pageTitle}
   description={pageDescription}
+  schema={faqSchema}
 >
   <section class="compat-page" style="padding: 3rem 0 6rem;" aria-labelledby="simulator-heading">
     <div class="container">

@@ -32,4 +32,3 @@ Crawl-delay: 5
 
 # Sitemaps
 Sitemap: https://psucheck.com/sitemap-index.xml
-Sitemap: https://psucheck.com/sitemap-0.xml

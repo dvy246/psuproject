@@ -42,7 +42,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   }
 
   const origin = context.request.headers.get('Origin') || '';
-  const allowedOrigins = ['https://psucheck.com', 'http://localhost:4321', 'http://localhost:3000'];
+  const allowedOrigins = ['https://psucheck.com', 'https://www.psucheck.com', 'http://localhost:4321', 'http://localhost:3000'];
   const corsOrigin = allowedOrigins.includes(origin) ? origin : 'https://psucheck.com';
 
   try {

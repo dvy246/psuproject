@@ -9,6 +9,80 @@ const schema = {
   "description": "Access side-by-side spec comparers and electrical load calculators for sizing power supplies, backing up battery UPS runtimes, and planning room circuit breaker loads."
 };
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "name": "PSUCheck Comparison Tools — Frequently Asked Questions",
+  "url": "https://psucheck.com/compare/",
+  "description": "Common questions about using PSUCheck's component comparison tools and electrical safety calculators.",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What comparison tools are available?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PSUCheck offers PSU Spec Comparison (compare two power supplies side-by-side), CPU Power Comparison, GPU Power Comparison, UPS Battery Sizer, Circuit Breaker Planner, Desktop vs Laptop TCO calculator, and Cable Compatibility tools — all focused on power draw, transient spikes, and electrical safety."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I compare two PSUs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Navigate to the PSU Spec Comparison tool, select your two power supply models from the dropdown lists, and the tool will display a side-by-side comparison of modularity, 80 PLUS vs Cybenetics efficiency ratings, native 12V-2x6 connector support, fan size, and cost-per-watt value."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I compare two GPUs for power draw?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Open the GPU Power Comparison tool and choose up to two graphics cards. The tool compares total board power (TBP), sub-millisecond transient spikes, recommended PSU wattage, PCIe slot draw, and 12V-2x6 connector requirements for NVIDIA GeForce, AMD Radeon, and Intel Arc models."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a GPU upgrade checker?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The GPU upgrade checker evaluates whether your existing power supply can handle a new graphics card. Input your current PSU wattage and the target GPU; the tool analyzes sustained load, transient headroom, and connector compatibility before recommending an upgrade path or a PSU swap."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a UPS sizer and when do I need it?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The UPS Battery Sizer calculates the minimum VA rating your uninterruptible power supply needs to safely support a gaming PC during a blackout. Use it when planning a home office, building a new rig, or if you have experienced sudden shutdowns during power flickers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a circuit breaker planner?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Circuit Breaker Planner audits all devices sharing a bedroom or office electrical circuit. It accounts for the combined draw of a gaming PC, monitor, air conditioner, space heater, and other peripherals to determine whether a 15 A or 20 A breaker will trip under load."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the cable compatibility tool work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The cable compatibility tool helps you verify whether your existing PSU cables (CPU, PCIe, SATA, 12V-2x6) match a new power supply or component. Select your current PSU model and target hardware; the tool flags mismatched pinouts and warns against mixing incompatible cables across different PSU brands or series."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the desktop vs laptop TCO calculator?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Desktop vs Laptop TCO (Total Cost of Ownership) calculator compares continuous power draw differences and projects 5-year electricity bills for a custom desktop rig versus a gaming or creator laptop. It factors in regional kWh rates, typical usage hours per day, and idle vs load power consumption."
+      }
+    }
+  ]
+};
+
 const comparisonTools = [
   {
     title: "⚡ PSU Spec Comparison",
@@ -58,7 +132,7 @@ const comparisonTools = [
 <Layout
   title="PC Component Comparisons & Electrical Safety Calculators — PSUCheck"
   description="Compare CPU and GPU transient power specs, side-by-side PSU standards, UPS backup battery runtimes, and bedroom circuit breaker limits."
-  schema={schema}
+  schema={[schema, faqSchema]}
 >
   <section class="calc-hero" aria-labelledby="compare-hub-heading">
     <div class="container">

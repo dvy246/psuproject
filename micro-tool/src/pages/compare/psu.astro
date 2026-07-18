@@ -2,6 +2,21 @@
 import Layout from '../../layouts/Layout.astro';
 import { PsuComparer } from '../../components/calculators/PsuComparer';
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How do I compare two power supplies?", "acceptedAnswer": { "@type": "Answer", "text": "Focus on wattage rating, efficiency certification (80+ Bronze through Titanium), modularity type, ATX version, protection features, and physical dimensions. Select two PSUs above to see a side-by-side comparison across all these metrics." } },
+    { "@type": "Question", "name": "What does the ATX version tell me?", "acceptedAnswer": { "@type": "Answer", "text": "ATX 3.0 and 3.1 PSUs include native 12VHPWR or 12V-2x6 connectors required for RTX 40 and 50 series GPUs. They also guarantee handling of 200% transient power excursions. Older ATX 2.x PSUs work with adapters but lack native transient tolerance." } },
+    { "@type": "Question", "name": "Is modular or non-modular PSU better?", "acceptedAnswer": { "@type": "Answer", "text": "Fully modular PSUs let you detach all cables, making cable management cleaner. Semi-modular units have fixed essential cables with detachable peripheral cables. Non-modular units have all cables fixed and cost less but are harder to manage." } },
+    { "@type": "Question", "name": "What efficiency rating should I look for?", "acceptedAnswer": { "@type": "Answer", "text": "80+ Gold is the best value for most builds (87-90% efficiency). Platinum adds 2-3% efficiency for 30-50% higher cost. Titanium is for 24/7 operation. Bronze is adequate for budget builds; the electricity cost difference vs Gold is roughly $8-15 per year." } },
+    { "@type": "Question", "name": "Do I need a Cybenetics rated PSU?", "acceptedAnswer": { "@type": "Answer", "text": "Cybenetics provides independent efficiency and noise testing at more load points than 80 PLUS. ETA-A++ roughly equals Titanium. Cybenetics noise ratings (A+ through Standard) help you choose quieter units, especially important for silent builds." } },
+    { "@type": "Question", "name": "What protection features matter most?", "acceptedAnswer": { "@type": "Answer", "text": "OCP (Over Current Protection) prevents damage from transient spikes. OVP protects against voltage surges. SCP prevents short circuit damage. OTP prevents overheating. A quality PSU should have all four." } },
+    { "@type": "Question", "name": "Does PSU wattage affect electricity bills?", "acceptedAnswer": { "@type": "Answer", "text": "No. A PSU only draws what your components demand. A 1200W PSU powering a 500W system draws approximately 500W plus conversion loss. A larger PSU may run more efficiently if it stays in the 40-60% load sweet spot." } },
+    { "@type": "Question", "name": "How does PSU physical size affect compatibility?", "acceptedAnswer": { "@type": "Answer", "text": "PSU dimensions determine case compatibility. Standard ATX PSUs are 150mm wide and 86mm tall but vary in length from 130mm to 200mm+. Check your case maximum PSU length before purchasing. The compare view shows dimensions for direct comparison." } }
+  ]
+};
+
 const schema = {
   "@type": "WebApplication",
   "name": "PSUCheck PSU Comparer",
@@ -15,7 +30,7 @@ const schema = {
 <Layout
   title="Compare PC Power Supplies: Side-by-Side PSU Spec Comparison — PSUCheck"
   description="Select and compare two power supplies side-by-side. Analyze ATX standard differences (2.x vs 3.1), modularity configurations, native cables, and estimated pricing."
-  schema={schema}
+  schema={[schema, faqSchema]}
 >
   <section class="calc-hero" aria-labelledby="compare-hero-heading">
     <div class="container">

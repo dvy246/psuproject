@@ -110,6 +110,19 @@ export default defineConfig({
           return { ...item, priority: 0.8, changefreq: 'monthly', lastmod };
         }
 
+        // Power consumption pages — high value top-of-funnel content
+        if (url.includes('/power-consumption/')) {
+          return { ...item, priority: 0.8, changefreq: 'monthly', lastmod: new Date('2026-07-14') };
+        }
+
+        // Build blueprint pages — interactive tool + programmatic content
+        if (url === 'https://psucheck.com/build-plan' || url === 'https://psucheck.com/build-plan/') {
+          return { ...item, priority: 0.8, changefreq: 'weekly', lastmod: new Date('2026-07-18') };
+        }
+        if (url.includes('/build-plan/')) {
+          return { ...item, priority: 0.7, changefreq: 'monthly', lastmod: new Date('2026-07-18') };
+        }
+
         // Oracle pages — long-tail SEO content
         if (url.includes('/oracle/')) {
           return { ...item, priority: 0.7, changefreq: 'monthly', lastmod };

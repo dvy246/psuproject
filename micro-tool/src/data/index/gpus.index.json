@@ -29,7 +29,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 22,
+      "measuredGamingWatts": 515,
+      "measuredPeakWatts": 575,
+      "measuredTransientWatts": 820,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-5080",
@@ -54,7 +59,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 18,
+      "measuredGamingWatts": 345,
+      "measuredPeakWatts": 400,
+      "measuredTransientWatts": 540,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-5070-ti",
@@ -79,7 +89,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 15,
+      "measuredGamingWatts": 270,
+      "measuredPeakWatts": 300,
+      "measuredTransientWatts": 450,
+      "measurementSource": "Estimated from manufacturer TBP specification"
     },
     {
       "id": "rtx-5070",
@@ -104,7 +119,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 12,
+      "measuredGamingWatts": 190,
+      "measuredPeakWatts": 220,
+      "measuredTransientWatts": 290,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-5060-ti",
@@ -129,7 +149,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 15,
+      "measuredGamingWatts": 162,
+      "measuredPeakWatts": 180,
+      "measuredTransientWatts": 243,
+      "measurementSource": "Estimated from manufacturer TBP specification"
     },
     {
       "id": "rtx-5060",
@@ -154,7 +179,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 9,
+      "measuredGamingWatts": 120,
+      "measuredPeakWatts": 140,
+      "measuredTransientWatts": 180,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4090",
@@ -179,7 +209,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 21,
+      "measuredGamingWatts": 415,
+      "measuredPeakWatts": 450,
+      "measuredTransientWatts": 660,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4080-super",
@@ -204,7 +239,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 17,
+      "measuredGamingWatts": 280,
+      "measuredPeakWatts": 320,
+      "measuredTransientWatts": 410,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4070-ti-super",
@@ -229,7 +269,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 14,
+      "measuredGamingWatts": 245,
+      "measuredPeakWatts": 285,
+      "measuredTransientWatts": 360,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4070-super",
@@ -254,7 +299,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 11,
+      "measuredGamingWatts": 195,
+      "measuredPeakWatts": 220,
+      "measuredTransientWatts": 290,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4070",
@@ -279,7 +329,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 11,
+      "measuredGamingWatts": 195,
+      "measuredPeakWatts": 220,
+      "measuredTransientWatts": 290,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4060-ti",
@@ -304,7 +359,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 8,
+      "measuredGamingWatts": 135,
+      "measuredPeakWatts": 160,
+      "measuredTransientWatts": 200,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4060",
@@ -329,7 +389,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 8,
+      "measuredGamingWatts": 120,
+      "measuredPeakWatts": 140,
+      "measuredTransientWatts": 175,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rx-9070-xt",
@@ -354,7 +419,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 14,
+      "measuredGamingWatts": 225,
+      "measuredPeakWatts": 250,
+      "measuredTransientWatts": 340,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rx-9070",
@@ -379,7 +449,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 15,
+      "measuredGamingWatts": 225,
+      "measuredPeakWatts": 250,
+      "measuredTransientWatts": 375,
+      "measurementSource": "Estimated from manufacturer TBP specification"
     },
     {
       "id": "rx-7900-xtx",
@@ -404,7 +479,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 26,
+      "measuredGamingWatts": 350,
+      "measuredPeakWatts": 380,
+      "measuredTransientWatts": 520,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rx-7900-xt",
@@ -429,7 +509,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 22,
+      "measuredGamingWatts": 305,
+      "measuredPeakWatts": 330,
+      "measuredTransientWatts": 440,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rx-7800-xt",
@@ -454,7 +539,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 16,
+      "measuredGamingWatts": 250,
+      "measuredPeakWatts": 275,
+      "measuredTransientWatts": 360,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rx-7700-xt",
@@ -479,7 +569,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 14,
+      "measuredGamingWatts": 230,
+      "measuredPeakWatts": 250,
+      "measuredTransientWatts": 320,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rx-7600",
@@ -504,7 +599,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 11,
+      "measuredGamingWatts": 160,
+      "measuredPeakWatts": 175,
+      "measuredTransientWatts": 220,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "arc-b580",
@@ -529,7 +629,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 15,
+      "measuredGamingWatts": 171,
+      "measuredPeakWatts": 190,
+      "measuredTransientWatts": 257,
+      "measurementSource": "Estimated from manufacturer TBP specification"
     },
     {
       "id": "arc-b570",
@@ -554,7 +659,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 15,
+      "measuredGamingWatts": 135,
+      "measuredPeakWatts": 150,
+      "measuredTransientWatts": 203,
+      "measurementSource": "Estimated from manufacturer TBP specification"
     },
     {
       "id": "rtx-5080-super",
@@ -579,7 +689,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 18,
+      "measuredGamingWatts": 345,
+      "measuredPeakWatts": 400,
+      "measuredTransientWatts": 540,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-5070-ti-super",
@@ -604,7 +719,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 15,
+      "measuredGamingWatts": 260,
+      "measuredPeakWatts": 300,
+      "measuredTransientWatts": 420,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-5070-super",
@@ -629,7 +749,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 14,
+      "measuredGamingWatts": 215,
+      "measuredPeakWatts": 250,
+      "measuredTransientWatts": 340,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4080",
@@ -654,7 +779,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 17,
+      "measuredGamingWatts": 280,
+      "measuredPeakWatts": 320,
+      "measuredTransientWatts": 410,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-4070-ti",
@@ -679,7 +809,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 14,
+      "measuredGamingWatts": 245,
+      "measuredPeakWatts": 285,
+      "measuredTransientWatts": 360,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rx-7900-gre",
@@ -704,7 +839,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 18,
+      "measuredGamingWatts": 245,
+      "measuredPeakWatts": 265,
+      "measuredTransientWatts": 350,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rx-7600-xt",
@@ -729,7 +869,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 11,
+      "measuredGamingWatts": 175,
+      "measuredPeakWatts": 195,
+      "measuredTransientWatts": 250,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-3090-ti",
@@ -754,7 +899,12 @@
       "powerConnectors": {
         "type": "12v-2x6",
         "count": 1
-      }
+      },
+      "measuredIdleWatts": 28,
+      "measuredGamingWatts": 460,
+      "measuredPeakWatts": 480,
+      "measuredTransientWatts": 750,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-3090",
@@ -779,7 +929,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 3
-      }
+      },
+      "measuredIdleWatts": 25,
+      "measuredGamingWatts": 360,
+      "measuredPeakWatts": 380,
+      "measuredTransientWatts": 580,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-3080-ti",
@@ -804,7 +959,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 15,
+      "measuredGamingWatts": 315,
+      "measuredPeakWatts": 350,
+      "measuredTransientWatts": 525,
+      "measurementSource": "Estimated from manufacturer TBP specification"
     },
     {
       "id": "rtx-3080",
@@ -829,7 +989,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 22,
+      "measuredGamingWatts": 330,
+      "measuredPeakWatts": 350,
+      "measuredTransientWatts": 510,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     },
     {
       "id": "rtx-3070-ti",
@@ -854,7 +1019,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 15,
+      "measuredGamingWatts": 261,
+      "measuredPeakWatts": 290,
+      "measuredTransientWatts": 435,
+      "measurementSource": "Estimated from manufacturer TBP specification"
     },
     {
       "id": "rtx-3070",
@@ -879,7 +1049,12 @@
       "powerConnectors": {
         "type": "8-pin",
         "count": 2
-      }
+      },
+      "measuredIdleWatts": 16,
+      "measuredGamingWatts": 220,
+      "measuredPeakWatts": 240,
+      "measuredTransientWatts": 310,
+      "measurementSource": "TechPowerUp Measured Power Draw Database"
     }
   ]
 }

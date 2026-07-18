@@ -17,7 +17,7 @@
 
 import { signal, computed } from '@preact/signals';
 import { useEffect, useRef, useState, useCallback } from 'preact/hooks';
-import type { CpuIndex, GpuIndex, MotherboardIndex, RamConfig, StorageConfig, CoolingConfig, CaseConfig, PsuIndex } from '../../types/components';
+import type { CpuIndex, GpuIndex, MotherboardIndex, RamConfig, StorageConfig, CoolingConfig, CaseConfig, PsuIndex, CaseIndex } from '../../types/components';
 import { BayCPU } from './bays/BayCPU';
 import { BayGPU } from './bays/BayGPU';
 import { BayMotherboard } from './bays/BayMotherboard';
@@ -32,6 +32,12 @@ import { serializeBuild, deserializeBuild } from '../../lib/url';
 import { runFullPsuAnalysis, calculatePsuHealthScore } from '../../lib/psu';
 import { calculateBuildCost } from '../../lib/calculate';
 import { ShareModal } from './ShareModal';
+import { generateBlueprint } from '../../lib/blueprint';
+import type { BlueprintOutput } from '../../lib/blueprint';
+import { BuildBlueprint } from './BuildBlueprint';
+
+import caseData from '../../data/index/cases.index.json';
+const ALL_CASES = (caseData as any).items as CaseIndex[];
 
 // --- Signals Store (global, shared with DiagnosticsHUD) ---
 export const selectedCpu     = signal<CpuIndex | null>(null);
@@ -67,13 +73,17 @@ const TOTAL_BAYS = 7;
 
 interface Props {
   mode?: 'psu' | 'cost';
+  blueprintMode?: boolean;
 }
 
-export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
+export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Props) {
   const [hudOpen, setHudOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentShareUrl, setCurrentShareUrl] = useState('');
   const [shareStatus, setShareStatus] = useState<'idle' | 'copied'>('idle');
+  const [blueprintOutput, setBlueprintOutput] = useState<BlueprintOutput | null>(null);
+  const [selectedCase, setSelectedCase] = useState<CaseIndex | null>(null);
+  const [showCaseSelector, setShowCaseSelector] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const drawerToggleRef = useRef<HTMLButtonElement>(null);
 
@@ -135,6 +145,28 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
     setCurrentShareUrl(shareUrl);
     setIsModalOpen(true);
   }, []);
+
+  const handleGenerateBlueprint = useCallback(() => {
+    const output = generateBlueprint({
+      cpu: selectedCpu.value,
+      gpu: selectedGpu.value,
+      ram: selectedRam.value,
+      storage: selectedStorage.value,
+      cooling: selectedCooling.value,
+      psu: selectedPsu.value,
+      caseModel: selectedCase,
+      fans: fans.value,
+      psuAgeYears: psuAge.value,
+      cpuOcPercent: cpuOcPercent.value,
+      gpuOcPercent: gpuOcPercent.value,
+      safetyBufferPercent: safetyBufferPercent.value,
+    });
+    setBlueprintOutput(output);
+    requestAnimationFrame(() => {
+      const el = document.getElementById('blueprint-output');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [selectedCase]);
 
   const activeCpu = selectedCpu.value;
   const activeGpu = selectedGpu.value;
@@ -216,6 +248,16 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
                   Build Gallery
                 </a>
+                <button
+                  onClick={handleGenerateBlueprint}
+                  class="btn btn-primary"
+                  style="font-size:0.7rem;padding:2px 8px;min-height:30px;display:flex;align-items:center;gap:4px;"
+                  aria-label="Generate build blueprint"
+                  type="button"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  Generate Blueprint
+                </button>
               </div>
             </div>
             {/* Build progress indicator */}
@@ -441,6 +483,55 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
                 </p>
               )}
             </div>
+
+            {/* ── Case Selection for Blueprint ── */}
+            <div
+              class="bay-wrapper"
+              role="listitem"
+              style="padding: 0.75rem 1rem; background: var(--color-surface-raised); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle);"
+            >
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                <span style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;font-weight:600;color:var(--color-text-secondary);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+                  Case (for clearance checks)
+                </span>
+                {selectedCase && (
+                  <button
+                    onClick={() => setSelectedCase(null)}
+                    class="btn btn-secondary"
+                    style="font-size:0.65rem;padding:2px 6px;min-height:24px;"
+                    type="button"
+                    aria-label="Clear case selection"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              {selectedCase ? (
+                <div style="display:flex;flex-direction:column;gap:0.25rem;">
+                  <span style="font-size:0.9375rem;font-weight:700;color:var(--text-primary);">{selectedCase.name}</span>
+                  <span style="font-size:0.75rem;color:var(--text-tertiary);">{selectedCase.formFactor} | GPU: {selectedCase.maxGpuLength}mm | Cooler: {selectedCase.maxCoolerHeight}mm</span>
+                </div>
+              ) : (
+                <select
+                  value=""
+                  onChange={(e) => {
+                    const id = (e.target as HTMLSelectElement).value;
+                    if (id) {
+                      const found = ALL_CASES.find(c => c.id === id);
+                      if (found) setSelectedCase(found);
+                    }
+                  }}
+                  aria-label="Select a computer case for clearance checks"
+                  style="width:100%;padding:0.5rem;background:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-default);border-radius:var(--radius-sm);font-size:0.8125rem;"
+                >
+                  <option value="">— Select a case —</option>
+                  {ALL_CASES.map(c => (
+                    <option key={c.id} value={c.id}>{c.name} ({c.formFactor}, {c.maxGpuLength}mm GPU max)</option>
+                  ))}
+                </select>
+              )}
+            </div>
           </div>
         </section>
 
@@ -493,6 +584,35 @@ export function VirtualAssemblyDesk({ mode = 'psu' }: Props) {
           </div>
         </aside>
       </div>
+
+      {/* ══ BLUEPRINT OUTPUT SECTION ══ */}
+      {(blueprintMode || blueprintOutput) && (
+        <section
+          class="blueprint-section"
+          style="margin-top:2rem;background:var(--bg-primary);border:1px solid var(--border-default);"
+          aria-label="Build Blueprint Output"
+        >
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <h2 style="font-size:1.25rem;font-weight:800;margin:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-right:0.5rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Build Blueprint
+            </h2>
+            {blueprintOutput && (
+              <button
+                onClick={() => window.print()}
+                class="btn btn-primary"
+                style="font-size:0.8125rem;padding:6px 14px;min-height:36px;"
+                type="button"
+                aria-label="Print build blueprint"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print Blueprint
+              </button>
+            )}
+          </div>
+          <BuildBlueprint blueprint={blueprintOutput} />
+        </section>
+      )}
 
       {/* ══ MOBILE: Bottom-Sheet Drawer ══ */}
       <div

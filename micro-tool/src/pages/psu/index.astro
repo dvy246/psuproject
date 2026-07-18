@@ -13,6 +13,86 @@ const budgetPsus = psus.filter(p => p.wattage < 700);
 const pageTitle = "Power Supply Unit (PSU) Specs & Compatibility Database — PSUCheck";
 const pageDescription = "Explore the complete PC power supply specs database. Check ATX 3.1 compatibility, 80 PLUS efficiency, and Cultists List quality tiers for 35+ PSUs.";
 
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://psucheck.com/" },
+    { "@type": "ListItem", "position": 2, "name": "PSU Database", "item": "https://psucheck.com/psu/" }
+  ]
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I use the PSU specs database?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Browse PSUs grouped by wattage class — enthusiast (1000W+), high-performance (700–850W), and mid-range (under 700W). Each card shows brand, model, wattage, 80 PLUS efficiency tier, ATX version, quality tier, and price. Click \"Full Specs\" on any card to view detailed specs including efficiency curves, Cybenetics ratings, connector counts, and warranty info."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What do PSU model names mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PSU model names typically encode series, wattage, and revision. For example, in Corsair RM850x, \"RM\" denotes the series (mid-range modular), \"850\" is the wattage, and \"x\" indicates an updated revision. Seasonic Focus GX-750 means the Focus series, Gold efficiency, and 750W. Each brand uses its own naming scheme, but wattage and series are almost always identifiable from the model string."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between 80+ Bronze, Gold, Platinum, Titanium?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "80 PLUS ratings certify efficiency at 20%, 50%, and 100% load. Bronze is 82–85% efficient, Gold is 87–90%, Platinum is 89–92%, and Titanium reaches 90–94% while also meeting 10% load efficiency. Higher tiers mean less heat waste, lower electricity bills, and typically better internal components. Titanium units are the most efficient and usually carry longer warranties."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I sort PSUs by efficiency or wattage?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The database groups PSUs into three wattage brackets: 1000W+, 700–850W, and under 700W. Within each bracket you can compare efficiency tiers at a glance via the color-coded pills (Bronze, Gold, Platinum, Titanium). To compare only high-efficiency units, focus on Platinum and Titanium badges or filter by the quality tier badge — units rated Tier A or B on the Cultists List typically use high-grade components and deliver strong real-world efficiency."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does Cybenetics rating tell me?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cybenetics provides two independent ratings that go beyond 80 PLUS: an efficiency grade (e.g., Gold, Platinum, Titanium) tested across a wider load range, and a noise level certification (Standard, Bronze through A++) measured in an anechoic chamber. A Cybenetics A++ noise rating means the PSU is virtually silent. These ratings are considered more rigorous and transparent than the basic 80 PLUS certification."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the 12V-2x6 connector and why does it matter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The 12V-2x6 (also called 12VHPWR) is the high-power connector used by NVIDIA RTX 40-series and 50-series GPUs, capable of delivering up to 600W over a single cable. ATX 3.1 PSUs ship with this connector natively, avoiding the need for octopus adapters. If you are building a high-end system, choosing a PSU with a native 12V-2x6 connector improves cable management and reliability."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does PSU warranty length relate to quality?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Warranty length is a strong indicator of manufacturer confidence. Budget PSUs typically carry 3–5 year warranties, mid-range units offer 7–10 years, and premium units (Tier A) often come with 10–12 year warranties. A longer warranty generally correlates with better Japanese capacitors, higher-quality soldering, and more robust thermal design. Always check the warranty terms, as some brands require proof of purchase for RMAs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What PSU brand is most reliable?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Reliability varies by specific model rather than brand alone, but Seasonic, Corsair (RMx/AX series), EVGA (SuperNOVA G6/P6), be quiet! (Dark Power 13), and Super Flower (Leadex VII) consistently top independent reviews and the Cultists PSU Tier List. Many brands — including Corsair, EVGA, and NZXT — rebrand platforms from Seasonic or Super Flower, so examining the internal platform is more revealing than the badge alone."
+      }
+    }
+  ]
+};
+
 const psuHubSchema = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
@@ -34,7 +114,7 @@ const effLabelMap: Record<string, string> = {
 <Layout
   title={pageTitle}
   description={pageDescription}
-  schema={psuHubSchema}
+  schema={[breadcrumbSchema, faqSchema]}
 >
   <section class="psu-database-page" aria-labelledby="hub-heading">
     <div class="container">

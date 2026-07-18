@@ -143,15 +143,26 @@ const faqSchema = {
   }))
 };
 
-const productSchema = {
+const articleSchema = {
   "@context": "https://schema.org",
-  "@type": "Product",
-  "name": `${gpu.name} Power Compatibility Guide`,
+  "@type": "TechArticle",
+  "headline": `${gpu.name} Power Compatibility Guide`,
   "description": `Detailed power supply compatibility analysis for ${gpu.name} running on a ${wattage}W PSU.`,
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
+  "image": ["https://psucheck.com/pc-hero.png"],
+  "datePublished": "2026-01-15T08:00:00Z",
+  "dateModified": "2026-07-14T08:00:00Z",
+  "author": {
+    "@type": "Organization",
+    "name": "PSUCheck Engineering Team",
+    "url": "https://psucheck.com/about"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PSUCheck",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://psucheck.com/favicon.svg"
+    }
   }
 };
 ---
@@ -165,7 +176,7 @@ const productSchema = {
       : `Is ${wattage}W Enough for ${gpu.name}? — PSUCheck`
   }
   description={`${psuAgeYears > 0 ? `${ageLabelStr} PSU aging analysis: ` : ''}Can a ${wattage}W power supply support ${gpu.name}${cpu ? ` and ${cpu.name}` : ''}? View transient spikes, per-rail amp draws${psuAgeYears > 3 ? `, capacitor derating for a ${psuAgeYears}yr-old PSU` : ''}, and upgrade recommendations.`}
-  schema={[faqSchema, productSchema]}
+  schema={[faqSchema, articleSchema]}
 >
   <section class="oracle-page" aria-labelledby="oracle-heading">
     <div class="container">

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/generate-wrangler.mjs && node scripts/sync-psu-counts.mjs && node scripts/add-reading-times.mjs || true",
+    "prebuild": "node scripts/generate-wrangler.mjs && node scripts/sync-psu-counts.mjs && node scripts/add-reading-times.mjs && node scripts/generate-search-index.mjs || true",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",

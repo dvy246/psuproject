@@ -43,16 +43,18 @@ export interface ComponentDraws {
 export function calculateBaseDraw(components: ComponentDraws): number {
   let total = 0;
 
-  // CPU — use sustained power (PL2 for Intel), apply OC multiplier
+  // CPU — use measuredPeakWatts if present, else sustained power (PL2 for Intel), apply OC multiplier
   if (components.cpu) {
     const ocMult = 1 + ((components.ocConfig?.cpuOcPercent ?? 0) / 100);
-    total += Math.round(components.cpu.tdpSustained * ocMult);
+    const cpuBase = components.cpu.measuredPeakWatts ?? components.cpu.tdpSustained;
+    total += Math.round(cpuBase * ocMult);
   }
 
-  // GPU — use TBP (Total Board Power), apply OC multiplier
+  // GPU — use measuredPeakWatts if present, else TBP (Total Board Power), apply OC multiplier
   if (components.gpu) {
     const ocMult = 1 + ((components.ocConfig?.gpuOcPercent ?? 0) / 100);
-    total += Math.round(components.gpu.tbp * ocMult);
+    const gpuBase = components.gpu.measuredPeakWatts ?? components.gpu.tbp;
+    total += Math.round(gpuBase * ocMult);
   }
 
   // RAM
@@ -83,7 +85,7 @@ export function calculateBaseDraw(components: ComponentDraws): number {
 
 export function calculateTransientPeak(
   cpu: CpuIndex | null,
-  gpu: CpuIndex | null,
+  gpu: GpuIndex | null,
   baseDraw: number,
   ocConfig?: OcConfig
 ): number {
@@ -92,19 +94,24 @@ export function calculateTransientPeak(
 
   if (cpu) {
     const ocMult = 1 + ((ocConfig?.cpuOcPercent ?? 0) / 100);
-    cpuPeak = cpu.tdpSustained * ocMult * constants.cpuTransientMultiplier;
+    const cpuBase = cpu.measuredPeakWatts ?? cpu.tdpSustained;
+    cpuPeak = cpuBase * ocMult * constants.cpuTransientMultiplier;
   }
 
   if (gpu) {
     const ocMult = 1 + ((ocConfig?.gpuOcPercent ?? 0) / 100);
-    const tierMultiplier = constants.gpuTierMultipliers[gpu.tier as GpuTier];
-    gpuPeak = gpu.tbp * ocMult * tierMultiplier;
+    if (gpu.measuredTransientWatts) {
+      gpuPeak = gpu.measuredTransientWatts * ocMult;
+    } else {
+      const tierMultiplier = constants.gpuTierMultipliers[gpu.tier as GpuTier];
+      gpuPeak = gpu.tbp * ocMult * tierMultiplier;
+    }
   }
 
   // Non-CPU/GPU components don't spike — add their draw as-is
-  const cpuBase = cpu ? cpu.tdpSustained * (1 + ((ocConfig?.cpuOcPercent ?? 0) / 100)) : 0;
-  const gpuBase = gpu ? gpu.tbp * (1 + ((ocConfig?.gpuOcPercent ?? 0) / 100)) : 0;
-  const otherDraw = baseDraw - Math.round(cpuBase) - Math.round(gpuBase);
+  const cpuBaseVal = cpu ? (cpu.measuredPeakWatts ?? cpu.tdpSustained) * (1 + ((ocConfig?.cpuOcPercent ?? 0) / 100)) : 0;
+  const gpuBaseVal = gpu ? (gpu.measuredPeakWatts ?? gpu.tbp) * (1 + ((ocConfig?.gpuOcPercent ?? 0) / 100)) : 0;
+  const otherDraw = baseDraw - Math.round(cpuBaseVal) - Math.round(gpuBaseVal);
 
   // Total peak: CPU peak + GPU peak + other components (no transient)
   return Math.round(cpuPeak + gpuPeak + otherDraw);

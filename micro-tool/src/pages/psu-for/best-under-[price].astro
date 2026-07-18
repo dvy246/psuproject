@@ -60,6 +60,66 @@ const faqSchema = {
         "@type": "Answer",
         "text": `Never skimp on the power supply. While staying under $${targetPrice} is fine for budget-to-mid builds, always ensure the unit is certified (80+ Bronze/Gold) and ATX 3.0/3.1 compliant to protect against transient voltage spikes.`
       }
+    },
+    {
+      "@type": "Question",
+      "name": `What can I expect from a PSU under $${targetPrice}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": matchedPsus.length > 0
+          ? `PSUs under $${targetPrice} typically offer 80+ Bronze or Gold efficiency, wattage ratings from 550W to 850W, and semi-modular or non-modular cable designs. Many budget units still provide reliable OCP, OVP, and SCP protections.`
+          : `We currently have no PSUs registered under $${targetPrice} in our database.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Is an 80+ Bronze PSU under $${targetPrice} good enough?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `Yes. 80+ Bronze (82-85% efficiency) is adequate for budget and mid-range builds. The efficiency difference between Bronze and Gold saves about $8-15 per year on electricity for a typical gaming PC — often less than the price premium for a Gold unit.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `How reliable are power supplies under $${targetPrice}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `Quality varies significantly. Stick to known brands like Corsair, EVGA, Seasonic, be quiet!, Cooler Master, MSI, and NZXT. Check our quality tier ratings on each PSU card. Units rated Tier B or higher are recommended for long-term reliability.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Should I buy a PSU at the top of my budget or save money?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `For PSUs under $${targetPrice}, spending more typically gets you higher wattage, better efficiency, and modular cables. If your build demands are modest (550-650W), a mid-price unit is fine. For future upgrade flexibility, spend closer to the $${targetPrice} limit.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Do cheap PSUs support modern GPU connectors?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `Most PSUs under $${targetPrice} do not have native 12V-2x6 connectors — that feature is reserved for premium units. If your GPU requires 12V-2x6, you will need an adapter or a higher budget. Check the connector match indicator on each PSU card.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `What wattage PSU should I look for under $${targetPrice}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": matchedPsus.length > 0
+          ? `Available wattages under $${targetPrice} range from ${Math.min(...matchedPsus.map(m => m.psu.wattage))}W to ${Math.max(...matchedPsus.map(m => m.psu.wattage))}W. Choose based on your GPU's minimum requirement plus 20% headroom for transient spikes.`
+          : `Wattage availability depends on current pricing. Generally, budget PSUs range from 450W to 750W.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `How does the value score work for PSUs under $${targetPrice}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `Our value score factors in cost-per-watt, efficiency tier, modularity, warranty length, and connector compatibility. Units with higher value scores deliver the best combination of price, features, and build quality in the sub-$${targetPrice} range.`
+      }
     }
   ]
 };

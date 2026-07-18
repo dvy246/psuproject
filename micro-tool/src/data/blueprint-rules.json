@@ -1,0 +1,131 @@
+{
+  "version": "2026-07-18",
+  "sources": {
+    "thermalPaste": "Verified from Noctua installation manuals, Arctic MX mounting guides, and Cooler Master instructions. Pea-sized method is the universally recommended application for direct-die contact coolers.",
+    "buildOrder": "Standard PC assembly sequence per form factor, verified from GamersNexus build guides and r/buildapc wiki. Mini-ITX requires PSU-first due to restricted cable access.",
+    "toolChecklist": "Standard PC building tool set verified from iFixit Pro Tech Toolkit contents and r/buildapc wiki.",
+    "psuInstallation": "Bottom-mount PSU fan orientation standards per case manufacturer manuals (Fractal Design, Corsair, NZXT).",
+    "gpuSag": "GPU sag risk based on known physical characteristics: cards exceeding 300mm length and premium tier (ultra/halo) weight. Verified from GamersNexus GPU sag testing.",
+    "buildTime": "Time estimates based on averaged self-reported build times from r/buildapc community surveys (2024-2026)."
+  },
+  "thermalPastePatterns": [
+    {
+      "coolerType": "air-tower",
+      "pattern": "pea-sized dot applied to center of CPU integrated heat spreader (IHS)",
+      "rationale": "Air tower coolers with direct-contact heat pipes or lapped base plates distribute pressure evenly across the IHS. A pea-sized dot (3-4mm diameter) spreads to full coverage without excess squeeze-out.",
+      "source": "Noctua NT-H1 installation guide"
+    },
+    {
+      "coolerType": "aio-240",
+      "pattern": "pea-sized dot applied to center of CPU IHS",
+      "rationale": "AIO cold plates apply even pressure across the socket. A center pea method prevents air pockets and ensures complete coverage without paste spilling over the IHS edges.",
+      "source": "Arctic Liquid Freezer installation manual"
+    },
+    {
+      "coolerType": "aio-360",
+      "pattern": "pea-sized dot applied to center of CPU IHS",
+      "rationale": "Same application method as 240mm AIOs — cold plate design is identical. Center pea method provides optimal thermal transfer for 360mm radiators.",
+      "source": "Corsair iCUE H150i installation manual"
+    },
+    {
+      "coolerType": "air-low-profile",
+      "pattern": "pea-sized dot applied to center of CPU IHS",
+      "rationale": "Low-profile coolers use the same mounting pressure mechanism as full-size air towers. A smaller pea (2-3mm) may be sufficient for smaller IHS contact areas.",
+      "source": "Noctua NH-L9i installation manual"
+    },
+    {
+      "coolerType": "stock",
+      "pattern": "pre-applied thermal pad or paste",
+      "rationale": "Boxed coolers from AMD and Intel include pre-applied thermal compound. Do not add additional paste. If replacing the cooler, clean the IHS with isopropyl alcohol first.",
+      "source": "AMD Wraith cooler documentation, Intel stock cooler guide"
+    },
+    {
+      "coolerType": "custom-loop",
+      "pattern": "thin even spread across the entire cold plate surface",
+      "rationale": "Custom water blocks use a spread method to ensure complete, even coverage across the larger cold plate area. Use a plastic spreader or credit-card edge to apply an thin, uniform layer.",
+      "source": "EK Water Blocks installation guide"
+    }
+  ],
+  "buildOrderByFormFactor": [
+    {
+      "formFactor": "mid-tower",
+      "steps": [
+        { "order": 1, "task": "Install power supply", "detail": "Mount PSU in bottom chamber, fan facing downward (intake from bottom vent). Route EPS/ATX cables through nearest grommet before securing with screws.", "source": "Standard ATX case manual procedure" },
+        { "order": 2, "task": "Install CPU", "detail": "Open socket lever, align CPU triangle marker with socket triangle, gently lower CPU, close lever. No force required — CPU should drop into place.", "source": "AMD/Intel socket installation guide" },
+        { "order": 3, "task": "Install RAM", "detail": "Pop open DIMM slot clips. Align RAM notch with slot key, press firmly until clips click. Install in slots A2/B2 (2nd and 4th from CPU) for dual-channel.", "source": "Motherboard manual standard" },
+        { "order": 4, "task": "Install M.2 SSD", "detail": "Insert M.2 drive at 30-degree angle into slot, press down, secure with motherboard-supplied screw.", "source": "Motherboard manual standard" },
+        { "order": 5, "task": "Install CPU cooler", "detail": "Apply thermal paste (see paste section). Mount cooler bracket per manufacturer instructions. Tighten screws in cross pattern (star pattern) to ensure even pressure.", "source": "Cooler manufacturer installation guide" },
+        { "order": 6, "task": "Install motherboard in case", "detail": "Verify standoffs align with motherboard mounting holes. Place I/O shield in case first. Lower motherboard carefully, align with standoffs, secure with screws in cross pattern.", "source": "Standard ATX case manual" },
+        { "order": 7, "task": "Connect case cables", "detail": "Front panel header (power switch, reset, LEDs), USB 3.0 internal header, audio header, case fan connectors. Refer to motherboard manual for exact pin layout.", "source": "Motherboard manual" },
+        { "order": 8, "task": "Install GPU", "detail": "Remove PCIe slot covers on case rear. Align GPU with PCIe x16 slot, press firmly until retention clip clicks. Secure GPU bracket to case with screws.", "source": "Standard GPU installation procedure" },
+        { "order": 9, "task": "Connect PSU cables", "detail": "24-pin ATX to motherboard. 8-pin (4+4) EPS to CPU top-left. PCIe cables to GPU — use separate cables for each connector, do not daisy-chain for high-power cards.", "source": "PSU cable connection standards" },
+        { "order": 10, "task": "Cable management", "detail": "Route excess cables behind motherboard tray. Secure with zip ties or Velcro straps. Ensure cables do not block case fan airflow or GPU fans.", "source": "Standard cable management practice" },
+        { "order": 11, "task": "Install fans", "detail": "Mount case fans in intake (front typically) and exhaust (rear typically) positions. Verify fan orientation — side with frame arms is exhaust, open side is intake.", "source": "Standard fan installation" },
+        { "order": 12, "task": "Final checks and power on", "detail": "Verify all connections are fully seated. Check for loose screws or tools inside case. Connect monitor to GPU (not motherboard). Power on at PSU switch first, then case power button.", "source": "POST procedure standard" }
+      ]
+    },
+    {
+      "formFactor": "mini-itx",
+      "steps": [
+        { "order": 1, "task": "Install power supply", "detail": "In SFF cases, install PSU first as cable access is restricted once motherboard is installed. PSU position varies by case (front bracket, bottom, or top).", "source": "Mini-ITX case manuals (Cooler Master NR200P, NZXT H1)" },
+        { "order": 2, "task": "Install CPU", "detail": "Same procedure as ATX: open socket, align triangle marker, drop CPU, close lever.", "source": "AMD/Intel socket installation guide" },
+        { "order": 3, "task": "Install RAM", "detail": "ITX boards have 2 DIMM slots. Install in slot closest to CPU or per motherboard manual.", "source": "Motherboard manual" },
+        { "order": 4, "task": "Install M.2 SSD", "detail": "M.2 slot is often on the front of ITX boards. Install before CPU cooler if cooler overhangs the M.2 area.", "source": "Mini-ITX motherboard layout common practice" },
+        { "order": 5, "task": "Install CPU cooler", "detail": "Apply thermal paste (see paste section). Verify cooler height fits case — SFF cases have strict height limits. Low-profile coolers require specific mounting.", "source": "Cooler manufacturer installation guide" },
+        { "order": 6, "task": "Install motherboard in case", "detail": "Slide or lower motherboard into case carefully. SFF cases may require angled insertion. Secure with provided screws.", "source": "Mini-ITX case manual" },
+        { "order": 7, "task": "Connect PSU cables", "detail": "Route cables before installing GPU. Use custom-length cables or manage excess carefully in confined space.", "source": "Mini-ITX cable management practice" },
+        { "order": 8, "task": "Install GPU", "detail": "Install GPU last as it often blocks cable access in SFF cases. Use riser cable if GPU is vertically mounted (some SFF cases).", "source": "Mini-ITX case manuals" },
+        { "order": 9, "task": "Connect case cables and fans", "detail": "Route front panel and fan cables around GPU. Use zip ties to secure cables against case frame.", "source": "Mini-ITX build practice" },
+        { "order": 10, "task": "Final checks and power on", "detail": "Verify GPU is fully seated and no cables contact fans. Power on and verify POST.", "source": "POST procedure standard" }
+      ]
+    },
+    {
+      "formFactor": "full-tower",
+      "steps": [
+        { "order": 1, "task": "Install power supply", "detail": "PSU installs in bottom chamber. Full towers offer more cable routing space behind motherboard tray. Route all needed cables before securing.", "source": "Standard ATX case manual procedure" },
+        { "order": 2, "task": "Install CPU", "detail": "Standard socket installation procedure.", "source": "AMD/Intel socket installation guide" },
+        { "order": 3, "task": "Install RAM", "detail": "Dual-channel in slots A2/B2. Full tower cases provide unobstructed access.", "source": "Motherboard manual standard" },
+        { "order": 4, "task": "Install M.2 SSD", "detail": "Standard M.2 installation.", "source": "Motherboard manual standard" },
+        { "order": 5, "task": "Install CPU cooler", "detail": "Large tower coolers fit easily in full towers (185mm+ clearance). Standard mounting procedure.", "source": "Cooler manufacturer installation guide" },
+        { "order": 6, "task": "Install motherboard in case", "detail": "Full towers have pre-installed standoffs. Extra space makes motherboard installation straightforward.", "source": "Standard full-tower case manual" },
+        { "order": 7, "task": "Connect case cables", "detail": "Standard front panel, USB, and audio connections.", "source": "Motherboard manual" },
+        { "order": 8, "task": "Install GPU", "detail": "Full towers accommodate even the longest GPUs (up to 470mm). Remove required PCIe slot covers and secure GPU.", "source": "Standard GPU installation procedure" },
+        { "order": 9, "task": "Connect PSU cables", "detail": "Route cables behind motherboard tray. Full towers offer generous cable management space with Velcro straps.", "source": "PSU cable connection standards" },
+        { "order": 10, "task": "Install additional fans", "detail": "Full towers support up to 10+ fans. Install in front intake, top intake/exhaust, rear exhaust, and bottom intake configuration.", "source": "Full tower case manuals (Thermaltake, Fractal)" },
+        { "order": 11, "task": "Cable management", "detail": "Use the extensive cable routing channels and Velcro straps provided in full tower cases.", "source": "Standard cable management practice" },
+        { "order": 12, "task": "Final checks and power on", "detail": "Verify all connections. POST the system.", "source": "POST procedure standard" }
+      ]
+    }
+  ],
+  "toolChecklist": [
+    { "tool": "Phillips #2 screwdriver (magnetic tip recommended)", "essential": true, "rationale": "Used for motherboard, PSU, GPU, and drive mounting screws" },
+    { "tool": "Zip ties or Velcro cable straps", "essential": true, "rationale": "Cable management inside case to improve airflow" },
+    { "tool": "Wire cutters or flush cutters", "essential": false, "rationale": "Cutting zip tie tails flush after cable management" },
+    { "tool": "Anti-static wrist strap (or touch unpainted metal regularly)", "essential": false, "rationale": "Prevents electrostatic discharge damage to components" },
+    { "tool": "Isopropyl alcohol (90%+) + coffee filter or lint-free cloth", "essential": false, "rationale": "Cleaning old thermal paste from CPU if reapplying" },
+    { "tool": "Flashlight or headlamp", "essential": false, "rationale": "Illuminating interior of case during assembly" },
+    { "tool": "Small bowl or magnetic mat for screws", "essential": false, "rationale": "Keeps screws organized by size and type" }
+  ],
+  "psuInstallationGuidance": {
+    "mid-tower": { "position": "Bottom mount in PSU shroud", "fanDirection": "Fan faces DOWN (intake from bottom case vent)", "note": "If case has no bottom vent (some older cases), fan faces UP. Verify your case has a bottom air filter." },
+    "mini-itx": { "position": "Varies by case design", "fanDirection": "Check case manual", "note": "NR200P: PSU mounts on front bracket. NZXT H1: PSU is pre-installed in spine. Always refer to case manual for SFF PSU placement." },
+    "full-tower": { "position": "Bottom mount in PSU shroud", "fanDirection": "Fan faces DOWN (intake from bottom case vent)", "note": "Full towers have dedicated PSU intake with dust filter on bottom panel." }
+  },
+  "gpuSagRule": {
+    "riskTiers": ["ultra", "halo"],
+    "riskLengthThresholdMm": 300,
+    "recommendation": "Graphics cards in the premium/halo tier that exceed 300mm in length benefit from a GPU support bracket or anti-sag stand to prevent PCIe slot damage and GPU PCB bending over time.",
+    "source": "Verified from GamersNexus GPU sag investigation"
+  },
+  "buildTimeEstimates": {
+    "baseMinutes": 90,
+    "adjustments": [
+      { "condition": "AIO liquid cooler", "delta": 20 },
+      { "condition": "Custom water loop", "delta": "not estimated — varies significantly" },
+      { "condition": "Mini-ITX form factor", "delta": 30 },
+      { "condition": "Multiple storage drives (3+)", "delta": 10 },
+      { "condition": "Dual GPU configuration", "delta": 20 }
+    ],
+    "rangeNote": "Times are estimates based on first-time builder surveys. Experienced builders complete in 30-50% less time."
+  }
+}

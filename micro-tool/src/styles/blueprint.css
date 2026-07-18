@@ -1,0 +1,347 @@
+/* Build Blueprint — Print Styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt !important;
+  }
+
+  .site-header,
+  .site-footer,
+  .search-trigger-btn,
+  .theme-toggle,
+  .nav-mobile-toggle,
+  .nav-links,
+  .feedback-share-bar,
+  .btn,
+  .hud-drawer,
+  .hud-sidebar,
+  .tray-header,
+  .bays-list,
+  .methodology-strip,
+  .calc-hero,
+  .section-eyebrow,
+  .calc-breadcrumb,
+  .related-section,
+  .faq-section {
+    display: none !important;
+  }
+
+  .blueprint-container {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+  }
+
+  .blueprint-print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #000;
+  }
+
+  .blueprint-print-header h1 {
+    font-size: 18pt !important;
+    color: #000 !important;
+    margin-bottom: 0.25rem;
+  }
+
+  .blueprint-print-header p {
+    font-size: 9pt !important;
+    color: #555 !important;
+  }
+
+  .blueprint-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    background: white !important;
+  }
+
+  .blueprint-section h2 {
+    font-size: 13pt !important;
+    color: #000 !important;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .blueprint-section h3 {
+    font-size: 11pt !important;
+    color: #222 !important;
+  }
+
+  .blueprint-section p,
+  .blueprint-section li {
+    font-size: 10pt !important;
+    color: #333 !important;
+  }
+
+  .blueprint-clearance-pass {
+    color: #15803d !important;
+    border-left: 3px solid #15803d !important;
+    padding-left: 0.5rem;
+  }
+
+  .blueprint-clearance-fail {
+    color: #dc2626 !important;
+    border-left: 3px solid #dc2626 !important;
+    padding-left: 0.5rem;
+  }
+
+  .blueprint-clearance-unknown {
+    color: #a16207 !important;
+    border-left: 3px solid #a16207 !important;
+    padding-left: 0.5rem;
+  }
+
+  .blueprint-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt !important;
+  }
+
+  .blueprint-table th,
+  .blueprint-table td {
+    border: 1px solid #ccc !important;
+    padding: 4px 8px;
+    text-align: left;
+  }
+
+  .blueprint-table th {
+    background: #f5f5f5 !important;
+    font-weight: 700;
+    color: #000 !important;
+  }
+
+  .blueprint-table td {
+    color: #333 !important;
+  }
+
+  .blueprint-table .pass { color: #15803d !important; font-weight: 700; }
+  .blueprint-table .fail { color: #dc2626 !important; font-weight: 700; }
+  .blueprint-table .unknown { color: #a16207 !important; font-weight: 700; }
+
+  .blueprint-build-order li {
+    margin-bottom: 0.35rem;
+    line-height: 1.4;
+  }
+
+  .blueprint-build-order strong {
+    color: #000 !important;
+  }
+
+  .blueprint-tool-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+  }
+
+  .blueprint-tool-dot.essential {
+    background: #15803d;
+  }
+
+  .blueprint-tool-dot.optional {
+    background: #a16207;
+  }
+
+  .blueprint-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .blueprint-summary-stat {
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid #ddd !important;
+    border-radius: 4px;
+  }
+
+  .blueprint-summary-stat .stat-value {
+    font-size: 16pt !important;
+    font-weight: 800;
+    color: #000 !important;
+  }
+
+  .blueprint-summary-stat .stat-label {
+    font-size: 8pt !important;
+    color: #666 !important;
+    text-transform: uppercase;
+  }
+
+  .blueprint-footer-print {
+    display: block !important;
+    text-align: center;
+    font-size: 8pt;
+    color: #999;
+    margin-top: 2rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #ddd;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+}
+
+.blueprint-container {
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+.blueprint-print-header {
+  display: none;
+}
+
+.blueprint-footer-print {
+  display: none;
+}
+
+.blueprint-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.blueprint-section h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.blueprint-clearance-pass {
+  color: var(--status-safe);
+  border-left: 3px solid var(--status-safe);
+  padding-left: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.blueprint-clearance-fail {
+  color: var(--status-danger);
+  border-left: 3px solid var(--status-danger);
+  padding-left: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.blueprint-clearance-unknown {
+  color: var(--status-warning);
+  border-left: 3px solid var(--status-warning);
+  padding-left: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.blueprint-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.blueprint-table th,
+.blueprint-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+}
+
+.blueprint-table th {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  font-weight: 700;
+}
+
+.blueprint-table td {
+  color: var(--text-secondary);
+}
+
+.blueprint-table .pass { color: var(--status-safe); font-weight: 700; }
+.blueprint-table .fail { color: var(--status-danger); font-weight: 700; }
+.blueprint-table .unknown { color: var(--status-warning); font-weight: 700; }
+
+.blueprint-build-order li {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.blueprint-build-order strong {
+  color: var(--text-primary);
+}
+
+.blueprint-tool-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.blueprint-tool-dot.essential {
+  background: var(--status-safe);
+}
+
+.blueprint-tool-dot.optional {
+  background: var(--status-warning);
+}
+
+.blueprint-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.blueprint-summary-stat {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+}
+
+.blueprint-summary-stat .stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.blueprint-summary-stat .stat-label {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.blueprint-empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.blueprint-empty-state h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: none;
+}
+
+.blueprint-empty-state p {
+  color: var(--text-secondary);
+  max-width: 40ch;
+  margin: 0 auto;
+}

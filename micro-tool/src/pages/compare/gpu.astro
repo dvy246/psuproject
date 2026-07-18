@@ -39,12 +39,83 @@ const schema = {
     "name": `${pair.a.name} vs ${pair.b.name} Spec Comparison`
   }))
 };
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I compare two GPUs side-by-side?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Select any two graphics cards from the comparison hub to view their TBP (typical board power), transient spike curves, native connector type, recommended PSU wattage, physical dimensions, VRAM, and clock speeds side-by-side. The comparer highlights which GPU needs a beefier PSU and flags ATX 3.1 compatibility."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does TBP (Typical Board Power) mean on a GPU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TBP (Typical Board Power) is AMD's term — equivalent to NVIDIA's TGP (Total Graphics Power) — representing the sustained average power the entire graphics card draws under a typical gaming or compute load. It is the figure you use when matching a GPU to a PSU wattage, but it does not cover transient spikes which can be significantly higher."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does GPU tier mean for power draw?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GPUs are grouped into tiers — budget, mid, high, ultra, and halo — that roughly correlate with their power requirements. A budget GPU may draw under 100W, mid-range cards 100–200W, high-end 200–300W, ultra 300–400W, and halo (flagship) cards can exceed 450W. Tier also indicates what connector type and PSU class you will need."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does the GPU connector type matter: 12V-2x6 vs 8-pin PCIe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The connector type determines whether your PSU is natively compatible. New high-power GPUs (RTX 40-series, RX 7900 XTX and above) use the 12V-2x6 (formerly 12VHPWR) connector, which requires an ATX 3.1 PSU with a native 12V-2x6 port. Older cards use standard 6+2 pin PCIe connectors. The comparison hub flags each GPU's connector and whether it needs an adapter or a native cable."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does GPU length matter for case fit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GPU length determines whether the card physically fits inside your PC case. High-end cards like the RTX 4090 can exceed 330mm, while compact ITX cases may only accommodate cards under 250mm. Always check your case's maximum GPU clearance and account for front-mounted radiators or fans that reduce usable space."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much GPU VRAM do I need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "VRAM requirements depend on resolution and workload: 8GB is adequate for 1080p gaming, 12–16GB is recommended for 1440p, and 16GB+ is ideal for 4K or creative workloads like video editing and 3D rendering. Modern games at high textures can easily consume 10–12GB, so buying more VRAM than you currently need improves future-proofing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does GPU power draw affect PSU choice?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A GPU's sustained TBP + transient (instantaneous) spikes determine the minimum PSU wattage you need. For example, a 450W GPU with transient spikes up to 600W needs an 850W+ PSU, not a 650W. The GPU comparison tool calculates both sustained and transient requirements so you know exactly what PSU class is needed to avoid shutdowns under load."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What do GPU clock speeds and boost clock mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The base clock is the guaranteed minimum frequency the GPU core runs at under load. Boost clock is the maximum frequency the card can reach under good thermal and power conditions via dynamic frequency scaling. Higher boost clocks generally mean better performance, but real-world speed depends on cooling, power limit, and silicon quality."
+      }
+    }
+  ]
+};
 ---
 
 <Layout
   title="Compare PC Graphics Cards: GPU Power & Spec Comparison Hub — PSUCheck"
   description="Compare power draw, sustained TBP, transient spikes, and connector types of popular NVIDIA GeForce, AMD Radeon, and Intel Arc GPUs side-by-side."
-  schema={schema}
+  schema={[schema, faqSchema]}
 >
   <section class="calc-hero" aria-labelledby="compare-hero-heading">
     <div class="container">

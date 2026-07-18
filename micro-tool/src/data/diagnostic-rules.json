@@ -1,0 +1,164 @@
+{
+  "symptoms": [
+    {
+      "id": "no-power",
+      "name": "PC Won't Power On",
+      "description": "Nothing happens when pressing the power button — no lights, no fans, no sounds."
+    },
+    {
+      "id": "shutdown-load",
+      "name": "Random Shutdowns Under Load",
+      "description": "System turns off instantly (black screen) during gaming, rendering, or heavy benchmarks."
+    },
+    {
+      "id": "burning-smell",
+      "name": "Burning Smell or Smoke",
+      "description": "Odor of hot plastic, electrical burning, or visible smoke coming from the chassis."
+    },
+    {
+      "id": "coil-whine",
+      "name": "Loud Squealing or Coil Whine",
+      "description": "High-pitched buzzing or whistling sound coming from the power supply under load."
+    },
+    {
+      "id": "bsod-instability",
+      "name": "Frequent BSODs or Reboots",
+      "description": "System crashes to a Blue Screen of Death or reboots with hardware-related errors."
+    },
+    {
+      "id": "fan-issues",
+      "name": "PSU Fan Not Spinning",
+      "description": "The cooling fan inside the power supply remains completely stationary."
+    }
+  ],
+  "questions": {
+    "no-power": [
+      {
+        "id": "np_lights",
+        "text": "Do any motherboard LEDs light up or do fans twitch briefly when pressing the power button?",
+        "options": [
+          {
+            "text": "Absolutely nothing happens (no lights, no movement)",
+            "weights": { "psu_failure": 60, "front_panel": 20, "outlet_issue": 20 }
+          },
+          {
+            "text": "Fans spin for a split-second and then stop instantly",
+            "weights": { "short_circuit": 70, "psu_overload": 30 }
+          },
+          {
+            "text": "Motherboard standby LEDs are ON, but the power button does nothing",
+            "weights": { "front_panel": 60, "motherboard_dead": 40 }
+          }
+        ]
+      },
+      {
+        "id": "np_paperclip",
+        "text": "Have you attempted the PSU Paperclip Test (bridging PS-ON pin 16 to COM ground)?",
+        "options": [
+          {
+            "text": "Yes, the PSU fan spun up and stayed running",
+            "weights": { "motherboard_dead": 70, "front_panel": 30, "psu_failure": 0 }
+          },
+          {
+            "text": "Yes, the PSU fan did not spin or stopped immediately",
+            "weights": { "psu_failure": 95, "motherboard_dead": 5 }
+          },
+          {
+            "text": "No, I have not performed this test",
+            "weights": { "pending_test": 100 }
+          }
+        ]
+      }
+    ],
+    "shutdown-load": [
+      {
+        "id": "sl_behavior",
+        "text": "What is the exact behavior of the system during a shutdown?",
+        "options": [
+          {
+            "text": "Instant black screen, power cuts off completely (like a power outage)",
+            "weights": { "psu_protection": 75, "gpu_instability": 25 }
+          },
+          {
+            "text": "System freezes, audio loops, or shows a Blue Screen before rebooting",
+            "weights": { "gpu_instability": 50, "ram_instability": 30, "psu_droop": 20 }
+          },
+          {
+            "text": "PC reboots instantly with no screen freeze (sudden restart)",
+            "weights": { "cpu_thermal": 40, "psu_transient": 40, "motherboard_vr": 20 }
+          }
+        ]
+      },
+      {
+        "id": "sl_timing",
+        "text": "When does the shutdown typically occur?",
+        "options": [
+          {
+            "text": "Immediately upon launching a heavy 3D game or benchmark",
+            "weights": { "psu_transient": 80, "gpu_overclock": 20 }
+          },
+          {
+            "text": "After 15-30 minutes of continuous gaming",
+            "weights": { "thermal_throttling": 60, "psu_overheating": 40 }
+          },
+          {
+            "text": "Randomly, even while browsing the web or sitting idle",
+            "weights": { "driver_issue": 50, "ram_instability": 30, "psu_ripple": 20 }
+          }
+        ]
+      }
+    ],
+    "coil-whine": [
+      {
+        "id": "cw_fps",
+        "text": "Does the pitch or volume of the whine change with your in-game frame rates?",
+        "options": [
+          {
+            "text": "Yes, it gets louder in game menus or at high FPS (>200 FPS)",
+            "weights": { "normal_resonance": 90, "psu_defect": 10 }
+          },
+          {
+            "text": "No, it is a constant hum or buzz regardless of workload",
+            "weights": { "psu_aging": 60, "dirty_power": 40 }
+          }
+        ]
+      }
+    ],
+    "bsod-instability": [
+      {
+        "id": "bs_errors",
+        "text": "What is the primary error message shown on the Blue Screen?",
+        "options": [
+          {
+            "text": "WHEA_UNCORRECTABLE_ERROR",
+            "weights": { "cpu_voltage_droop": 50, "psu_rail_instability": 30, "cpu_overclock": 20 }
+          },
+          {
+            "text": "MEMORY_MANAGEMENT / PAGE_FAULT_IN_NONPAGED_AREA",
+            "weights": { "ram_defect": 70, "cpu_memory_controller": 30 }
+          },
+          {
+            "text": "DRIVER_IRQL_NOT_LESS_OR_EQUAL or other software codes",
+            "weights": { "software_driver": 80, "system_corruption": 20 }
+          }
+        ]
+      }
+    ],
+    "fan-issues": [
+      {
+        "id": "fn_mode",
+        "text": "What efficiency class or model series is your power supply?",
+        "options": [
+          {
+            "text": "Gold/Platinum premium model (e.g. Corsair RMx, Seasonic Focus)",
+            "weights": { "normal_zero_rpm": 85, "fan_failure": 15 }
+          },
+          {
+            "text": "Budget/Bronze model (e.g. EVGA W1, Smart 500W)",
+            "weights": { "fan_failure": 80, "normal_low_speed": 20 }
+          }
+        ]
+      }
+    ]
+  }
+}

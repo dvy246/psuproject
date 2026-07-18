@@ -66,8 +66,8 @@ const schema = {
   "name": `${gpuA.name} vs ${gpuB.name} — PSU & Power Comparison`,
   "description": `Side-by-side power supply requirements for ${gpuA.name} vs ${gpuB.name}: transient peaks, PSU wattage, ATX compliance, and cable requirements.`,
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": gpuA.name, "item": { "@type": "Product", "name": gpuA.name, "description": `${gpuA.tbp}W TBP, ${gpuA.tier} tier, ${gpuA.connectorType} connector, min ${gpuA.minPsuWattage}W PSU required` }},
-    { "@type": "ListItem", "position": 2, "name": gpuB.name, "item": { "@type": "Product", "name": gpuB.name, "description": `${gpuB.tbp}W TBP, ${gpuB.tier} tier, ${gpuB.connectorType} connector, min ${gpuB.minPsuWattage}W PSU required` }}
+    { "@type": "ListItem", "position": 1, "name": `${gpuA.name} Power Specifications`, "url": `https://psucheck.com/compare/gpu/${gpuA.id}-vs-${gpuB.id}/` },
+    { "@type": "ListItem", "position": 2, "name": `${gpuB.name} Power Specifications`, "url": `https://psucheck.com/compare/gpu/${gpuA.id}-vs-${gpuB.id}/` }
   ]
 };
 

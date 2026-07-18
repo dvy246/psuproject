@@ -1,0 +1,245 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { VirtualAssemblyDesk } from '../components/calculators/VirtualAssemblyDesk';
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PSUCheck PC Build Blueprint Generator",
+  "url": "https://psucheck.com/build-plan",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "description": "Generate a complete, printable PC build blueprint with verified compatibility checks, step-by-step build order, tool checklist, thermal paste guidance, and power supply analysis.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Component clearance verification (GPU, cooler, case)",
+    "Step-by-step build order",
+    "Tool and equipment checklist",
+    "Thermal paste application guidance",
+    "Cable planning and PSU connection guide",
+    "Power supply capacity analysis",
+    "Print-optimized build blueprint"
+  ]
+};
+
+const faqSchema = {
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is a PC build blueprint?", "acceptedAnswer": { "@type": "Answer", "text": "A PC build blueprint is a complete, step-by-step build plan that includes component compatibility checks, assembly order, tool requirements, and power analysis. It helps first-time builders avoid common mistakes by providing verified guidance specific to their selected components." } },
+    { "@type": "Question", "name": "How do I use the build blueprint?", "acceptedAnswer": { "@type": "Answer", "text": "Select your components in the Assembly Tray above, then click 'Generate Blueprint'. The tool will run compatibility checks, create a build order, and generate a printable plan. Use the 'Print Blueprint' button for a printer-friendly version." } },
+    { "@type": "Question", "name": "Does the blueprint check if my GPU fits in my case?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. If both your GPU and case are in our database, the blueprint checks GPU length and width against case maximum dimensions. If data is unavailable, the tool will note this rather than guess." } },
+    { "@type": "Question", "name": "What tools do I need to build a PC?", "acceptedAnswer": { "@type": "Answer", "text": "Essential: Phillips #2 screwdriver (magnetic tip recommended) and zip ties or Velcro straps for cable management. Recommended: anti-static wrist strap, isopropyl alcohol for cleaning, flush cutters, and a flashlight." } },
+    { "@type": "Question", "name": "How long does it take to build a PC?", "acceptedAnswer": { "@type": "Answer", "text": "A first-time builder typically takes 90 minutes to 3 hours. Experienced builders complete in 45-90 minutes. Mini-ITX builds take longer due to tighter spaces. AIO liquid coolers add 20-30 minutes versus air coolers." } },
+    { "@type": "Question", "name": "Does the blueprint include thermal paste guidance?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The blueprint provides thermal paste application guidance based on your CPU and cooler. It recommends pea-size dot application for LGA sockets and proper spread patterns for large IHS chips. First-time builders should follow the paste pattern recommended for their socket type." } },
+    { "@type": "Question", "name": "What build order does the blueprint follow?", "acceptedAnswer": { "@type": "Answer", "text": "The blueprint follows a standardized order adapted to your form factor: motherboard pre-assembly (CPU, RAM, SSD) → case preparation → PSU installation → motherboard installation → cooler mounting → GPU installation → cable connection → first boot verification. Mini-ITX builds may reorder PSU installation earlier." } },
+    { "@type": "Question", "name": "Can I print the blueprint?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Click 'Print Blueprint' and the page reformats to a printer-friendly layout. The print view hides navigation, removes backgrounds, and uses break-avoid formatting to keep sections from splitting across pages." } }
+  ]
+};
+---
+
+<Layout
+  title="PC Build Blueprint Generator — PSUCheck: Printable Build Plan"
+  description="Generate a complete, printable PC build blueprint with verified compatibility checks, step-by-step build order, tool checklist, thermal paste guidance, and power supply analysis for your custom PC."
+  schema={[schema, faqSchema]}
+>
+  <section class="calc-hero" aria-labelledby="blueprint-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Build Blueprint</span>
+          </div>
+          <h1 id="blueprint-hero-heading" class="calc-h1">
+            PC Build Blueprint Generator
+          </h1>
+          <p class="calc-subtitle">
+            Select your components and generate a complete, printable build plan. Get verified
+            compatibility checks, step-by-step assembly order, cable planning, and PSU analysis —
+            all customized for your specific parts.
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Blueprint features">
+          <span class="badge badge-safe">Clearance Checks</span>
+          <span class="badge badge-safe">Build Order</span>
+          <span class="badge badge-safe">Cable Plan</span>
+          <span class="badge badge-safe">Print-Ready</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="methodology-strip" role="complementary" aria-label="Data sources">
+    <div class="container">
+      <div class="methodology-strip-inner">
+        <span class="method-label">Data Sources:</span>
+        <span class="method-item">GPU dimensions from manufacturer specs + TechPowerUp</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">Cooler dimensions from manufacturer mounting manuals</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">Build order verified from industry assembly standards</span>
+        <a href="/about#methodology" class="method-link">Full methodology →</a>
+      </div>
+    </div>
+  </div>
+
+  <VirtualAssemblyDesk client:load mode="psu" blueprintMode={true} />
+
+  <section class="related-section" aria-labelledby="bp-guides-heading">
+    <div class="container">
+      <h2 id="bp-guides-heading">PC Building Guides</h2>
+      <div class="related-grid">
+        <a href="/guides/how-to-build-a-pc" class="related-card card">
+          <h3>How to Build a PC</h3>
+          <p>Complete walkthrough from parts check to first boot, with images and troubleshooting steps.</p>
+        </a>
+        <a href="/guides/building-tips" class="related-card card">
+          <h3>PC Building Tips</h3>
+          <p>Expert advice on thermal paste, cable routing, fan placement, and common first-time mistakes.</p>
+        </a>
+        <a href="/guides/budget-guide" class="related-card card">
+          <h3>PC Budget Guide</h3>
+          <p>Recommended builds at $500, $1,000, $1,500, and $2,500+ price points with component breakdowns.</p>
+        </a>
+        <a href="/guides/psu-sizing-guide" class="related-card card">
+          <h3>PSU Sizing Guide</h3>
+          <p>How to calculate wattage requirements and understand transient spikes and safety buffers.</p>
+        </a>
+        <a href="/pc-builder" class="related-card card">
+          <h3>PC Build Cost Calculator</h3>
+          <p>Build your PC configuration and estimate total cost with budget allocation charts.</p>
+        </a>
+        <a href="/compatibility/" class="related-card card">
+          <h3>Compatibility Hub</h3>
+          <p>Check GPU+PSU, cooler+case, and cable compatibility between specific models.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-section" aria-labelledby="bp-faq-heading">
+    <div class="container">
+      <div class="section-eyebrow">Common Questions</div>
+      <h2 id="bp-faq-heading">Build Blueprint — Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <details class="faq-item" id="bp-faq-1">
+          <summary class="faq-question">
+            What is a PC build blueprint?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>A PC build blueprint is a comprehensive build plan specific to your selected components. It verifies physical compatibility (GPU length vs case, cooler height vs case), provides a step-by-step build order, lists required tools, recommends thermal paste application methods, and plans your PSU cable connections.</p>
+          </div>
+        </details>
+        <details class="faq-item" id="bp-faq-2">
+          <summary class="faq-question">
+            How do I use the blueprint?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Select your CPU, GPU, RAM, storage, cooling, and PSU in the Assembly Tray above. Click "Generate Blueprint" to run compatibility checks and create your build plan. Use the "Print Blueprint" button for a printer-friendly version you can reference during assembly.</p>
+          </div>
+        </details>
+        <details class="faq-item" id="bp-faq-3">
+          <summary class="faq-question">
+            Can I save or share my blueprint?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Your build configuration is encoded in the page URL. Bookmark or share the URL to return to your exact component selection later. Use the browser's Print (Ctrl+P / Cmd+P) function for a clean, paper-friendly version of the blueprint.</p>
+          </div>
+        </details>
+        <details class="faq-item" id="bp-faq-4">
+          <summary class="faq-question">
+            What if my component isn't in the database?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>If a specific component lacks dimension data in our database, the blueprint clearly marks that check as "Data not available" rather than fabricating a value. You can verify the missing specification from the manufacturer's product page.</p>
+          </div>
+        </details>
+        <details class="faq-item" id="bp-faq-5">
+          <summary class="faq-question">
+            Is the build order the same for every PC?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>No. The build order adapts to your case form factor. Mini-ITX builds install the PSU first (for cable access), while standard mid-tower builds follow the conventional PSU → motherboard → CPU → cooler → RAM → GPU sequence. The blueprint adjusts the order and adds relevant notes for your specific case type.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.calc-hero {
+  padding: 3rem 0 1.5rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.calc-hero-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+.calc-h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.calc-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 60ch;
+  line-height: 1.65;
+  margin-top: 0.75rem;
+}
+.calc-hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.methodology-strip {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.625rem 0;
+}
+.methodology-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+.method-label { font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+.method-item { color: var(--text-secondary); }
+.method-sep { color: var(--border-default); }
+.method-link { color: var(--accent-primary); margin-left: auto; font-weight: 600; white-space: nowrap; }
+.related-section { padding: 4rem 0 5rem; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.related-card { text-decoration: none; color: inherit; transition-property: transform, border-color; transition-duration: 200ms; }
+.related-card:hover { transform: translateY(-2px); border-color: var(--border-accent); text-decoration: none; }
+.related-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+.related-card p { font-size: 0.875rem; color: var(--text-secondary); }
+.faq-section { padding: 5rem 0; background: var(--bg-secondary); }
+.faq-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--border-subtle); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question { display: flex; align-items: center; justify-content: space-between; padding: 1.125rem 1.25rem; font-size: 0.9375rem; font-weight: 600; cursor: pointer; color: var(--text-primary); gap: 1rem; list-style: none; transition: background 150ms ease; }
+.faq-question:hover { background: var(--bg-tertiary); }
+.faq-question::-webkit-details-marker { display: none; }
+.faq-chevron { flex-shrink: 0; transition: transform 200ms ease; color: var(--accent-primary); }
+.faq-item[open] .faq-chevron { transform: rotate(180deg); }
+.faq-answer { padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border-subtle); }
+.faq-answer p { font-size: 0.9375rem; line-height: 1.7; max-width: 65ch; margin-top: 1rem; }
+</style>

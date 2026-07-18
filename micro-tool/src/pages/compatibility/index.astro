@@ -11,99 +11,364 @@ const psus = psuData.items;
 const cases = caseData.items;
 const coolers = coolerData.items;
 
+function findCompatiblePsu(gpu: any): string {
+  const match = psus.find(p => p.wattage >= gpu.minPsuWattage);
+  return match ? match.id : psus[0].id;
+}
+
 const pageTitle = "PC Component Compatibility Hub & Sizing Center — PSUCheck";
 const pageDescription = "Verify physical and electrical compatibility between your PC components. Sizing validators for GPU to PSU, CPU Cooler clearance, and PSU aging.";
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What is PC component compatibility?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "PC component compatibility ensures that all parts in a build work together physically, electrically, and functionally. This includes checking that a GPU fits inside a case, that a CPU cooler clears the side panel or RAM slots, that the PSU has enough wattage and the correct connectors for the GPU, and that the PSU form factor matches the case mounting bay."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "How do I check if my GPU fits in my case?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        "text": "Measure your case's maximum GPU length clearance (from the rear PCIe slot to the front fan/radiator mounting area). Subtract the thickness of any front-mounted radiator or fans (typically 25–30mm per fan plus radiator depth). Then compare that value to the GPU's length listed in its specifications. Also verify the GPU's width (height above the PCIe slot) and slot count fit the case layout."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I check if my CPU cooler fits in my case?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        "text": "Check your case's maximum CPU cooler height specification, usually listed in the manufacturer's documentation or product page. Then verify your cooler's height. If the cooler exceeds the case's listed maximum, the side panel will not close. For air coolers, also check RAM clearance — tall RAM sticks may interfere with the cooler's front fan or heatsink overhang."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I check if my PSU fits in my case?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        "text": "Verify that the PSU form factor (ATX, SFX, SFX-L) is supported by your case's PSU mounting bay. Check the case's maximum PSU depth/length — some compact cases cannot fit long ATX power supplies. Also account for modular cable clearance at the front of the PSU shroud: modular connectors add roughly 20–30mm beyond the PSU body that must fit inside the shroud."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are PSU cables compatible between brands?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        "text": "No, PSU modular cables are NOT interchangeable between brands — and often not even between different models from the same brand. Pinouts vary at the PSU side. Using a cable from a different power supply can route 12V to a ground pin or vice versa, instantly destroying connected components or causing a fire hazard. Always use only the cables that came with your specific PSU."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I check if my PSU can power my GPU?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        "text": "Compare the GPU's total board power (TBP) plus the rest of your system's estimated load against the PSU's rated wattage, leaving a 20–30% headroom for transient spikes. Also verify that the PSU has the required PCIe power connectors (6-pin, 8-pin, or 12VHPWR) in sufficient quantity. Check the PSU's +12V rail capacity — modern GPUs draw almost all their power from the 12V rail(s)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if my GPU is too long for my case?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        "text": "The side panel will not close, or the GPU may physically press against front-mounted fans or a radiator, preventing them from spinning. In some cases you can shift the front radiator to the top if the case supports it, move fans outside the chassis, or choose a shorter GPU model. If none of these work, you need a larger case or a shorter GPU."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if my cooler is too tall for my case?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        "text": "The side panel will not close because the cooler heat sink or fan protrudes beyond the case's CPU cooler clearance height. You can either replace the cooler with a low-profile or shorter model, replace the case with one offering more headroom, or — if using a tower air cooler with a removable top fan — removing the top fan may shave off enough height to fit (at the cost of some cooling performance)."
+      }
+    }
+  ]
+};
 ---
 
 <Layout
   title={pageTitle}
   description={pageDescription}
+  schema={faqSchema}
 >
-  <section class="compat-hub" style="padding: 3rem 0 6rem;" aria-labelledby="hub-heading">
+  <section class="compat-database-page" aria-labelledby="hub-heading">
     <div class="container">
       <nav class="calc-breadcrumb" aria-label="Breadcrumb">
         <a href="/">Home</a>
-        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-hidden="true">›</span>
         <span aria-current="page">Compatibility Hub</span>
       </nav>
 
-      <header style="margin-bottom: 3rem;">
-        <div style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Universal Sizing Suite</div>
-        <h1 id="hub-heading" style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+      <header class="hub-header">
+        <div class="section-eyebrow">Universal Sizing Suite</div>
+        <h1 id="hub-heading">
           Universal PC <span class="gradient-text">Compatibility Hub</span>
         </h1>
-        <p style="font-size: 1.1rem; color: var(--color-text-secondary); max-width: 75ch; line-height: 1.6;">
-          Select a compatibility matrix category below to run automated sizing audits, clearance checks, and power safety verifications.
+        <p class="hub-intro">
+          Run automated sizing audits, clearance checks, and power safety verifications across all components.
         </p>
       </header>
 
-      {/* Grid of validation tools */}
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 4rem;">
-        {/* GPU to PSU */}
-        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
-          <div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">⚡ GPU ↔ PSU Sizing</h2>
-            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
-              Audit sustained draw, transient spikes, adapter rules, and ATX 3.1 connections.
-            </p>
-          </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href={`/compatibility/gpu/${gpus[0].id}/psu/${psus[0].id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Run Sample Audit →</a>
-          </div>
-        </div>
+      <div class="wattage-sections">
 
-        {/* GPU to Case */}
-        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
-          <div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">📏 GPU ↔ Case Clearances</h2>
-            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
-              Verify graphics card length and width clearances including front radiator thickness deductions.
-            </p>
+        {/* GPU ↔ PSU Sizing */}
+        <section class="db-section" aria-labelledby="gpu-psu-heading">
+          <div class="category-header">
+            <h2 id="gpu-psu-heading">⚡ GPU ↔ PSU Sizing</h2>
+            <p>Audit sustained draw, transient spikes, adapter rules, and ATX 3.1 connections for every GPU in our database.</p>
           </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href={`/compatibility/gpu/${gpus[0].id}/case/${cases[0].id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Run Sample Clearance →</a>
+          <div class="compat-grid">
+            {gpus.map(g => {
+              const psuId = findCompatiblePsu(g);
+              return (
+                <a key={g.id} href={`/compatibility/gpu/${g.id}/psu/${psuId}`} class="compat-card card">
+                  <div class="card-header">
+                    <span class="compat-brand">{g.brand}</span>
+                    <span class={`tier-badge tier-${g.tier}`}>{g.tier}</span>
+                  </div>
+                  <h3 class="compat-name-title">{g.name}</h3>
+                  <div class="spec-row">
+                    <span class="spec-pill">{g.tbp}W TBP</span>
+                    <span class="spec-pill">Min {g.minPsuWattage}W PSU</span>
+                    <span class="spec-pill">{g.connectorType}</span>
+                  </div>
+                  <div class="card-footer-link">
+                    <span>Check PSU Sizing →</span>
+                  </div>
+                </a>
+              );
+            })}
           </div>
-        </div>
+        </section>
 
-        {/* PSU to Case */}
-        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
-          <div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">🔌 PSU ↔ Case Sizing</h2>
-            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
-              Confirm form factor fits (SFX, SFX-L, ATX) and shroud compartment depth clearances.
-            </p>
+        {/* GPU ↔ Case Clearances */}
+        <section class="db-section" aria-labelledby="gpu-case-heading" style="margin-top:4rem;">
+          <div class="category-header">
+            <h2 id="gpu-case-heading">📏 GPU ↔ Case Clearances</h2>
+            <p>Verify graphics card length and width clearances including front radiator thickness deductions for all GPUs.</p>
           </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href={`/compatibility/psu/${psus[0].id}/case/${cases[0].id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Run Sizing Audit →</a>
+          <div class="compat-grid">
+            {gpus.map(g => (
+              <a key={g.id} href={`/compatibility/gpu/${g.id}/case/${cases[0].id}`} class="compat-card card">
+                <div class="card-header">
+                  <span class="compat-brand">{g.brand}</span>
+                  <span class="spec-pill">{g.generation}</span>
+                </div>
+                <h3 class="compat-name-title">{g.name}</h3>
+                <div class="spec-row">
+                  <span class="spec-pill">{g.dimensions.length}mm length</span>
+                  <span class="spec-pill">{g.dimensions.width}mm width</span>
+                  <span class="spec-pill">{g.dimensions.slotsOccupied} slots</span>
+                </div>
+                <div class="card-footer-link">
+                  <span>Check Case Clearance →</span>
+                </div>
+              </a>
+            ))}
           </div>
-        </div>
+        </section>
 
-        {/* Cooler to Case */}
-        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
-          <div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">❄ Cooler ↔ Case Height</h2>
-            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
-              Verify cpu cooler height clearances, RAM clearance conflicts, and AIO mounts.
-            </p>
+        {/* PSU ↔ Case Sizing */}
+        <section class="db-section" aria-labelledby="psu-case-heading" style="margin-top:4rem;">
+          <div class="category-header">
+            <h2 id="psu-case-heading">🔌 PSU ↔ Case Sizing</h2>
+            <p>Confirm form factor fits (SFX, SFX-L, ATX) and shroud compartment depth clearances for all PSUs.</p>
           </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href={`/compatibility/cooler/${coolers[0].id}/case/${cases[0].id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Check Cooler Height →</a>
+          <div class="compat-grid">
+            {psus.map(p => {
+              const targetCase = cases.find(c => c.psuFormFactor.includes('ATX')) || cases[0];
+              return (
+                <a key={p.id} href={`/compatibility/psu/${p.id}/case/${targetCase.id}`} class="compat-card card">
+                  <div class="card-header">
+                    <span class="compat-brand">{p.brand}</span>
+                    <span class="spec-pill">{p.efficiencyTier}</span>
+                  </div>
+                  <h3 class="compat-name-title">{p.name}</h3>
+                  <div class="spec-row">
+                    <span class="spec-pill">{p.wattage}W</span>
+                    <span class="spec-pill">ATX {p.atxVersion}</span>
+                    <span class="spec-pill">{p.formFactor || 'ATX'}</span>
+                  </div>
+                  <div class="card-footer-link">
+                    <span>Check Case Fit →</span>
+                  </div>
+                </a>
+              );
+            })}
           </div>
-        </div>
+        </section>
 
-        {/* Modular Cables */}
-        <div class="card card-accent" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 3px solid var(--color-accent-cyan);">
-          <div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem;">⚠️ Modular Cable Safety</h2>
-            <p style="font-size: 0.875rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
-              Audit pinout compatibility between PSU brands to avoid short circuits and component fire hazards.
-            </p>
+        {/* Cooler ↔ Case Height */}
+        <section class="db-section" aria-labelledby="cooler-case-heading" style="margin-top:4rem;">
+          <div class="category-header">
+            <h2 id="cooler-case-heading">❄ Cooler ↔ Case Height</h2>
+            <p>Verify CPU cooler height clearances, RAM clearance conflicts, and AIO mounts for all coolers.</p>
           </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href="/compatibility/connector/corsair/seasonic" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Check Brand Safety →</a>
+          <div class="compat-grid">
+            {coolers.map(c => (
+              <a key={c.id} href={`/compatibility/cooler/${c.id}/case/${cases[0].id}`} class="compat-card card">
+                <div class="card-header">
+                  <span class="compat-brand">{c.brand}</span>
+                  <span class="spec-pill">{c.type}</span>
+                </div>
+                <h3 class="compat-name-title">{c.name}</h3>
+                <div class="spec-row">
+                  <span class="spec-pill">{c.height}mm height</span>
+                  <span class="spec-pill">RAM &le;{c.ramClearanceMaxHeight}mm</span>
+                  <span class="spec-pill">{c.tdpRating}W TDP</span>
+                </div>
+                <div class="card-footer-link">
+                  <span>Check Case Height →</span>
+                </div>
+              </a>
+            ))}
           </div>
-        </div>
+        </section>
+
+        {/* Modular Cable Safety */}
+        <section class="db-section" aria-labelledby="cable-heading" style="margin-top:4rem;">
+          <div class="category-header">
+            <h2 id="cable-heading">⚠️ Modular Cable Safety</h2>
+            <p>Audit pinout compatibility between PSU brands to avoid short circuits and component fire hazards. Cross-reference modular cable pinouts across brands.</p>
+          </div>
+          <div class="compat-grid">
+            {Array.from(new Set(psus.map(p => p.brand))).sort().map(brand => (
+              <a key={brand} href={`/compatibility/connector/${brand.toLowerCase().replace(/\s+/g, '-')}/corsair`} class="compat-card card card-cable">
+                <div class="card-header">
+                  <span class="compat-brand">{brand}</span>
+                </div>
+                <h3 class="compat-name-title">{brand} Modular Pinouts</h3>
+                <div class="spec-row">
+                  <span class="spec-pill">vs Corsair</span>
+                  <span class="spec-pill">Cross-brand safety</span>
+                </div>
+                <div class="card-footer-link">
+                  <span>Check Cable Safety →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
       </div>
     </div>
   </section>
 </Layout>
+
+<style>
+.compat-database-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 3.5rem;
+}
+.hub-header h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+.hub-intro {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 65ch;
+  line-height: 1.6;
+}
+.category-header {
+  margin-bottom: 1.5rem;
+}
+.category-header h2 {
+  font-size: 1.35rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+.category-header p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.compat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.compat-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+.compat-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+.compat-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+.compat-brand {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tier-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.tier-halo { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+.tier-ultra { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+.tier-high { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+.tier-mid { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+.tier-budget { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
+.compat-name-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.35;
+}
+.spec-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: auto;
+}
+.spec-pill {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+}
+.card-footer-link {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+.card-cable {
+  border-left: 3px solid var(--accent-warning, #f59e0b);
+}
+</style>

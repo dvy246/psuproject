@@ -1,0 +1,133 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DiagnosticWizard from '../../components/ui/DiagnosticWizard';
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PSU Fail Symptoms & Diagnostic Triage Wizard",
+  "url": "https://psucheck.com/diagnose",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "description": "Interactive triage tool diagnosing power supply failure symptoms. Isolate OCP shutdowns, voltage rail droop, and capacitor aging limits.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Differential hardware diagnostics wizard",
+    "Interactive symptoms branching questions",
+    "Instant emergency safety intercept triggers",
+    "Weighted likelihood failure probability engine",
+    "Hardware profile age & quality tier calibration"
+  ]
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the telltale signs of a failing PSU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The most common symptoms include random instant shutdowns under gaming load (usually triggering OCP protection), failure to power on at all, loud electrical buzzing or abnormal coil whine, frequent Blue Screens of Death (BSOD) with WHEA hardware errors, or a burning plastic smell."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does my PC shut off instantly when starting a game?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Instant shutdowns (where the screen goes black and all motherboard lights turn off immediately) are typically caused by the PSU's Over-Current Protection (OCP) or Over-Power Protection (OPP) triggering due to a high GPU transient spike exceeding the unit's capacity limit."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the Paperclip Test for power supplies?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Paperclip Test is a manual method to check if a PSU turns on. By bridging the green PS-ON pin (pin 16) with any black COM ground pin on the 24-pin motherboard connector, you trigger the power supply to boot up. If the fan spins, the basic startup logic functions."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title="PSU Fail Symptoms & Diagnostic Triage Wizard — PSUCheck"
+  description="Troubleshoot random PC shutdowns, boot issues, and electrical noise. Run our interactive diagnostic wizard to isolate PSU faults vs GPU/Motherboard failures."
+  schema={schema}
+>
+  <div class="container py-lg">
+    {/* Breadcrumbs */}
+    <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true" class="breadcrumb-separator">›</span>
+      <span aria-current="page">PSU Diagnostic Wizard</span>
+    </nav>
+
+    {/* Header */}
+    <header class="section-header" style="margin-top: 1.5rem; text-align: left;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+        <span class="badge badge-accent">🛠️ Interactive Triage</span>
+        <span class="badge badge-safe">✓ Diagnostic Methodology Verified</span>
+      </div>
+      <h1 class="text-3xl font-display font-bold">PSU Fail Symptoms &amp; Diagnostic Wizard</h1>
+      <p class="text-secondary" style="max-width: 800px; margin-top: 0.5rem; font-size: 1.05rem;">
+        Is your power supply failing, or is another component causing instability? 
+        Select your symptoms, configure your hardware profile, and run our triage rules-engine to narrow down the fault.
+      </p>
+    </header>
+
+    <div class="grid grid-3-1" style="margin-top: 2rem; gap: 2rem; align-items: start;">
+      {/* Wizard Column */}
+      <main class="calc-main">
+        <DiagnosticWizard client:load />
+      </main>
+
+      {/* Info Sidebar Column */}
+      <aside class="calc-sidebar">
+        <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+          <h3 class="text-lg font-bold font-display" style="color: var(--text-primary);">
+            🚨 Triage Instructions
+          </h3>
+          <ul style="padding-left: 1.25rem; font-size: 0.875rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.75rem; list-style-type: disc;">
+            <li>Select the primary symptom that describes your system's current failure state.</li>
+            <li>If you have physical smoke or a burning odor, <strong>do not use the wizard</strong>; unplug the unit immediately.</li>
+            <li>Results represent likelihood scores based on known hardware protection curves and capacitor aging models.</li>
+          </ul>
+
+          <div style="border-top: 1px dashed var(--border-subtle); padding-top: 1.25rem;">
+            <h4 class="font-bold" style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--accent-primary);">
+              Sizing &amp; Lifespan Tools
+            </h4>
+            <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
+              <a href="/psu-calculator" style="color:var(--text-secondary); text-decoration:none;">⚡ PSU Wattage Calculator</a>
+              <a href="/psu-replacement-calculator" style="color:var(--text-secondary); text-decoration:none;">🔋 PSU Lifespan Checker</a>
+              <a href="/psu-reliability" style="color:var(--text-secondary); text-decoration:none;">📊 Longevity &amp; Failure Rates</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    {/* Frequently Asked Questions Accordion Block */}
+    <section class="card" style="margin-top: 3rem; padding: 2rem;">
+      <h2 class="text-2xl font-bold font-display" style="margin-bottom: 1.5rem;">
+        Frequently Asked Questions — PSU Fail Symptoms
+      </h2>
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        {faqSchema.mainEntity.map(faq => (
+          <details class="faq-details" style="background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1rem; cursor: pointer;">
+            <summary style="font-weight: 700; font-size: 1rem; color: var(--text-primary); outline: none;">
+              {faq.name}
+            </summary>
+            <p style="margin-top: 0.75rem; color: var(--text-secondary); line-height: 1.6; font-size: 0.9rem; padding-left: 0.5rem; border-left: 2px solid var(--accent-primary);">
+              {faq.acceptedAnswer.text}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </div>
+</Layout>

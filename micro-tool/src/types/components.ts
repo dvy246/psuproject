@@ -15,6 +15,17 @@ export interface CpuIndex {
   tdpSustained: number;   // Sustained power (PL2 for Intel = tdpSustained)
   price: number;          // USD
   confirmed: boolean;     // false for leaked/rumored SKUs
+  measuredIdleWatts?: number;
+  measuredGamingWatts?: number;
+  measuredPeakWatts?: number;
+  measurementSource?: string;
+}
+
+export interface GpuDimensions {
+  length: number;
+  width: number;
+  slotsOccupied: number;
+  pciePowerConnectorPosition?: string;
 }
 
 export interface GpuIndex {
@@ -31,6 +42,12 @@ export interface GpuIndex {
   confirmed: boolean;
   pcieLanes: number;
   generation: string;
+  dimensions?: GpuDimensions;
+  measuredIdleWatts?: number;
+  measuredGamingWatts?: number;
+  measuredPeakWatts?: number;
+  measuredTransientWatts?: number;
+  measurementSource?: string;
 }
 
 export type GpuTier = "budget" | "mid" | "high" | "ultra" | "halo";
@@ -55,6 +72,21 @@ export interface MotherboardIndex {
 }
 
 export type FormFactor = "ATX" | "Micro-ATX" | "Mini-ITX" | "E-ATX";
+
+export interface CaseIndex {
+  id: string;
+  brand: string;
+  name: string;
+  formFactor: string;
+  maxGpuLength: number;
+  maxGpuLengthWithRad360: number;
+  maxGpuLengthWithRad280: number;
+  maxGpuLengthWithRad240: number;
+  maxCoolerHeight: number;
+  maxPsuLength: number;
+  psuFormFactor: string[];
+  gpuWidthMax: number;
+}
 
 export interface PsuIndex {
   id: string;

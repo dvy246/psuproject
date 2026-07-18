@@ -199,17 +199,6 @@
       "connectorType": "USB-C / Slim Tip"
     },
     {
-      "id": "asus-rog-zephyrus-g14-2024",
-      "name": "ASUS ROG Zephyrus G14 (2024)",
-      "brand": "ASUS",
-      "batteryCapacityWh": 73,
-      "maxChargeWatts": 100,
-      "protocol": "PD 3.0",
-      "typicalOfficeWatts": 15,
-      "typicalLoadWatts": 80,
-      "connectorType": "USB-C / Slim Plug"
-    },
-    {
       "id": "razer-blade-16-2024",
       "name": "Razer Blade 16 (2024)",
       "brand": "Razer",
@@ -219,6 +208,94 @@
       "typicalOfficeWatts": 20,
       "typicalLoadWatts": 90,
       "connectorType": "USB-C"
+    },
+    {
+      "id": "macbook-pro-14-m4-pro",
+      "name": "Apple MacBook Pro 14\" (M4 Pro, 2024)",
+      "brand": "Apple",
+      "batteryCapacityWh": 72.4,
+      "maxChargeWatts": 140,
+      "protocol": "PD 3.1",
+      "typicalOfficeWatts": 12,
+      "typicalLoadWatts": 65,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-pro-16-m4-max",
+      "name": "Apple MacBook Pro 16\" (M4 Max, 2024)",
+      "brand": "Apple",
+      "batteryCapacityWh": 99.6,
+      "maxChargeWatts": 140,
+      "protocol": "PD 3.1",
+      "typicalOfficeWatts": 15,
+      "typicalLoadWatts": 90,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-air-13-m4",
+      "name": "Apple MacBook Air 13\" (M4, 2025)",
+      "brand": "Apple",
+      "batteryCapacityWh": 52.6,
+      "maxChargeWatts": 70,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 7,
+      "typicalLoadWatts": 35,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-air-15-m4",
+      "name": "Apple MacBook Air 15\" (M4, 2025)",
+      "brand": "Apple",
+      "batteryCapacityWh": 66.5,
+      "maxChargeWatts": 70,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 8,
+      "typicalLoadWatts": 40,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-pro-14-m5-pro",
+      "name": "Apple MacBook Pro 14\" (M5 Pro, 2025)",
+      "brand": "Apple",
+      "batteryCapacityWh": 72.4,
+      "maxChargeWatts": 140,
+      "protocol": "PD 3.1",
+      "typicalOfficeWatts": 12,
+      "typicalLoadWatts": 65,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-pro-16-m5-max",
+      "name": "Apple MacBook Pro 16\" (M5 Max, 2025)",
+      "brand": "Apple",
+      "batteryCapacityWh": 99.6,
+      "maxChargeWatts": 140,
+      "protocol": "PD 3.1",
+      "typicalOfficeWatts": 15,
+      "typicalLoadWatts": 90,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-air-13-m5",
+      "name": "Apple MacBook Air 13\" (M5, 2026)",
+      "brand": "Apple",
+      "batteryCapacityWh": 52.6,
+      "maxChargeWatts": 70,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 7,
+      "typicalLoadWatts": 35,
+      "connectorType": "USB-C / MagSafe 3"
+    },
+    {
+      "id": "macbook-air-15-m5",
+      "name": "Apple MacBook Air 15\" (M5, 2026)",
+      "brand": "Apple",
+      "batteryCapacityWh": 66.5,
+      "maxChargeWatts": 70,
+      "protocol": "PD 3.0",
+      "typicalOfficeWatts": 8,
+      "typicalLoadWatts": 40,
+      "connectorType": "USB-C / MagSafe 3"
     }
   ]
 }
