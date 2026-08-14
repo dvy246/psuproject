@@ -309,7 +309,7 @@ const faqList = [
         <a href={`/build-plan?cpu=${cpu.id}&gpu=${gpu.id}`} class="btn btn-primary" style="text-decoration:none;min-height:44px;padding:0.75rem 1.5rem;">
           Customize This Blueprint →
         </a>
-        <a href={`/compare/upgrade/gpu/${encodeURIComponent(gpu.id.split('-').slice(0, -1).join('-'))}/${encodeURIComponent(gpu.id)}`} class="btn btn-secondary" style="text-decoration:none;min-height:44px;padding:0.75rem 1.5rem;">
+        <a href="/compare/gpu-upgrade-checker" class="btn btn-secondary" style="text-decoration:none;min-height:44px;padding:0.75rem 1.5rem;">
           Compare GPU Upgrades
         </a>
       </div>

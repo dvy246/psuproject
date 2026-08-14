@@ -1,0 +1,188 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { GpuIndex } from '../../types/components';
+import gpuData from '../../data/index/gpus.index.json';
+
+const gpus = gpuData.items as GpuIndex[];
+
+const pageTitle = "PSU Finder: Best Power Supply for Every GPU (2026) — PSUCheck";
+const pageDescription = "Find the best power supply for your graphics card. Transient-aware PSU recommendations for NVIDIA RTX 5090, RTX 5080, RTX 4090, AMD RX 7900 XTX, and more across all tiers.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "PSU Finder & GPU Matchmaker",
+  "url": "https://psucheck.com/psu-for/",
+  "description": pageDescription,
+  "publisher": {
+    "@type": "Organization",
+    "name": "PSUCheck",
+    "url": "https://psucheck.com"
+  }
+};
+
+const tiers = ['halo', 'ultra', 'high', 'mid', 'budget'] as const;
+const tierLabels: Record<string, string> = {
+  halo: 'Halo & Flagship Tier (500W+ Spikes)',
+  ultra: 'Enthusiast / Ultra Tier (350W–500W Spikes)',
+  high: 'High-End Gaming (250W–350W Spikes)',
+  mid: 'Mid-Range Gaming (150W–250W Spikes)',
+  budget: 'Budget / Entry Tier (<150W Spikes)'
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schema}
+>
+  <section class="finder-hub-page" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">PSU Finder</span>
+      </nav>
+
+      <header class="hub-header">
+        <div class="section-eyebrow">GPU Matchmaker Engine</div>
+        <h1 id="hub-heading">
+          Best PSU for <span class="gradient-text">Every Graphics Card</span>
+        </h1>
+        <p class="hub-intro">
+          Select your GPU below for curated, transient-safe power supply recommendations. Every pairing accounts for sub-millisecond power excursions, 12V-2x6 cable safety, and 5-year operating efficiency.
+        </p>
+      </header>
+
+      {/* === TIERS LIST === */}
+      {tiers.map(tier => {
+        const tierGpus = gpus.filter(g => g.tier === tier);
+        if (tierGpus.length === 0) return null;
+        return (
+          <div class="tier-group" key={tier} style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem; display:flex; justify-content:space-between; align-items:center;">
+              <span>{tierLabels[tier]}</span>
+              <span style="font-size:0.75rem; color:var(--text-tertiary); font-weight:600; text-transform:uppercase;">{tierGpus.length} Models</span>
+            </h2>
+            <div class="gpu-match-grid">
+              {tierGpus.map(gpu => (
+                <div class="gpu-hub-card card" key={gpu.id}>
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                      <span class="gpu-brand-tag">{gpu.brand}</span>
+                      <h3 class="gpu-title">{gpu.name}</h3>
+                    </div>
+                    <span class="gpu-tbp-badge">{gpu.tbp}W TBP</span>
+                  </div>
+                  <div class="gpu-meta-specs">
+                    <span>{gpu.vram} VRAM</span>
+                    <span>•</span>
+                    <span>{gpu.connectorType}</span>
+                    <span>•</span>
+                    <span>Rec: {gpu.minPsuWattage}W+</span>
+                  </div>
+                  <div class="gpu-links-row" style="margin-top: 1.25rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                    <a href={`/psu-for/${gpu.id}/`} class="btn btn-secondary btn-sm" style="flex:1; justify-content:center; text-align:center;">
+                      Best PSUs →
+                    </a>
+                    <a href={`/power-consumption/${gpu.id}/`} class="btn btn-secondary btn-sm" title="Real Measured Power Draw" style="padding:4px 8px;">
+                      📊 Lab Draw
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* === HELPER CARD === */}
+      <section class="card" style="margin-top: 3rem; padding: 2rem; border-left: 4px solid var(--color-accent-cyan);">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin:0 0 0.5rem;">
+          🔍 Looking for GPU Upgrade Headroom?
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 1rem;">
+          Already have an existing power supply and want to check if it can support a newer graphics card upgrade? Use our dedicated GPU Upgrade Safety Checker.
+        </p>
+        <a href="/compare/gpu-upgrade-checker" class="btn btn-primary">Open GPU Upgrade Checker →</a>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.finder-hub-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.hub-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.hub-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  max-width: 75ch;
+}
+.gpu-match-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.gpu-hub-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.gpu-hub-card:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+}
+.gpu-brand-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.gpu-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.15rem 0 0;
+}
+.gpu-tbp-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent-cyan);
+  font-family: var(--font-mono);
+}
+.gpu-meta-specs {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+.btn-sm {
+  font-size: 0.75rem !important;
+  padding: 6px 12px !important;
+  min-height: 32px !important;
+}
+</style>

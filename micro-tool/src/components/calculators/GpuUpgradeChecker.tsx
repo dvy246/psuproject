@@ -253,15 +253,15 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
                   <td style="padding: 0.75rem; font-weight: 700;">GPU Rated TBP</td>
                   <td style="padding: 0.75rem;">{currentGpu.tbp}W</td>
                   <td style="padding: 0.75rem;">{targetGpu.tbp}W</td>
-                  <td style="padding: 0.75rem; font-weight: 700; color: baseDelta >= 0 ? '#ef4444' : '#10b981';">
-                    {baseDelta >= 0 ? `+${baseDelta}` : baseDelta}W
+                  <td style={{ padding: '0.75rem', fontWeight: 700, color: (targetGpu.tbp - currentGpu.tbp) >= 0 ? '#ef4444' : '#10b981' }}>
+                    {(targetGpu.tbp - currentGpu.tbp) >= 0 ? `+${targetGpu.tbp - currentGpu.tbp}` : targetGpu.tbp - currentGpu.tbp}W
                   </td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-subtle);">
                   <td style="padding: 0.75rem; font-weight: 700;">Sustained System Draw</td>
                   <td style="padding: 0.75rem;">{currentBaseDraw}W</td>
                   <td style="padding: 0.75rem;">{targetBaseDraw}W</td>
-                  <td style="padding: 0.75rem; font-weight: 700; color: baseDelta >= 0 ? '#ef4444' : '#10b981';">
+                  <td style={{ padding: '0.75rem', fontWeight: 700, color: baseDelta >= 0 ? '#ef4444' : '#10b981' }}>
                     {baseDelta >= 0 ? `+${baseDelta}` : baseDelta}W
                   </td>
                 </tr>
@@ -269,7 +269,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
                   <td style="padding: 0.75rem; font-weight: 700;">Peak Transient Spike</td>
                   <td style="padding: 0.75rem; color: var(--color-warning-text);">{currentTransientPeak}W</td>
                   <td style="padding: 0.75rem; color: var(--color-warning-text);">{targetTransientPeak}W</td>
-                  <td style="padding: 0.75rem; font-weight: 700; color: peakDelta >= 0 ? '#ef4444' : '#10b981';">
+                  <td style={{ padding: '0.75rem', fontWeight: 700, color: peakDelta >= 0 ? '#ef4444' : '#10b981' }}>
                     {peakDelta >= 0 ? `+${peakDelta}` : peakDelta}W
                   </td>
                 </tr>
@@ -277,7 +277,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
                   <td style="padding: 0.75rem; font-weight: 700;">Power Connector</td>
                   <td style="padding: 0.75rem;">{currentGpu.connectorType.toUpperCase()}</td>
                   <td style="padding: 0.75rem;">{targetGpu.connectorType.toUpperCase()}</td>
-                  <td style="padding: 0.75rem; font-weight: 700; color: connectorChanged ? '#f59e0b' : 'inherit';">
+                  <td style={{ padding: '0.75rem', fontWeight: 700, color: connectorChanged ? '#f59e0b' : 'inherit' }}>
                     {connectorChanged ? 'Different' : 'Same'}
                   </td>
                 </tr>

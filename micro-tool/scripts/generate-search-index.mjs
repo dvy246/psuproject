@@ -20,16 +20,16 @@ function addItem(id, name, type, url, brand = '', subtitle = '') {
 }
 
 // 1. Add Core Tools/Calculators
-addItem('psu-calculator', 'PSU Sizing Calculator', 'tool', '/psu-calculator/', 'VoltForge', 'Calculate steady load & transient spikes');
-addItem('pc-builder', 'PC Builder & Cost Estimator', 'tool', '/pc-builder/', 'VoltForge', 'Build a custom PC and estimate costs');
-addItem('psu-checker', 'PSU Upgrade Headroom Checker', 'tool', '/psu-checker/', 'VoltForge', 'Check compatibility for GPU upgrades');
-addItem('psu-replacement-calculator', 'PSU Replacement Calculator', 'tool', '/psu-replacement-calculator/', 'VoltForge', 'Check if aging PSU can run new GPU');
-addItem('breaker-calculator', 'Circuit Breaker Auditor', 'tool', '/compare/breaker-calculator/', 'VoltForge', 'Calculate breaker load limits for your PC');
-addItem('ups-calculator', 'UPS Battery Sizer', 'tool', '/compare/ups-calculator/', 'VoltForge', 'Size backup battery UPS runtime');
-addItem('gpu-upgrade-checker', 'GPU Upgrade Checker', 'tool', '/compare/gpu-upgrade-checker/', 'VoltForge', 'Select from-to GPUs and verify PSU safety');
-addItem('best-psu', 'Best PSU Recommendations', 'tool', '/best-psu/', 'VoltForge', 'Premium, mid-range & budget PSU tier list');
-addItem('psu-reliability', 'Reliability & Longevity Database', 'tool', '/psu-reliability/', 'VoltForge', 'Real community failure rates by PSU model');
-addItem('diagnose', 'PSU Fail Symptoms & Diagnostic Triage Wizard', 'tool', '/diagnose/', 'VoltForge', 'Diagnose shutdowns, boot loops, coil whine, or BSODs');
+addItem('psu-calculator', 'PSU Sizing Calculator', 'tool', '/psu-calculator/', 'PSUCheck', 'Calculate steady load & transient spikes');
+addItem('pc-builder', 'PC Builder & Cost Estimator', 'tool', '/pc-builder/', 'PSUCheck', 'Build a custom PC and estimate costs');
+addItem('psu-checker', 'PSU Upgrade Headroom Checker', 'tool', '/psu-checker/', 'PSUCheck', 'Check compatibility for GPU upgrades');
+addItem('psu-replacement-calculator', 'PSU Replacement Calculator', 'tool', '/psu-replacement-calculator/', 'PSUCheck', 'Check if aging PSU can run new GPU');
+addItem('breaker-calculator', 'Circuit Breaker Auditor', 'tool', '/compare/breaker-calculator/', 'PSUCheck', 'Calculate breaker load limits for your PC');
+addItem('ups-calculator', 'UPS Battery Sizer', 'tool', '/compare/ups-calculator/', 'PSUCheck', 'Size backup battery UPS runtime');
+addItem('gpu-upgrade-checker', 'GPU Upgrade Checker', 'tool', '/compare/gpu-upgrade-checker/', 'PSUCheck', 'Select from-to GPUs and verify PSU safety');
+addItem('best-psu', 'Best PSU Recommendations', 'tool', '/best-psu/', 'PSUCheck', 'Premium, mid-range & budget PSU tier list');
+addItem('psu-reliability', 'Reliability & Longevity Database', 'tool', '/psu-reliability/', 'PSUCheck', 'Real community failure rates by PSU model');
+addItem('diagnose', 'PSU Fail Symptoms & Diagnostic Triage Wizard', 'tool', '/diagnose/', 'PSUCheck', 'Diagnose shutdowns, boot loops, coil whine, or BSODs');
 
 // 2. Load Component Indexes
 // CPUs -> /pc-builder?cpu=[id]

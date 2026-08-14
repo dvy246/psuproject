@@ -4,6 +4,7 @@ import { checkCables } from '../../../../lib/compatibility/check-cables';
 import cableRules from '../../../../data/compatibility/cross-brand-cables.json';
 
 export async function getStaticPaths() {
+  const slugifyBrand = (b: string) => b.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const brands = cableRules.brands;
   const paths = [];
 
@@ -11,7 +12,7 @@ export async function getStaticPaths() {
     for (const bB of brands) {
       if (bA !== bB) {
         paths.push({
-          params: { brandA: bA.toLowerCase(), brandB: bB.toLowerCase() },
+          params: { brandA: slugifyBrand(bA), brandB: slugifyBrand(bB) },
           props: { brandA: bA, brandB: bB }
         });
       }

@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { GpuIndex } from '../../types/components';
+import gpuData from '../../data/index/gpus.index.json';
+
+const gpus = gpuData.items as GpuIndex[];
+const wattages = [550, 650, 750, 850, 1000, 1200];
+
+const pageTitle = "PSU Replacement & Capacitor Aging Matrix — PSUCheck";
+const pageDescription = "Determine if your aging power supply can safely handle a GPU upgrade. Calculate capacitor degradation, voltage ripple risk, and safe upgrade limits.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "PSU Replacement & Health Matrix",
+  "url": "https://psucheck.com/psu-replacement/",
+  "description": pageDescription,
+  "publisher": {
+    "@type": "Organization",
+    "name": "PSUCheck",
+    "url": "https://psucheck.com"
+  }
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schema}
+>
+  <section class="replacement-hub-page" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">PSU Replacement</span>
+      </nav>
+
+      <header class="hub-header">
+        <div class="section-eyebrow">Capacitor Longevity & Upgrade Sizing</div>
+        <h1 id="hub-heading">
+          PSU Health &amp; <span class="gradient-text">Replacement Matrix</span>
+        </h1>
+        <p class="hub-intro">
+          Electrolytic capacitors lose 3% to 5% effective hold-up capacitance each year after year three. Select your GPU and current PSU wattage below to verify if your existing unit is safe for an upgrade or if replacement is required.
+        </p>
+      </header>
+
+      {/* === REPLACEMENT MATRIX GRID === */}
+      <div class="replacement-grid">
+        {gpus.map(gpu => (
+          <div class="card" key={gpu.id} style="padding:1.25rem; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <span style="font-size:0.6875rem; font-weight:700; color:var(--text-tertiary); text-transform:uppercase;">{gpu.brand}</span>
+                  <h3 style="font-size:1.0625rem; font-weight:700; color:var(--text-primary); margin:0.15rem 0 0;">{gpu.name}</h3>
+                </div>
+                <span style="font-size:0.6875rem; font-weight:700; padding:2px 6px; background:var(--bg-secondary); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); color:var(--color-accent-cyan); font-family:var(--font-mono);">{gpu.tbp}W TBP</span>
+              </div>
+              <p style="font-size:0.8125rem; color:var(--text-secondary); margin:0.75rem 0; line-height:1.4;">
+                Minimum Recommended: {gpu.minPsuWattage}W · Connector: {gpu.connectorType}
+              </p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px; margin-top:0.75rem;">
+              <span style="font-size:0.7rem; font-weight:700; color:var(--text-tertiary); text-transform:uppercase;">Select Current PSU Capacity:</span>
+              <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                {wattages.filter(w => w >= gpu.minPsuWattage - 100).map(w => (
+                  <a
+                    href={`/psu-replacement/should-i-replace-my-${w}w-psu-for-${gpu.id}/`}
+                    class="btn btn-secondary btn-sm"
+                    key={w}
+                    style="font-family:var(--font-mono); padding:4px 8px; font-size:0.75rem;"
+                  >
+                    {w}W
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* === CALCULATOR LINK === */}
+      <section class="card" style="margin-top: 3rem; padding: 2rem; border-left: 4px solid var(--color-accent-cyan);">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin:0 0 0.5rem;">
+          🔋 Interactive PSU Health & Degradation Calculator
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 1rem;">
+          Want to input your specific PSU model, operating temperature, and years in service? Run our interactive replacement calculator.
+        </p>
+        <a href="/psu-replacement-calculator" class="btn btn-primary">Open Interactive Health Sizer →</a>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.replacement-hub-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.hub-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.hub-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  max-width: 75ch;
+}
+.replacement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+.btn-sm {
+  font-size: 0.75rem !important;
+  padding: 6px 12px !important;
+  min-height: 32px !important;
+}
+</style>

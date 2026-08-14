@@ -1,0 +1,269 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { CpuIndex, GpuIndex } from '../../types/components';
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+
+const gpus = gpuData.items as GpuIndex[];
+const cpus = cpuData.items as CpuIndex[];
+const wattages = [550, 650, 750, 850, 1000, 1200];
+
+const pageTitle = "PSU Oracle Matrix: Power Compatibility Calculator — PSUCheck";
+const pageDescription = "Explore the complete PSU compatibility matrix. Determine if 550W, 650W, 750W, 850W, 1000W, or 1200W power supplies provide safe transient headroom for your GPU and CPU.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "PSU Oracle Matrix",
+  "url": "https://psucheck.com/oracle/",
+  "description": pageDescription,
+  "publisher": {
+    "@type": "Organization",
+    "name": "PSUCheck",
+    "url": "https://psucheck.com"
+  }
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the PSU Oracle Matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The PSU Oracle Matrix is an automated compatibility directory that models sub-millisecond transient power spikes, ATX 3.1 tolerances, and capacitor aging across popular CPU and GPU combinations."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does PSUCheck determine if a wattage is enough?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PSUCheck applies Cybenetics transient multipliers to GPU Total Board Power (TBP) and adds sustained CPU boost draws plus system infrastructure overhead to verify that peak transient excursions remain within safe PSU safety thresholds."
+      }
+    }
+  ]
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={[schema, faqSchema]}
+>
+  <section class="oracle-hub-page" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">Oracle Matrix</span>
+      </nav>
+
+      <header class="hub-header">
+        <div class="section-eyebrow">Programmatic Compatibility Engine</div>
+        <h1 id="hub-heading">
+          PSU Oracle <span class="gradient-text">Compatibility Matrix</span>
+        </h1>
+        <p class="hub-intro">
+          Select any GPU or GPU+CPU pairing below to audit whether a 550W, 650W, 750W, 850W, 1000W, or 1200W power supply delivers safe transient headroom under heavy workloads.
+        </p>
+      </header>
+
+      {/* === POPULAR GPU HUBS === */}
+      <section style="margin-bottom: 3.5rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+          🎯 GPU Power Headroom Checkers
+        </h2>
+        <div class="oracle-grid">
+          {gpus.map(gpu => (
+            <div class="oracle-card card" key={gpu.id}>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+                <div>
+                  <span class="card-brand">{gpu.brand}</span>
+                  <h3 class="card-title">{gpu.name}</h3>
+                </div>
+                <span class="card-badge">{gpu.tbp}W TBP</span>
+              </div>
+              <p style="font-size:0.8125rem; color:var(--text-secondary); margin-bottom:1rem; line-height:1.4;">
+                Transient Peak: ~{Math.round(gpu.tbp * gpu.transientMultiplier)}W ({gpu.transientMultiplier}x) · Connector: {gpu.connectorType}
+              </p>
+              <div class="wattage-pills">
+                {wattages.map(w => (
+                  <a
+                    href={`/oracle/is-${w}w-enough-for-${gpu.id}/`}
+                    class="watt-pill"
+                    key={w}
+                    title={`Is ${w}W enough for ${gpu.name}?`}
+                  >
+                    {w}W
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* === TOP PAIRINGS MATRIX === */}
+      <section style="margin-bottom: 3.5rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+          ⚡ Popular GPU + CPU Combinations
+        </h2>
+        <div class="combo-grid">
+          {gpus.slice(0, 8).map(gpu => (
+            cpus.slice(0, 4).map(cpu => (
+              <a
+                href={`/oracle/is-850w-enough-for-${gpu.id}-with-${cpu.id}/`}
+                class="combo-card card"
+                key={`${gpu.id}-${cpu.id}`}
+              >
+                <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                  <span style="font-size:0.75rem; font-weight:700; color:var(--accent-primary); text-transform:uppercase;">
+                    {gpu.brand} + {cpu.brand}
+                  </span>
+                  <strong style="color:var(--text-primary); font-size:0.9375rem;">
+                    {gpu.name} & {cpu.name}
+                  </strong>
+                </div>
+                <span class="combo-arrow">→</span>
+              </a>
+            ))
+          ))}
+        </div>
+      </section>
+
+      {/* === FAQ SECTION === */}
+      <section class="card" style="padding:2rem; margin-top:2rem;">
+        <h2 style="font-size:1.25rem; font-weight:800; color:var(--text-primary); margin-bottom:1rem;">
+          Frequently Asked Questions
+        </h2>
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          {faqSchema.mainEntity.map(faq => (
+            <div>
+              <h3 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">
+                {faq.name}
+              </h3>
+              <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.5; margin:0;">
+                {faq.acceptedAnswer.text}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.oracle-hub-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.hub-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.hub-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  max-width: 75ch;
+}
+.oracle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+.oracle-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.oracle-card:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+}
+.card-brand {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.card-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.15rem 0 0;
+}
+.card-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent-cyan);
+  font-family: var(--font-mono);
+}
+.wattage-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.watt-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 4px 10px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.watt-pill:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  transform: translateY(-1px);
+}
+.combo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+.combo-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  text-decoration: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
+}
+.combo-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+.combo-arrow {
+  font-size: 1rem;
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+</style>

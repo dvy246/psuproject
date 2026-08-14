@@ -16,13 +16,13 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "name": "PSUCheck PC Builds Gallery",
-  "url": "https://psucheck.com/builds",
+  "url": "https://psucheck.com/builds/",
   "description": "Browse community PC builds with complete component lists and real-time transient-aware PSU safety analysis.",
   "itemListElement": builds.map((b, idx) => ({
     "@type": "ListItem",
     "position": idx + 1,
     "name": b.name,
-    "url": `https://psucheck.com/build/${b.slug}`
+    "url": `https://psucheck.com/build/${b.slug}/`
   }))
 };
 
@@ -99,7 +99,7 @@ const faqSchema = {
                 </div>
                 
                 <h2 style="font-size:1.15rem; font-weight:700; margin-top:0.5rem; line-height:1.3; color:var(--color-text-primary);">
-                  <a href={`/build/${b.slug}`} style="color:inherit; text-decoration:none; outline:none;" class="hover-cyan">{b.name}</a>
+                  <a href={`/build/${b.slug}/`} style="color:inherit; text-decoration:none; outline:none;" class="hover-cyan">{b.name}</a>
                 </h2>
                 
                 <p style="font-size:0.8125rem; color:var(--color-text-secondary); line-height:1.5; margin-top:0.75rem; margin-bottom:1.25rem; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">
@@ -127,7 +127,7 @@ const faqSchema = {
                   <span style="font-size:0.65rem; color:var(--color-text-tertiary); text-transform:uppercase;">Build Cost</span>
                   <span style="font-size:1.25rem; font-weight:800; color:var(--color-accent-cyan); font-family:var(--font-mono);">${b.price}</span>
                 </div>
-                <a href={`/build/${b.slug}`} class="btn btn-secondary" style="font-size:0.75rem; padding:6px 12px; min-height:34px; text-decoration:none; display:inline-flex; align-items:center;">
+                <a href={`/build/${b.slug}/`} class="btn btn-secondary" style="font-size:0.75rem; padding:6px 12px; min-height:34px; text-decoration:none; display:inline-flex; align-items:center;">
                   View Diagnostics →
                 </a>
               </div>
@@ -286,8 +286,11 @@ const faqSchema = {
   .gallery-hero {
     padding: 3rem 0 1rem;
   }
+  .hover-cyan {
+    transition: color 200ms ease, text-decoration 200ms ease;
+  }
   .hover-cyan:hover {
-    color: var(--color-accent-cyan) !important;
-    transition: color 200ms ease;
+    color: var(--text-primary) !important;
+    text-decoration: underline !important;
   }
 </style>

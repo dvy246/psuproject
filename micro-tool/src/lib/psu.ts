@@ -282,8 +282,6 @@ export function checkCableCompatibility(gpu: GpuIndex | null): CableAuditResult 
   };
 }
 
-// --- Per-Rail Current Estimation ---
-
 export function estimatePerRailCurrents(baseDraw: number): PerRailResult {
   // Modern systems draw ~90% from +12V rail, ~5% from +5V, ~5% from +3.3V
   const v12Watts = baseDraw * 0.90;
@@ -297,6 +295,23 @@ export function estimatePerRailCurrents(baseDraw: number): PerRailResult {
     v12Watts: Math.round(v12Watts),
     v5Watts: Math.round(v5Watts),
     v3_3Watts: Math.round(v3_3Watts),
+  };
+}
+
+export function calculatePerRailDraw(
+  cpu: CpuIndex | null,
+  gpu: GpuIndex | null,
+  ram: RamConfig | null,
+  storage: StorageConfig[],
+  cooling: CoolingConfig | null,
+  fans: number
+) {
+  const base = calculateBaseDraw({ cpu, gpu, ram, storage, cooling, fans });
+  const rails = estimatePerRailCurrents(base);
+  return {
+    v12: { amps: rails.v12Amps, watts: rails.v12Watts },
+    v5: { amps: rails.v5Amps, watts: rails.v5Watts },
+    v3_3: { amps: rails.v3_3Amps, watts: rails.v3_3Watts },
   };
 }
 

@@ -20,8 +20,6 @@ export async function getStaticPaths() {
 
   for (const gpu of gpus as GpuIndex[]) {
     for (const wattage of wattages) {
-      if (wattage < gpu.minPsuWattage) continue;
-
       paths.push({
         params: { slug: `should-i-replace-my-${wattage}w-psu-for-${gpu.id}` },
         props: { gpu, refCpu, wattage, psuAgeYears: 5, psus }

@@ -237,8 +237,8 @@ const faqSchema = {
             <p>Audit pinout compatibility between PSU brands to avoid short circuits and component fire hazards. Cross-reference modular cable pinouts across brands.</p>
           </div>
           <div class="compat-grid">
-            {Array.from(new Set(psus.map(p => p.brand))).sort().map(brand => (
-              <a key={brand} href={`/compatibility/connector/${brand.toLowerCase().replace(/\s+/g, '-')}/corsair`} class="compat-card card card-cable">
+            {Array.from(new Set(psus.map(p => p.brand))).filter(b => b.toLowerCase() !== 'corsair').sort().map(brand => (
+              <a key={brand} href={`/compatibility/connector/${brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}/corsair`} class="compat-card card card-cable">
                 <div class="card-header">
                   <span class="compat-brand">{brand}</span>
                 </div>

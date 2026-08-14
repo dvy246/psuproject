@@ -22,6 +22,7 @@ export async function getStaticPaths() {
       // Pair: different brands, within ±150W, same ATX generation preferred
       if (!sameBrand && wattageDiff <= 150) {
         pairs.push({ a, b });
+        pairs.push({ a: b, b: a });
       }
     }
   }

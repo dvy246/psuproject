@@ -56,7 +56,7 @@ const faqSchema = {
 <Layout
   title="PSU Fail Symptoms & Diagnostic Triage Wizard — PSUCheck"
   description="Troubleshoot random PC shutdowns, boot issues, and electrical noise. Run our interactive diagnostic wizard to isolate PSU faults vs GPU/Motherboard failures."
-  schema={schema}
+  schema={[schema, faqSchema]}
 >
   <div class="container py-lg">
     {/* Breadcrumbs */}

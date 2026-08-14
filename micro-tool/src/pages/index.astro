@@ -327,7 +327,7 @@ const faqSchema = {
         <div class="hero-visual-wrapper">
           <div class="hero-visual-glow" aria-hidden="true"></div>
           
-          <div class="cpu-3d-scene" id="cpu-scene" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; background: rgba(10, 15, 30, 0.4); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: var(--radius-lg); position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); z-index: 1;">
+          <div class="cpu-3d-scene" id="cpu-scene">
             
             <div class="telemetry-grid" aria-hidden="true">
               <div class="telemetry-line">SYS.READY: +12V_LINE_STABLE</div>
@@ -1125,13 +1125,14 @@ const faqSchema = {
   left: 1rem;
   font-family: var(--font-mono);
   font-size: 0.625rem;
-  color: rgba(0, 229, 255, 0.35);
+  color: rgba(0, 229, 255, 0.7);
   pointer-events: none;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  font-weight: 600;
 }
 .telemetry-line {
   white-space: nowrap;
@@ -1170,6 +1171,42 @@ const faqSchema = {
   align-items: center;
   justify-content: center;
   perspective: 1200px;
+  background: radial-gradient(135deg, rgba(13, 20, 38, 0.7) 0%, rgba(8, 12, 24, 0.9) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  z-index: 1;
+}
+
+:global([data-theme="light"]) .cpu-3d-scene {
+  background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid rgba(0, 145, 234, 0.25);
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.1), 0 1px 3px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff;
+}
+
+:global([data-theme="light"]) .hero-visual-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(0, 145, 234, 0.15) 0%, rgba(124, 77, 255, 0.08) 50%, transparent 70%);
+}
+
+:global([data-theme="light"]) .telemetry-grid {
+  color: #0284c7;
+  font-weight: 700;
+}
+
+:global([data-theme="light"]) .diag-ring circle {
+  stroke: #0284c7;
+}
+
+:global([data-theme="light"]) .diag-text {
+  color: #0284c7;
+  font-weight: 800;
+}
+
+:global([data-theme="light"]) .cpu-pcb {
+  box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.25), 0 10px 15px -3px rgba(15, 23, 42, 0.12), inset 0 0 15px rgba(0, 230, 118, 0.25);
 }
 .cpu-package {
   width: 230px;
@@ -1383,34 +1420,62 @@ const faqSchema = {
   gap: 0.75rem;
   transition: transform 250ms var(--ease-out), box-shadow 250ms var(--ease-out);
 }
-.pillar-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-glow); text-decoration: none; }
-.pillar-card h3 { color: var(--text-primary); }
-.pillar-card p { font-size: 0.9rem; }
+.pillar-card:hover {
+  transform: translateY(-4px);
+  text-decoration: none;
+}
+.pillar-card h3 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+.pillar-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+.pillar-card:hover h3 { color: var(--text-primary); }
+.pillar-card:hover p { color: var(--text-secondary); }
 .pillar-icon { font-size: 2rem; }
 .pillar-features {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 0.5rem;
   margin-top: 0.25rem;
+  padding: 0;
 }
 .pillar-features li {
   font-size: 0.8125rem;
   color: var(--text-secondary);
   padding-left: 1.25rem;
   position: relative;
+  line-height: 1.5;
+}
+.pillar-card:hover .pillar-features li {
+  color: var(--text-secondary);
 }
 .pillar-features li::before {
   content: '→';
   position: absolute;
   left: 0;
-  color: var(--accent-primary);
+  color: var(--color-accent-cyan, var(--accent-primary));
 }
 .pillar-cta {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--accent-primary);
+  color: var(--color-accent-cyan, var(--accent-primary));
   margin-top: auto;
+  padding-top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.pillar-card:hover .pillar-cta {
+  color: var(--color-accent-cyan, var(--accent-primary));
+  text-decoration: underline;
 }
 
 /* ---- Features ---- */

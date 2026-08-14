@@ -15,10 +15,11 @@ interface Props {
   'aria-label'?: string;
 }
 
-const VERDICTCOLORS = {
+const VERDICTCOLORS: Record<string, string> = {
   safe:    'var(--color-accent-cyan)',
   warning: 'var(--color-warning)',
   danger:  'var(--color-danger)',
+  empty:   'var(--color-text-tertiary)',
 };
 
 // Arc: semi-circle. r=70, center=(90,90), circumference of half-circle

@@ -90,13 +90,17 @@ export default function SearchPalette() {
     }
 
     if (matchedGpu && matchedCpu) {
+      const topGpuIds = ['rtx-5090', 'rtx-5080', 'rtx-5070-ti', 'rtx-5070', 'rtx-4090', 'rtx-4080-super', 'rtx-4070-ti-super', 'rtx-4070-super', 'rtx-4070', 'rtx-4060-ti'];
+      const topCpuIds = ['ryzen-7-9800x3d', 'ryzen-9-9950x', 'ryzen-9-9900x', 'ryzen-7-9700x', 'ryzen-5-9600x', 'ryzen-7-7800x3d', 'ryzen-9-7950x3d', 'core-ultra-9-285k', 'core-ultra-7-265k', 'core-i9-14900k'];
+      const isStaticPage = topGpuIds.includes(matchedGpu.id) && topCpuIds.includes(matchedCpu.id);
+
       const comboItem: SearchItem = {
         id: `${matchedGpu.id}-with-${matchedCpu.id}`,
         name: `${matchedGpu.name} + ${matchedCpu.name} Sizing Verdict`,
         type: 'combo',
-        url: `/psu-for/${matchedGpu.id}-with-${matchedCpu.id}/`,
-        brand: 'Dynamic Combo',
-        subtitle: 'Pairing analysis page evaluating bottleneck and wattage constraints'
+        url: isStaticPage ? `/psu-for/${matchedGpu.id}-with-${matchedCpu.id}/` : `/psu-calculator?gpu=${matchedGpu.id}&cpu=${matchedCpu.id}`,
+        brand: 'Hardware Pairing',
+        subtitle: isStaticPage ? 'Pairing analysis page evaluating bottleneck and wattage constraints' : 'Calculate custom power requirements and transient spikes in PSU Calculator'
       };
       // Inject at the top of results
       matched = [comboItem, ...matched.filter(item => item.id !== matchedGpu?.id && item.id !== matchedCpu?.id)];
@@ -295,7 +299,7 @@ export default function SearchPalette() {
             <span><kbd>Enter</kbd> Select</span>
             <span><kbd>Esc</kbd> Close</span>
           </div>
-          <div class="search-footer-brand">VoltForge Search</div>
+          <div class="search-footer-brand">PSUCheck Search</div>
         </div>
       </div>
     </div>

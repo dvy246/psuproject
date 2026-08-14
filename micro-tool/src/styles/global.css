@@ -237,6 +237,42 @@ a:hover {
   border-color: var(--border-default);
 }
 
+/* Ensure interactive card links maintain high contrast and never lose text visibility on hover */
+a.card,
+a.guide-card,
+a.pillar-card,
+a.related-card,
+a.tool-card,
+a.compat-card,
+a.combo-card,
+a.oracle-link-card,
+a.psu-match-card,
+a.ups-link-card,
+a.power-card {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.card:hover,
+a.guide-card:hover,
+a.pillar-card:hover,
+a.related-card:hover,
+a.tool-card:hover,
+a.compat-card:hover,
+a.combo-card:hover,
+a.oracle-link-card:hover,
+a.psu-match-card:hover,
+a.ups-link-card:hover,
+a.power-card:hover {
+  text-decoration: none;
+}
+
+a.card:hover h1, a.card:hover h2, a.card:hover h3, a.card:hover h4, a.card:hover strong,
+.card:hover h1, .card:hover h2, .card:hover h3, .card:hover h4,
+.guide-card:hover h3, .pillar-card:hover h3, .related-card:hover h3, .tool-card:hover h3 {
+  color: var(--text-primary);
+}
+
 .card-glass {
   background: var(--bg-glass);
   backdrop-filter: blur(16px);
@@ -483,24 +519,20 @@ a:hover {
 /* --- Animated gradient border (signature visual element) --- */
 .gradient-border {
   position: relative;
-  background: var(--bg-secondary);
+  background:
+    linear-gradient(var(--bg-secondary), var(--bg-secondary)) padding-box,
+    linear-gradient(135deg, rgba(0, 229, 255, 0.4) 0%, rgba(124, 77, 255, 0.4) 100%) border-box;
+  border: 1px solid transparent;
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
+  transition: background var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out);
 }
 
-.gradient-border::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: calc(var(--radius-lg) + 1px);
-  background: var(--accent-gradient);
-  z-index: -1;
-  opacity: 0.5;
-  transition: opacity var(--duration-normal) var(--ease-out);
-}
-
-.gradient-border:hover::before {
-  opacity: 1;
+.gradient-border:hover {
+  background:
+    linear-gradient(var(--bg-secondary), var(--bg-secondary)) padding-box,
+    linear-gradient(135deg, rgba(0, 229, 255, 0.9) 0%, rgba(124, 77, 255, 0.9) 100%) border-box;
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* --- Hero wattage number animation --- */

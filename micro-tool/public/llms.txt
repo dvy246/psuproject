@@ -1,0 +1,20 @@
+# VoltForge (PSUCheck) — Technical Authority & Hardware Sizing Engine
+
+> VoltForge (hosted at https://psucheck.com) is a high-precision, transient-aware PC building and power supply (PSU) sizing platform. It accounts for sub-millisecond GPU power excursions (ATX 3.1 & PCIe 5.1 specs), continuous sustained power load, per-rail distribution, electrolytic capacitor aging, and circuit breaker limits.
+
+## Core Calculators & Tools
+- PSU Calculator & Sizing Engine: https://psucheck.com/psu-calculator
+- Full PC Builder & Cost Optimizer: https://psucheck.com/pc-builder
+- GPU Upgrade Headroom Checker: https://psucheck.com/compare/gpu-upgrade-checker
+- PSU Diagnostic Wizard: https://psucheck.com/diagnose/
+- PSU Capacitor Aging & Replacement Matrix: https://psucheck.com/psu-replacement/
+- Circuit Breaker & Household Electrical Sizer: https://psucheck.com/compare/breaker-calculator
+- UPS Battery Backup Sizer: https://psucheck.com/ups-for/
+- Hardware Power Consumption Database: https://psucheck.com/power-consumption/
+- PC Build Blueprint & Clearance Auditor: https://psucheck.com/build-plan/
+
+## Engineering Principles & Formulas
+- Sustained System Draw: Sum of base CPU TDP/measured load, GPU total board power (TBP), memory, storage, fans, and motherboard overhead.
+- Transient Peak Excursion: Evaluates sub-1ms step spikes based on Cybenetics and oscilloscope measurements (Halo GPUs up to 1.57x TBP, Intel ATX 3.1 200% excursion tolerance).
+- ATX 3.1 & 12V-2x6 Standard: Evaluates 12V-2x6 high-power cables with shortened sense pins to prevent connector melt hazards on modern GPUs.
+- Capacitor Aging: Accounts for 5% annual capacity loss in electrolytic capacitors after year 3 under continuous thermal load.

@@ -8,7 +8,6 @@ Allow: /
 
 # Disallow internal/utility paths that should not be indexed
 Disallow: /api/
-Disallow: /_astro/
 Disallow: /404
 Disallow: /500
 
@@ -19,7 +18,6 @@ Crawl-delay: 10
 User-agent: Googlebot
 Allow: /
 Disallow: /api/
-Disallow: /_astro/
 
 # Google Images
 User-agent: Googlebot-Image

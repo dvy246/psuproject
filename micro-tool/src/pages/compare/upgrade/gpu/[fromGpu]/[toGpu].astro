@@ -127,19 +127,19 @@ const pageDescription = `Detailed power draw comparison, peak transient load inc
                   <td style="padding: 0.75rem; font-weight: 700;">GPU Rated TBP</td>
                   <td style="padding: 0.75rem;">{fromGpu.tbp}W</td>
                   <td style="padding: 0.75rem;">{toGpu.tbp}W</td>
-                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{toGpu.tbp - fromGpu.tbp}W</td>
+                  <td style={`padding: 0.75rem; font-weight: 700; color: ${toGpu.tbp - fromGpu.tbp >= 0 ? '#ef4444' : '#10b981'};`}>{toGpu.tbp - fromGpu.tbp >= 0 ? `+${toGpu.tbp - fromGpu.tbp}` : toGpu.tbp - fromGpu.tbp}W</td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-subtle);">
                   <td style="padding: 0.75rem; font-weight: 700;">Sustained System Draw</td>
                   <td style="padding: 0.75rem;">{fromBaseDraw}W</td>
                   <td style="padding: 0.75rem;">{toBaseDraw}W</td>
-                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{baseDelta}W</td>
+                  <td style={`padding: 0.75rem; font-weight: 700; color: ${baseDelta >= 0 ? '#ef4444' : '#10b981'};`}>{baseDelta >= 0 ? `+${baseDelta}` : baseDelta}W</td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-subtle);">
                   <td style="padding: 0.75rem; font-weight: 700;">Transient Peak Spike</td>
                   <td style="padding: 0.75rem;">{fromTransientPeak}W</td>
                   <td style="padding: 0.75rem; color: var(--color-warning-text);">{toTransientPeak}W</td>
-                  <td style="padding: 0.75rem; font-weight: 700; color: "#ef4444";">+{peakDelta}W</td>
+                  <td style={`padding: 0.75rem; font-weight: 700; color: ${peakDelta >= 0 ? '#ef4444' : '#10b981'};`}>{peakDelta >= 0 ? `+${peakDelta}` : peakDelta}W</td>
                 </tr>
               </tbody>
             </table>

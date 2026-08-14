@@ -1,0 +1,173 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import buildsData from '../../data/builds.json';
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+import psuData from '../../data/index/psus.index.json';
+import { calculateBaseDraw, calculateTransientPeak, calculateRecommendedWattage } from '../../lib/psu';
+
+export async function getStaticPaths() {
+  const builds = buildsData.items;
+  return builds.map(b => ({
+    params: { slug: b.slug },
+    props: { build: b }
+  }));
+}
+
+const { build } = Astro.props;
+
+const cpu = cpuData.items.find(c => c.id === build.cpuId) || null;
+const gpu = gpuData.items.find(g => g.id === build.gpuId) || null;
+const psu = psuData.items.find(p => p.id === build.psuId) || null;
+
+const baseDraw = calculateBaseDraw({
+  cpu: cpu as any,
+  gpu: gpu as any,
+  ram: build.ram as any,
+  storage: (build.storage || []) as any,
+  cooling: (build.cooling || null) as any,
+  fans: build.fans || 3,
+});
+
+const transientPeak = calculateTransientPeak(cpu as any, gpu as any, baseDraw);
+const recommendedWattage = calculateRecommendedWattage(
+  transientPeak,
+  psu?.atxVersion || '3.1',
+  0.25,
+  0
+);
+
+const isSafe = psu ? psu.wattage >= baseDraw : false;
+const hasHeadroom = psu ? psu.wattage >= recommendedWattage : false;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": `${build.name} — Power & Hardware Diagnostics`,
+  "description": build.description,
+  "url": `https://psucheck.com/builds/${build.slug}/`,
+  "author": {
+    "@type": "Organization",
+    "name": "PSUCheck Editorial Team"
+  }
+};
+---
+
+<Layout
+  title={`${build.name} — Power Diagnostics & Build Breakdown`}
+  description={build.description}
+  schema={schema}
+>
+  <div class="calc-header" style="background:linear-gradient(180deg, var(--color-surface-sunken) 0%, var(--color-surface-base) 100%); border-bottom:1px solid var(--color-border-subtle); padding: 3rem 0 2rem;">
+    <div class="container" style="max-width:1100px; margin:0 auto; padding:0 1.5rem;">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1rem; font-size:0.8125rem; color:var(--color-text-tertiary);">
+        <a href="/" style="color:var(--color-text-secondary); text-decoration:none;">Home</a>
+        <span aria-hidden="true" style="margin:0 0.5rem;">/</span>
+        <a href="/builds" style="color:var(--color-text-secondary); text-decoration:none;">Completed Builds</a>
+        <span aria-hidden="true" style="margin:0 0.5rem;">/</span>
+        <span style="color:var(--color-text-primary);">{build.name}</span>
+      </nav>
+
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+            <span class="badge badge-safe" style="text-transform:uppercase; font-size:0.75rem;">{build.useCase}</span>
+            <span style="font-size:0.8125rem; color:var(--color-text-tertiary);">Created by @{build.creator}</span>
+          </div>
+          <h1 style="font-size:2rem; font-weight:800; color:var(--color-text-primary); margin:0 0 0.75rem; line-height:1.2;">
+            {build.name}
+          </h1>
+          <p style="font-size:0.95rem; color:var(--color-text-secondary); max-width:750px; line-height:1.6; margin:0;">
+            {build.description}
+          </p>
+        </div>
+
+        <div style="background:var(--color-surface-raised); border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); padding:1.25rem 1.5rem; text-align:right;">
+          <div style="font-size:0.75rem; color:var(--color-text-tertiary); text-transform:uppercase;">Total Build Cost</div>
+          <div style="font-size:2rem; font-weight:850; font-family:var(--font-mono); color:var(--color-accent-cyan);">${build.price}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="max-width:1100px; margin:2.5rem auto 5rem; padding:0 1.5rem;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:2rem;">
+      {/* Component Breakdown */}
+      <div class="card card-dark" style="padding:1.5rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg);">
+        <h2 style="font-size:1.25rem; font-weight:700; color:var(--color-text-primary); margin:0 0 1.25rem; border-bottom:1px solid var(--color-border-subtle); padding-bottom:0.75rem;">
+          Hardware Components
+        </h2>
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">Processor (CPU)</span>
+            <strong style="color:var(--color-text-primary);">{cpu?.name || build.cpuId}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">Graphics Card (GPU)</span>
+            <strong style="color:var(--color-text-primary);">{gpu?.name || build.gpuId}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">Memory (RAM)</span>
+            <strong style="color:var(--color-text-primary);">{build.ram.capacity}GB {build.ram.type}-{build.ram.speed}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">Storage</span>
+            <strong style="color:var(--color-text-primary);">{build.storage?.[0]?.capacity || 1000}GB {build.storage?.[0]?.type || 'NVMe'}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">Cooling</span>
+            <strong style="color:var(--color-text-primary); text-transform:capitalize;">{build.cooling?.type || 'Air Cooler'}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem; border-top:1px solid var(--color-border-subtle); padding-top:0.75rem;">
+            <span style="color:var(--color-text-secondary);">Power Supply (PSU)</span>
+            <strong style="color:var(--color-accent-cyan);">{psu?.name || build.psuId}</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* Power Diagnostics */}
+      <div class="card card-dark" style="padding:1.5rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg);">
+        <h2 style="font-size:1.25rem; font-weight:700; color:var(--color-text-primary); margin:0 0 1.25rem; border-bottom:1px solid var(--color-border-subtle); padding-bottom:0.75rem;">
+          Power & Transient Diagnostics
+        </h2>
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:0.8125rem; color:var(--color-text-secondary);">Sustained System Draw</div>
+              <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--color-text-primary);">{baseDraw}W</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.8125rem; color:var(--color-text-secondary);">Sub-1ms Transient Peak</div>
+              <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--color-warning);">{transientPeak}W</div>
+            </div>
+          </div>
+
+          <div style="padding:1rem; background:var(--color-surface-raised); border-radius:var(--radius-md); border:1px solid var(--color-border-subtle);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span style="font-size:0.8125rem; font-weight:600; color:var(--color-text-secondary);">PSU Compatibility Rating</span>
+              <span class={`badge ${hasHeadroom ? 'badge-safe' : isSafe ? 'badge-warning' : 'badge-danger'}`} style="font-size:0.75rem;">
+                {hasHeadroom ? 'Optimal Sizing' : isSafe ? 'Marginal Sizing' : 'PSU Overload'}
+              </span>
+            </div>
+            <p style="font-size:0.8125rem; color:var(--color-text-secondary); line-height:1.5; margin:0;">
+              {hasHeadroom
+                ? `The selected ${psu?.wattage || 750}W PSU provides robust headroom above the ${transientPeak}W transient excursion ceiling.`
+                : isSafe
+                ? `The ${psu?.wattage || 750}W PSU satisfies continuous load but operates near transient trip protection limits.`
+                : `The power supply capacity is below recommended thresholds for this hardware tier.`}
+            </p>
+          </div>
+
+          <div style="display:flex; gap:1rem; margin-top:0.5rem;">
+            <a href={`/psu-calculator?cpu=${cpu?.id || ''}&gpu=${gpu?.id || ''}`} class="btn btn-primary" style="flex:1; text-align:center; text-decoration:none; padding:0.625rem; font-size:0.8125rem;">
+              Customize in Calculator →
+            </a>
+            <a href="/builds" class="btn btn-secondary" style="text-decoration:none; padding:0.625rem 1rem; font-size:0.8125rem;">
+              Back to Gallery
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>

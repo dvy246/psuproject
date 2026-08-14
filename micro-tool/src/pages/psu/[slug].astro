@@ -86,30 +86,16 @@ const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": psu.name,
+  "brand": {
+    "@type": "Brand",
+    "name": psu.brand
+  },
   "description": `Detailed specifications, GPU compatibility, TCO analytics, and comparison guide for the ${psu.name} (${psu.wattage}W, ${psu.efficiencyTier} efficiency, ATX ${psu.atxVersion}).`,
   "offers": {
     "@type": "Offer",
     "price": psu.price.toString(),
     "priceCurrency": "USD",
     "availability": "https://schema.org/InStock"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.7",
-    "reviewCount": "64"
-  },
-  "review": {
-    "@type": "Review",
-    "author": {
-      "@type": "Person",
-      "name": "VoltForge Expert"
-    },
-    "reviewRating": {
-      "@type": "Rating",
-      "ratingValue": "4.5",
-      "bestRating": "5"
-    },
-    "reviewBody": `Reliable power delivery, exceptional build quality, and strong efficiency characteristics. Recommended for modern high-performance GPU configurations.`
   }
 };
 

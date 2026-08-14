@@ -247,7 +247,8 @@ const faqSchema = {
 </Layout>
 
 <style>
-  .hover-cyan:hover { color: var(--color-accent-cyan) !important; transition: color 150ms ease; }
+  .hover-cyan { transition: color 150ms ease, text-decoration 150ms ease; }
+  .hover-cyan:hover { color: var(--text-primary) !important; text-decoration: underline !important; }
   details summary::-webkit-details-marker { display: none; }
   details[open] summary span { transform: rotate(45deg); display: inline-block; }
 </style>

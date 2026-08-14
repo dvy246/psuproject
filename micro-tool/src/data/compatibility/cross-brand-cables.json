@@ -1,6 +1,6 @@
 {
   "version": "2026-07-14",
-  "brands": ["Corsair", "Seasonic", "EVGA", "MSI", "be quiet!", "ASUS", "SilverStone", "Cooler Master", "Thermaltake", "Fractal Design"],
+  "brands": ["Corsair", "Seasonic", "EVGA", "MSI", "be quiet!", "ASUS", "SilverStone", "Cooler Master", "Thermaltake", "Fractal Design", "NZXT"],
   "rules": [
     { "brandA": "Corsair", "brandB": "Seasonic", "compatible": false, "danger": true, "details": "Corsair (Type 4) and Seasonic use completely different modular pinouts on the power supply side. Plugging a Seasonic cable into a Corsair PSU (or vice-versa) will short circuit your motherboard, GPU, or CPU." },
     { "brandA": "Corsair", "brandB": "EVGA", "compatible": false, "danger": true, "details": "EVGA and Corsair modular ports are pin-incompatible. Mixing cables will likely trigger over-current/short-circuit protection or cause permanent hardware damage." },

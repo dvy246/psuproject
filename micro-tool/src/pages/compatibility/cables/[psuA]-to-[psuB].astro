@@ -118,7 +118,7 @@ const pageDescription = `Check modular cable compatibility between the ${psuA.na
                 <td style="padding: 0.75rem; font-weight: 700;">{psuA.name}</td>
                 <td style="padding: 0.75rem;">{psuA.brand}</td>
                 <td style="padding: 0.75rem; font-family: var(--font-mono);">{sourceStandard.toUpperCase()}</td>
-                <td style="padding: 0.75rem; rowspan: 2; font-weight: 700; color: verdict === 'PASS' ? 'var(--color-safe)' : 'var(--color-danger)';">{verdict === 'PASS' ? '✅ Yes' : '❌ No'}</td>
+                <td rowspan={2} style={`padding: 0.75rem; font-weight: 700; color: ${verdict === 'PASS' ? 'var(--color-safe)' : 'var(--color-danger)'};`}>{verdict === 'PASS' ? '✅ Yes' : '❌ No'}</td>
               </tr>
               <tr style="border-bottom: 1px solid var(--border-subtle);">
                 <td style="padding: 0.75rem; font-weight: 700;">{psuB.name}</td>

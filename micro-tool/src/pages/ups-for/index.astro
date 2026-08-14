@@ -1,0 +1,182 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { UPS_PRODUCTS } from '../../lib/electrical';
+import gpuData from '../../data/index/gpus.index.json';
+import cpuData from '../../data/index/cpus.index.json';
+
+const targetGpuIds = [
+  "rtx-5090", "rtx-5080", "rtx-5070-ti", "rtx-5070",
+  "rtx-4090", "rtx-4080-super", "rtx-4070-super",
+  "rx-9070-xt", "rx-7900-xtx", "rtx-4080",
+  "rtx-4070-ti", "rx-7900-gre"
+];
+const targetCpuIds = [
+  "ryzen-7-9800x3d", "ryzen-9-9950x", "ryzen-7-7800x3d",
+  "core-ultra-9-285k", "core-i9-14900k", "core-i7-14700k",
+  "ryzen-5-7600", "core-i5-14600k"
+];
+
+const gpus = (gpuData.items as any[]).filter(g => targetGpuIds.includes(g.id));
+const cpus = (cpuData.items as any[]).filter(c => targetCpuIds.includes(c.id));
+
+const pageTitle = "UPS Battery Backup Sizer for Gaming PCs — PSUCheck";
+const pageDescription = "Calculate the ideal Uninterruptible Power Supply (UPS) capacity in VA and Watts for your gaming PC. Ensure safe emergency runtime during power outages.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "UPS Battery Backup Sizer",
+  "url": "https://psucheck.com/ups-for/",
+  "description": pageDescription,
+  "publisher": {
+    "@type": "Organization",
+    "name": "PSUCheck",
+    "url": "https://psucheck.com"
+  }
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schema}
+>
+  <section class="ups-hub-page" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">UPS Sizer</span>
+      </nav>
+
+      <header class="hub-header">
+        <div class="section-eyebrow">Electrical Safety & Protection</div>
+        <h1 id="hub-heading">
+          UPS Battery Backup <span class="gradient-text">Sizing Database</span>
+        </h1>
+        <p class="hub-intro">
+          Prevent sudden shutdowns, data corruption, and hardware shock. Select your GPU & CPU combination below to calculate recommended VA/Wattage sizing, minimum battery runtimes, and recommended pure sinewave backup units.
+        </p>
+      </header>
+
+      {/* === FEATURED UPS MODELS === */}
+      <section style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+          🔋 Recommended Pure Sine Wave UPS Units
+        </h2>
+        <div class="ups-product-grid">
+          {UPS_PRODUCTS.map(ups => (
+            <div class="card" key={ups.id} style="padding:1.25rem; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <span style="font-size:0.6875rem; font-weight:700; color:var(--text-tertiary); text-transform:uppercase;">{ups.brand}</span>
+                <h3 style="font-size:1.0625rem; font-weight:700; color:var(--text-primary); margin:0.2rem 0 0.5rem;">{ups.name}</h3>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:0.75rem;">
+                  <span class="spec-pill">{ups.vaRating} VA</span>
+                  <span class="spec-pill">{ups.wattageCapacity} Watts</span>
+                  <span class="spec-pill">{ups.topology}</span>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; border-top:1px solid var(--border-subtle); padding-top:0.75rem;">
+                <span style="font-size:1.15rem; font-weight:800; color:var(--color-accent-cyan); font-family:var(--font-mono);">${ups.priceUsd}</span>
+                <span style="font-size:0.75rem; color:var(--text-secondary);">{ups.outlets} Outlets</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* === GPU COMBOS === */}
+      <section style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+          ⚡ UPS Sizing by Hardware Configuration
+        </h2>
+        <div class="ups-link-grid">
+          {gpus.map(gpu => (
+            cpus.slice(0, 3).map(cpu => (
+              <a
+                href={`/ups-for/${gpu.id}-with-${cpu.id}/`}
+                class="ups-link-card card"
+                key={`${gpu.id}-${cpu.id}`}
+              >
+                <div>
+                  <span style="font-size:0.7rem; font-weight:700; color:var(--accent-primary); text-transform:uppercase;">UPS Sizer</span>
+                  <strong style="display:block; color:var(--text-primary); font-size:0.875rem; margin-top:2px;">
+                    {gpu.name} + {cpu.name}
+                  </strong>
+                </div>
+                <span style="color:var(--accent-primary); font-weight:700;">→</span>
+              </a>
+            ))
+          ))}
+        </div>
+      </section>
+
+      {/* === CALCULATOR LINK === */}
+      <section class="card" style="padding: 2rem; border-left: 4px solid var(--color-accent-cyan);">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin:0 0 0.5rem;">
+          ⚡ Need Custom Load & Runtime Calculation?
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 1rem;">
+          Calculate UPS battery runtime with monitor, peripherals, and networking gear using our interactive UPS battery sizer tool.
+        </p>
+        <a href="/compare/ups-calculator" class="btn btn-primary">Open Interactive UPS Calculator →</a>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.ups-hub-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.hub-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.hub-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  max-width: 75ch;
+}
+.ups-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+.spec-pill {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+.ups-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+.ups-link-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  text-decoration: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
+}
+.ups-link-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+</style>

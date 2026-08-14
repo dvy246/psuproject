@@ -4,7 +4,7 @@
     "name": "PSU Sizing Calculator",
     "type": "tool",
     "url": "/psu-calculator/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Calculate steady load & transient spikes"
   },
   {
@@ -12,7 +12,7 @@
     "name": "PC Builder & Cost Estimator",
     "type": "tool",
     "url": "/pc-builder/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Build a custom PC and estimate costs"
   },
   {
@@ -20,7 +20,7 @@
     "name": "PSU Upgrade Headroom Checker",
     "type": "tool",
     "url": "/psu-checker/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Check compatibility for GPU upgrades"
   },
   {
@@ -28,7 +28,7 @@
     "name": "PSU Replacement Calculator",
     "type": "tool",
     "url": "/psu-replacement-calculator/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Check if aging PSU can run new GPU"
   },
   {
@@ -36,7 +36,7 @@
     "name": "Circuit Breaker Auditor",
     "type": "tool",
     "url": "/compare/breaker-calculator/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Calculate breaker load limits for your PC"
   },
   {
@@ -44,7 +44,7 @@
     "name": "UPS Battery Sizer",
     "type": "tool",
     "url": "/compare/ups-calculator/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Size backup battery UPS runtime"
   },
   {
@@ -52,7 +52,7 @@
     "name": "GPU Upgrade Checker",
     "type": "tool",
     "url": "/compare/gpu-upgrade-checker/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Select from-to GPUs and verify PSU safety"
   },
   {
@@ -60,7 +60,7 @@
     "name": "Best PSU Recommendations",
     "type": "tool",
     "url": "/best-psu/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Premium, mid-range & budget PSU tier list"
   },
   {
@@ -68,7 +68,7 @@
     "name": "Reliability & Longevity Database",
     "type": "tool",
     "url": "/psu-reliability/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Real community failure rates by PSU model"
   },
   {
@@ -76,7 +76,7 @@
     "name": "PSU Fail Symptoms & Diagnostic Triage Wizard",
     "type": "tool",
     "url": "/diagnose/",
-    "brand": "VoltForge",
+    "brand": "PSUCheck",
     "subtitle": "Diagnose shutdowns, boot loops, coil whine, or BSODs"
   },
   {

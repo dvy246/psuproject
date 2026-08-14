@@ -13,7 +13,7 @@
  */
 
 import { execSync } from 'child_process';
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -26,8 +26,14 @@ const MIN_SAMPLE_SIZE = 30;
 async function main() {
   console.log('[sync-psu-counts] Reading PSU reliability data from D1...');
 
+  const wranglerPath = path.join(__dirname, '../wrangler.toml');
+  if (!existsSync(wranglerPath)) {
+    console.warn('[sync-psu-counts] ⚠ wrangler.toml not found — skipping D1 sync.');
+    return;
+  }
+
   // Check if database_id has been configured
-  const wranglerToml = readFileSync(path.join(__dirname, '../wrangler.toml'), 'utf8');
+  const wranglerToml = readFileSync(wranglerPath, 'utf8');
   if (wranglerToml.includes('PASTE_YOUR_DATABASE_ID_HERE')) {
     console.warn('[sync-psu-counts] ⚠ D1 database_id not configured in wrangler.toml — skipping sync.');
     console.warn('[sync-psu-counts]   Run `npx wrangler d1 create psu-reliability` then update wrangler.toml.');

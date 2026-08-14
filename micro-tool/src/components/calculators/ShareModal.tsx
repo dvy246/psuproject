@@ -83,7 +83,7 @@ export function ShareModal({
     md += `| | **Total Build Cost** | **$${totalCost}** |\n\n`;
 
     md += `### PSUCheck Sizing & Power Analysis\n`;
-    md += `- **Calculated Sustained Draw:** ${transientPeak}W peak spike / ${transientPeak}W headroom limits\n`;
+    md += `- **Calculated Transient Peak:** ${transientPeak}W sub-1ms excursion ceiling\n`;
     md += `- **Recommended PSU Wattage:** ${recommendedWattage}W\n`;
     md += `- **Cable Compliance Warning:** Verified via PSUCheck Cable-Melt Prevention Auditor.\n\n`;
     md += `*Configure your build at [PSUCheck.app PSU Sizing & Cost Calculator](${shareUrl})*`;

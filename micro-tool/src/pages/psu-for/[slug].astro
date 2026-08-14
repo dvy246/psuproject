@@ -102,7 +102,7 @@ const oracleLinks = oracleWattages.map(w => ({
 const replacementLinks = oracleWattages
   .filter(w => w >= gpu.minPsuWattage)
   .map(w => ({
-    href: `/psu-replacement/should-i-replace-my-${w}w-psu-for-${gpu.id}-age-5`,
+    href: `/psu-replacement/should-i-replace-my-${w}w-psu-for-${gpu.id}/`,
     label: `Should I replace my ${w}W PSU for ${gpu.name} (5yr old)?`,
   }));
 
