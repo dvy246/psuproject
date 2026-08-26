@@ -1,0 +1,72 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PsuReplacementCalc from '../../components/calculators/PsuReplacementCalc';
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+import psuData from '../../data/index/psus.index.json';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const cpus = cpuData.items;
+const gpus = gpuData.items;
+const psus = psuData.items;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `${t.nav.psuReplacement} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/psu-replacement-calculator`,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": t.seo.diagnoseDescription,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+---
+
+<Layout
+  title={t.seo.diagnoseTitle}
+  description={t.seo.diagnoseDescription}
+  schema={[schema]}
+>
+  <div class="psu-replacement-page container" style="padding-top: 2rem; padding-bottom: 5rem;">
+    {/* Breadcrumbs */}
+    <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1.5rem;">
+      <a href={l('/', lang)}>{t.nav.home}</a>
+      <span aria-hidden="true" style="margin:0 0.5rem; opacity:0.5;">›</span>
+      <span aria-current="page">{t.nav.psuReplacement}</span>
+    </nav>
+
+    <header style="margin-bottom:2.5rem;">
+      <div style="font-size:0.8125rem; font-weight:700; color:var(--color-accent-cyan); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">
+        {t.diagnostics.title}
+      </div>
+      <h1 style="font-size:clamp(2rem, 4vw, 2.75rem); font-weight:900; line-height:1.2; color:var(--text-primary);">
+        {t.nav.psuReplacement}
+      </h1>
+      <p style="font-size:1.05rem; color:var(--text-secondary); margin-top:0.75rem; max-width:70ch;">
+        {t.seo.diagnoseDescription}
+      </p>
+    </header>
+
+    {/* Interactive Tool Island */}
+    <PsuReplacementCalc client:load cpus={cpus} gpus={gpus} psus={psus} lang={lang} />
+  </div>
+</Layout>
+
+<style>
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+</style>

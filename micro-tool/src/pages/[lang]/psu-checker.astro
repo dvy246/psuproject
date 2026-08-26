@@ -1,0 +1,127 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { VirtualAssemblyDesk } from '../../components/calculators/VirtualAssemblyDesk';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const schema = {
+  "@type": "WebApplication",
+  "name": `${t.nav.psuChecker} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/psu-checker`,
+  "applicationCategory": "UtilitiesApplication",
+  "description": t.seo.psuCheckerDescription,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+---
+
+<Layout
+  title={t.seo.psuCheckerTitle}
+  description={t.seo.psuCheckerDescription}
+  schema={[schema]}
+>
+  <!-- Checker Hero -->
+  <section class="calc-hero" aria-labelledby="checker-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href={l('/', lang)}>{t.nav.home}</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{t.nav.psuChecker}</span>
+          </div>
+          <h1 id="checker-hero-heading" class="calc-h1">
+            {t.nav.psuChecker}
+          </h1>
+          <p class="calc-subtitle">
+            {t.hero.subtitle}
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Checker features">
+          <span class="badge badge-safe">⚡ Upgrade Headroom Check</span>
+          <span class="badge badge-safe">🔌 Cable Validation</span>
+          <span class="badge badge-safe">✕ Excursion Auditing</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology trust strip -->
+  <div class="methodology-strip" role="complementary" aria-label="Audit criteria">
+    <div class="container">
+      <div class="methodology-strip-inner">
+        <span class="method-label">Upgrade Audit Criteria:</span>
+        <span class="method-item">GPU Transient Multiplier (Cybenetics)</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">ATX standard safety bounds (2.x vs 3.1)</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">No Fabricated Tolerances</span>
+        <a href={l('/about#methodology', lang)} class="method-link">{t.footer.methodology} →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VIRTUAL ASSEMBLY DESK (Preact Island in PSU Mode) ===== -->
+  <VirtualAssemblyDesk client:load mode="psu" lang={lang} />
+</Layout>
+
+<style>
+.calc-hero {
+  padding: 4rem 0 2.5rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.calc-hero-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+.calc-h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.calc-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 60ch;
+  line-height: 1.65;
+  margin-top: 0.75rem;
+}
+.calc-hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.methodology-strip {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.625rem 0;
+}
+.methodology-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+.method-label { font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+.method-item { color: var(--text-secondary); }
+.method-sep { color: var(--border-default); }
+.method-link { color: var(--accent-primary); margin-left: auto; font-weight: 600; white-space: nowrap; }
+.method-link:hover { text-decoration: underline; }
+</style>

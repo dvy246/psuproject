@@ -1,115 +1,17 @@
 ---
-// PSUCheck — Base Layout
+// PSUCheck / VoltForge — Base Layout with Full i18n & Zero-Bug Localization
 // Shared across all MPA routes.
 // Dark/light theme via data-theme on <html>.
-// Every page: meta, OG, schema, skip link, header, footer.
+// Full parity hreflang, OpenGraph, dynamic schemas, accessible language switcher.
 
 import '../styles/tailwind.css';
 import '../styles/global.css';
 import '../styles/assembly-desk.css';
 import '../styles/blueprint.css';
 import SearchPalette from '../components/ui/SearchPalette';
-
-const breadcrumbNames: Record<string, string> = {
-  '/': 'Home',
-  '/build-plan': 'Build Blueprint',
-  '/psu-calculator': 'PSU Calculator',
-  '/pc-builder': 'PC Builder',
-  '/psu-checker': 'PSU Checker',
-  '/psu': 'PSU Database',
-  '/psu-for': 'PSU Finder',
-  '/oracle': 'PSU Oracle',
-  '/ups-for': 'UPS Sizer',
-  '/psu-replacement': 'PSU Replacement',
-  '/psu-reliability': 'PSU Reliability',
-  '/charger-for': 'USB-C Charger Sizer',
-  '/compare/desktop-vs-laptop': 'Desktop vs Laptop TCO',
-  '/compatibility': 'Compatibility Hub',
-  '/builds': 'Completed Builds',
-  '/guides': 'Guides',
-  '/power-consumption': 'Power Consumption Database',
-  '/diagnose': 'PSU Diagnostic Wizard',
-  '/about': 'About',
-  '/methodology': 'Methodology',
-  '/compare': 'Compare',
-  '/compare/psu': 'PSU Comparison',
-  '/compare/gpu': 'GPU Power Comparison',
-  '/compare/cpu': 'CPU Power Comparison',
-  '/compare/upgrade': 'Upgrade Simulator',
-  '/compare/ups-calculator': 'UPS Sizer',
-  '/compare/breaker-calculator': 'Circuit Breaker Planner',
-  '/contact': 'Contact',
-  '/privacy-policy': 'Privacy Policy',
-  '/terms': 'Terms & Conditions',
-  '/disclaimer': 'Disclaimer',
-  '/editorial-policy': 'Editorial Policy',
-};
-
-const guideNames: Record<string, string> = {
-  'psu-sizing-guide': 'PSU Sizing Guide',
-  'atx-3-1-guide': 'ATX 3.1 Guide',
-  'psu-efficiency-guide': '80+ Efficiency Guide',
-  'cybenetics-vs-80-plus': 'Cybenetics vs 80 PLUS',
-  'gpu-power-connectors': 'GPU Power Connectors',
-  'psu-cable-extensions': 'Cable Extensions Safety',
-  'single-vs-multi-rail': 'Single vs Multi Rail',
-  'ups-backup-power': 'UPS & Surge Protection',
-  'how-to-build-a-pc': 'How to Build a PC',
-  'budget-guide': 'PC Budget Guide',
-  'building-tips': 'PC Building Tips',
-  'pc-bottleneck-guide': 'PC Bottleneck Guide',
-  'overclocking-power-draw': 'Overclocking Power',
-  'aio-cooler-power-draw': 'AIO Cooler Power',
-  'pc-idle-power': 'PC Idle Power',
-  'how-to-test-a-psu': 'How to Test a PSU',
-  'psu-lifespan': 'PSU Lifespan & Aging',
-  'psu-coil-whine': 'PSU Coil Whine',
-  'quiet-psu-guide': 'Quiet PSU Guide',
-  'fanless-psu-guide': 'Fanless PSU Guide',
-  'psu-fan-direction': 'PSU Fan Direction',
-  'modular-vs-non-modular-psu': 'Modular vs Non-Modular',
-  'sfx-vs-atx-psu': 'SFX vs ATX Guide',
-  'sfx-l-psu-guide': 'SFX-L Clearance Guide',
-  'server-vs-desktop-psu': 'Server vs Desktop PSU',
-  'psu-cable-compatibility': 'Modular Cable Pinout Safety',
-  'power-glossary': 'PC Power Glossary',
-  'best-psu-for-gaming': 'Best PSU for Gaming 2026',
-  '750w-vs-850w-psu': '750W vs 850W PSU',
-  'oracle': 'PSU Oracle',
-};
-
-function formatSlug(seg: string): string {
-  const known = guideNames[seg];
-  if (known) return known;
-  return seg.replace(/-/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase())
-    .replace(/\bPsu\b/g, 'PSU')
-    .replace(/\bAtx\b/g, 'ATX')
-    .replace(/\bRtx\b/g, 'RTX')
-    .replace(/\bGpu\b/g, 'GPU')
-    .replace(/\bCpu\b/g, 'CPU')
-    .replace(/\bTco\b/g, 'TCO')
-    .replace(/\bSfx\b/g, 'SFX')
-    .replace(/\bPsu\b/g, 'PSU');
-}
-
-function buildBreadcrumbSchema(pathname: string) {
-  const segments = pathname.split('/').filter(Boolean);
-  const items = [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://psucheck.com/' }];
-  let accumulated = '';
-  for (const seg of segments) {
-    accumulated += '/' + seg;
-    const known = breadcrumbNames[accumulated];
-    const name = known || formatSlug(seg);
-    if (accumulated !== pathname) {
-      items.push({ '@type': 'ListItem', position: items.length + 1, name, item: 'https://psucheck.com' + accumulated + '/' });
-    } else {
-      items.push({ '@type': 'ListItem', position: items.length + 1, name });
-    }
-  }
-  if (items.length === 1) return null;
-  return { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items };
-}
+import VoltBotAssistant from '../components/chat/VoltBotAssistant';
+import LanguageSwitcher from '../components/ui/LanguageSwitcher';
+import { getLangFromUrl, l, getAlternateHreflangLinks, getDir, useTranslations, getCleanPath, type Locale } from '../i18n';
 
 export interface Props {
   title: string;
@@ -118,6 +20,7 @@ export interface Props {
   ogImage?: string;
   schema?: object | object[];
   noIndex?: boolean;
+  lang?: Locale;
 }
 
 const {
@@ -127,16 +30,77 @@ const {
   ogImage = '/pc-hero.png',
   schema,
   noIndex = false,
+  lang: propLang,
 } = Astro.props;
+
+const currentLang: Locale = propLang || getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang);
+const hreflangLinks = getAlternateHreflangLinks(Astro.url.pathname);
 
 const pathname = Astro.url.pathname;
 const normalizedPathname = pathname.endsWith('/') ? pathname : pathname + '/';
 const canonicalUrl = propCanonicalUrl || (Astro.url.origin + normalizedPathname);
 
-const siteTitle = title.includes('PSUCheck') ? title : `${title} | PSUCheck`;
+const siteTitle = title.includes('PSUCheck') || title.includes('VoltForge') ? title : `${title} | PSUCheck`;
+
+const breadcrumbNames: Record<string, string> = {
+  '/': t.nav.brand,
+  '/build-plan': t.nav.buildBlueprint,
+  '/psu-calculator': t.nav.psuCalculator,
+  '/pc-builder': t.nav.pcBuilder,
+  '/psu-checker': t.nav.psuChecker,
+  '/psu-replacement-calculator': t.nav.psuReplacement,
+  '/psu-for': t.nav.psuFinder,
+  '/compare/ups-calculator': t.nav.upsCalculator,
+  '/compare/breaker-calculator': t.nav.breakerCalculator,
+  '/charger-for': t.nav.usbCharger,
+  '/compare/desktop-vs-laptop': t.nav.desktopVsLaptop,
+  '/diagnose': t.nav.diagnosticWizard,
+  '/builds': t.nav.completedBuilds,
+  '/guides': t.nav.guides,
+  '/about': t.nav.aboutUs,
+  '/methodology': t.footer.methodology,
+  '/privacy-policy': t.footer.privacy,
+  '/terms': t.footer.terms,
+  '/disclaimer': t.footer.disclaimer,
+  '/editorial-policy': t.footer.editorialPolicy,
+  '/contact': t.footer.contact,
+};
+
+function formatSlug(seg: string): string {
+  return seg.replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/\bPsu\b/g, 'PSU')
+    .replace(/\bAtx\b/g, 'ATX')
+    .replace(/\bRtx\b/g, 'RTX')
+    .replace(/\bGpu\b/g, 'GPU')
+    .replace(/\bCpu\b/g, 'CPU')
+    .replace(/\bTco\b/g, 'TCO')
+    .replace(/\bSfx\b/g, 'SFX');
+}
+
+function buildBreadcrumbSchema(pathname: string, lang: Locale) {
+  const cleanPath = getCleanPath(pathname);
+  const segments = cleanPath.split('/').filter(Boolean);
+  const items = [{ '@type': 'ListItem', position: 1, name: 'Home', item: Astro.url.origin + l('/', lang) }];
+  let accumulated = '';
+  for (const seg of segments) {
+    accumulated += '/' + seg;
+    const known = breadcrumbNames[accumulated];
+    const name = known || formatSlug(seg);
+    const itemUrl = Astro.url.origin + l(accumulated, lang);
+    if (accumulated !== cleanPath) {
+      items.push({ '@type': 'ListItem', position: items.length + 1, name, item: itemUrl.endsWith('/') ? itemUrl : itemUrl + '/' });
+    } else {
+      items.push({ '@type': 'ListItem', position: items.length + 1, name });
+    }
+  }
+  if (items.length === 1) return null;
+  return { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items };
+}
 
 // Dynamic TechArticle injection for guide subpages
-const isGuidePage = Astro.url.pathname.startsWith('/guides/') && Astro.url.pathname !== '/guides' && Astro.url.pathname !== '/guides/';
+const isGuidePage = Astro.url.pathname.includes('/guides/') && !Astro.url.pathname.endsWith('/guides') && !Astro.url.pathname.endsWith('/guides/');
 const techArticleSchema = isGuidePage ? {
   "@type": "TechArticle",
   "headline": title,
@@ -144,6 +108,7 @@ const techArticleSchema = isGuidePage ? {
   "image": [Astro.url.origin + ogImage],
   "datePublished": "2026-01-15T08:00:00Z",
   "dateModified": "2026-07-13T08:00:00Z",
+  "inLanguage": currentLang,
   "author": {
     "@type": "Organization",
     "name": "PSUCheck Engineering Team",
@@ -182,7 +147,7 @@ const schemaStr = finalSchemas.length > 0
 ---
 
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang={currentLang} dir={getDir(currentLang)} data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <!-- Google tag (gtag.js) -->
@@ -197,24 +162,33 @@ const schemaStr = finalSchemas.length > 0
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5910777021067126" crossorigin="anonymous" is:inline></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="yandex-verification" content="6b305a222b45edbc" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-language" content={currentLang} />
   <title>{siteTitle}</title>
   <meta name="description" content={description} />
   {!noIndex && <link rel="canonical" href={canonicalUrl} />}
   {noIndex && <meta name="robots" content="noindex, nofollow" />}
+  
+  <!-- Bidirectional Alternate Hreflang Links -->
+  {hreflangLinks.map(link => (
+    <link rel="alternate" hreflang={link.lang} href={link.href} />
+  ))}
+
   <meta property="og:type" content="website" />
   <meta property="og:title" content={siteTitle} />
   <meta property="og:description" content={description} />
   {!noIndex && <meta property="og:url" content={canonicalUrl} />}
   <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
   <meta property="og:site_name" content="PSUCheck" />
+  <meta property="og:locale" content={currentLang} />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={siteTitle} />
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={new URL(ogImage, Astro.site).href} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- Design system fonts: Fira Code (monospace/display) + Fira Sans (body) -->
+  <!-- Design system fonts: Fira Code + Fira Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -231,7 +205,7 @@ const schemaStr = finalSchemas.length > 0
     })();
   </script>
   {schemaStr && <script type="application/ld+json" set:html={schemaStr} />}
-  {buildBreadcrumbSchema(Astro.url.pathname) && <script type="application/ld+json" set:html={JSON.stringify(buildBreadcrumbSchema(Astro.url.pathname))} />}
+  {buildBreadcrumbSchema(Astro.url.pathname, currentLang) && <script type="application/ld+json" set:html={JSON.stringify(buildBreadcrumbSchema(Astro.url.pathname, currentLang))} />}
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context":"https://schema.org","@type":"Organization",
     "name":"PSUCheck","url":"https://psucheck.com",
@@ -241,50 +215,52 @@ const schemaStr = finalSchemas.length > 0
   })} />
 </head>
 <body>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#main-content" class="skip-link">{t.nav.skipToContent}</a>
 
   <header class="site-header" role="banner">
     <div class="container">
       <nav class="nav-inner" role="navigation" aria-label="Main navigation">
-        <a href="/" class="nav-logo" aria-label="PSUCheck home">⚡ PSUCheck</a>
+        <a href={l('/', currentLang)} class="nav-logo" aria-label="PSUCheck home">{t.nav.brand}</a>
         <ul class="nav-links" id="nav-links">
           <li class="nav-dropdown-wrapper">
             <button class="nav-dropdown-trigger" id="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false" type="button">
-              Calculators &amp; Tools <span class="chevron" aria-hidden="true">▼</span>
+              {t.nav.calculatorsDropdown} <span class="chevron" aria-hidden="true">▼</span>
             </button>
             <ul class="nav-dropdown-menu" id="nav-dropdown-menu">
-              <li><a href="/build-plan">📋 Build Blueprint Generator</a></li>
-              <li><a href="/psu-calculator">⚡ PSU Sizing Calculator</a></li>
-              <li><a href="/psu-checker">🔍 PSU Upgrade Checker</a></li>
-              <li><a href="/psu-replacement-calculator">🔋 PSU Replacement &amp; Health</a></li>
-              <li><a href="/pc-builder">🛠️ PC Builder &amp; Cost</a></li>
-              <li><a href="/psu-for/rtx-5080">🎯 PSU Finder (Matchmaker)</a></li>
-              <li><a href="/compare/ups-calculator">🔋 UPS Battery Sizer</a></li>
-              <li><a href="/compare/breaker-calculator">🔌 Circuit Breaker Planner</a></li>
-              <li><a href="/charger-for">💻 USB-C Charger Sizer</a></li>
-              <li><a href="/compare/desktop-vs-laptop">📉 Desktop vs Laptop TCO</a></li>
+              <li><a href={l('/build-plan', currentLang)}>{t.nav.buildBlueprint}</a></li>
+              <li><a href={l('/psu-calculator', currentLang)}>{t.nav.psuCalculator}</a></li>
+              <li><a href={l('/psu-checker', currentLang)}>{t.nav.psuChecker}</a></li>
+              <li><a href={l('/psu-replacement-calculator', currentLang)}>{t.nav.psuReplacement}</a></li>
+              <li><a href={l('/pc-builder', currentLang)}>{t.nav.pcBuilder}</a></li>
+              <li><a href={l('/psu-for/rtx-5080', currentLang)}>{t.nav.psuFinder}</a></li>
+              <li><a href={l('/compare/ups-calculator', currentLang)}>{t.nav.upsCalculator}</a></li>
+              <li><a href={l('/compare/breaker-calculator', currentLang)}>{t.nav.breakerCalculator}</a></li>
+              <li><a href={l('/charger-for', currentLang)}>{t.nav.usbCharger}</a></li>
+              <li><a href={l('/compare/desktop-vs-laptop', currentLang)}>{t.nav.desktopVsLaptop}</a></li>
+              <li><a href={l('/diagnose', currentLang)}>{t.nav.diagnosticWizard}</a></li>
             </ul>
           </li>
-          <li><a href="/builds">Completed Builds</a></li>
-          <li><a href="/guides">Guides</a></li>
-          <li><a href="/about">About Us</a></li>
+          <li><a href={l('/builds', currentLang)}>{t.nav.completedBuilds}</a></li>
+          <li><a href={l('/guides', currentLang)}>{t.nav.guides}</a></li>
+          <li><a href={l('/about', currentLang)}>{t.nav.aboutUs}</a></li>
         </ul>
-        <div class="nav-right">
-          <button class="search-trigger-btn" id="search-trigger-btn" aria-label="Open search (Cmd+K)" type="button">
+        <div class="nav-right" style="display:flex; align-items:center; gap:8px;">
+          <LanguageSwitcher currentLang={currentLang} client:idle />
+          <button class="search-trigger-btn" id="search-trigger-btn" aria-label={t.nav.searchAria} type="button">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <span class="search-trigger-text">Search</span>
+            <span class="search-trigger-text">{t.nav.search}</span>
             <kbd class="search-trigger-kbd">⌘K</kbd>
           </button>
-          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode" type="button">
+          <button class="theme-toggle" id="theme-toggle" aria-label={t.nav.themeToggleAria} type="button">
             <span class="theme-slider-thumb">
               <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
               <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
             </span>
           </button>
-          <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-links" type="button">
+          <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label={t.nav.menuOpenAria} aria-expanded="false" aria-controls="nav-links" type="button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
         </div>
@@ -306,16 +282,16 @@ const schemaStr = finalSchemas.length > 0
   <section class="feedback-share-bar" aria-label="Page feedback and sharing">
     <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.5rem; padding:1.5rem 1rem; border-top:1px solid var(--color-border-subtle); border-bottom:1px solid var(--color-border-subtle); margin-top:3rem; margin-bottom:1rem;">
       <!-- Feedback Widget -->
-      <div id="feedback-widget" style="display:flex; align-items:center; gap:0.75rem;">
-        <span style="font-weight:700; font-size:0.875rem; color:var(--color-text-secondary);">Was this page helpful?</span>
-        <button id="feedback-btn-yes" class="btn btn-secondary btn-sm" style="min-height:32px; padding:4px 12px; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;" type="button">👍 Yes</button>
-        <button id="feedback-btn-no" class="btn btn-secondary btn-sm" style="min-height:32px; padding:4px 12px; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;" type="button">👎 No</button>
-        <span id="feedback-thanks" style="display:none; font-size:0.875rem; font-weight:700; color:var(--color-accent-cyan);">Thanks for your feedback!</span>
+      <div id="feedback-widget" style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+        <span style="font-weight:700; font-size:0.875rem; color:var(--color-text-secondary);">{t.feedback.helpfulQuestion}</span>
+        <button id="feedback-btn-yes" class="btn btn-secondary btn-sm" style="min-height:32px; padding:4px 12px; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;" type="button">{t.feedback.yesBtn}</button>
+        <button id="feedback-btn-no" class="btn btn-secondary btn-sm" style="min-height:32px; padding:4px 12px; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;" type="button">{t.feedback.noBtn}</button>
+        <span id="feedback-thanks" style="display:none; font-size:0.875rem; font-weight:700; color:var(--color-accent-cyan);">{t.feedback.thanks}</span>
       </div>
 
       <!-- Social Share Links -->
-      <div style="display:flex; align-items:center; gap:0.75rem;">
-        <span style="font-weight:700; font-size:0.875rem; color:var(--color-text-secondary);">Share:</span>
+      <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+        <span style="font-weight:700; font-size:0.875rem; color:var(--color-text-secondary);">{t.feedback.shareLabel}</span>
         <a href={`https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}`} target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="min-height:32px; padding:4px 12px; font-size:0.8rem; text-decoration:none;" aria-label="Share on X (Twitter)">X / Twitter</a>
         <a href={`https://www.reddit.com/submit?title=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}`} target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="min-height:32px; padding:4px 12px; font-size:0.8rem; text-decoration:none;" aria-label="Share on Reddit">Reddit</a>
         <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(Astro.url.href)}`} target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="min-height:32px; padding:4px 12px; font-size:0.8rem; text-decoration:none;" aria-label="Share on Facebook">Facebook</a>
@@ -360,77 +336,65 @@ const schemaStr = finalSchemas.length > 0
     <div class="container">
       <div class="footer-grid">
         <div class="footer-section">
-          <a href="/" class="nav-logo" style="display:inline-block;margin-bottom:0.75rem;">⚡ PSUCheck</a>
-          <p style="font-size:0.875rem;max-width:28ch;">Independent, unbiased PC power supply calculator and build cost estimator.</p>
-          <p style="font-size:0.75rem;margin-top:0.75rem;color:var(--text-tertiary);">Methodology sources: Cybenetics, TechPowerUp, Intel ARK, AMD official specs, 80 PLUS certification data.</p>
+          <a href={l('/', currentLang)} class="nav-logo" style="display:inline-block;margin-bottom:0.75rem;">{t.footer.aboutTitle}</a>
+          <p style="font-size:0.875rem;max-width:32ch;">{t.footer.aboutDesc}</p>
+          <p style="font-size:0.75rem;margin-top:0.75rem;color:var(--text-tertiary);">{t.footer.methodologyNote}</p>
+          <div style="margin-top:1.25rem;">
+            <LanguageSwitcher currentLang={currentLang} variant="footer" client:idle />
+          </div>
         </div>
         <div class="footer-section">
-          <h4>Calculators & Hubs</h4>
+          <h4>{t.footer.calculatorsCol}</h4>
           <ul>
-            <li><a href="/psu-calculator">PSU Calculator</a></li>
-            <li><a href="/psu-for/">PSU Finder Hub</a></li>
-            <li><a href="/oracle/">PSU Oracle Matrix</a></li>
-            <li><a href="/power-consumption/">Power Consumption Database</a></li>
-            <li><a href="/psu/">PSU Specs Database</a></li>
-            <li><a href="/psu-reliability/">PSU Reliability Database</a></li>
-            <li><a href="/best-psu">Best PSU Picks 2026</a></li>
-            <li><a href="/pc-builder">PC Builder & Cost</a></li>
-            <li><a href="/build-plan">Build Blueprint Generator</a></li>
-            <li><a href="/psu-checker">PSU Upgrade Checker</a></li>
-            <li><a href="/psu-replacement-calculator">PSU Replacement Calculator</a></li>
-            <li><a href="/psu-replacement/">PSU Replacement Matrix</a></li>
-            <li><a href="/compare">All Comparison Tools</a></li>
-            <li><a href="/compare/gpu-upgrade-checker">GPU Upgrade Checker</a></li>
-            <li><a href="/compatibility/">Compatibility Hub</a></li>
-            <li><a href="/compare/cable-compatibility">PSU Cable Sizer</a></li>
-            <li><a href="/compare/upgrade/">Upgrade Simulator</a></li>
-            <li><a href="/compare/psu">PSU Spec Comparison</a></li>
-            <li><a href="/compare/cpu">CPU Power Comparison</a></li>
-            <li><a href="/compare/gpu">GPU Power Comparison</a></li>
-            <li><a href="/ups-for/">UPS Sizer Hub</a></li>
-            <li><a href="/compare/ups-calculator">UPS Sizer Calculator</a></li>
-            <li><a href="/compare/breaker-calculator">Circuit Breaker Planner</a></li>
-            <li><a href="/charger-for/">USB-C Charger Sizer</a></li>
-            <li><a href="/compare/desktop-vs-laptop">Desktop vs Laptop TCO</a></li>
-            <li><a href="/methodology">Our Methodology</a></li>
-            <li><a href="/diagnose">PSU Diagnostic Wizard</a></li>
-          </ul>
-
-        </div>
-        <div class="footer-section">
-          <h4><a href="/guides" style="color:inherit;text-decoration:none;">Guides</a></h4>
-          <ul>
-            <li><a href="/guides/how-to-build-a-pc">How to Build a PC</a></li>
-            <li><a href="/guides/atx-3-1-guide">ATX 3.1 Guide</a></li>
-            <li><a href="/guides/psu-sizing-guide">PSU Sizing Guide</a></li>
-            <li><a href="/guides/psu-efficiency-guide">80+ Efficiency Guide</a></li>
-            <li><a href="/guides/budget-guide">PC Budget Guide</a></li>
-            <li><a href="/guides/building-tips">Building Tips</a></li>
+            <li><a href={l('/psu-calculator', currentLang)}>{t.nav.psuCalculator}</a></li>
+            <li><a href={l('/psu-for/', currentLang)}>{t.nav.psuFinder}</a></li>
+            <li><a href={l('/best-psu', currentLang)}>{t.bestPsu.title.split('—')[0]}</a></li>
+            <li><a href={l('/pc-builder', currentLang)}>{t.nav.pcBuilder}</a></li>
+            <li><a href={l('/build-plan', currentLang)}>{t.nav.buildBlueprint}</a></li>
+            <li><a href={l('/psu-checker', currentLang)}>{t.nav.psuChecker}</a></li>
+            <li><a href={l('/psu-replacement-calculator', currentLang)}>{t.nav.psuReplacement}</a></li>
+            <li><a href={l('/compare/ups-calculator', currentLang)}>{t.nav.upsCalculator}</a></li>
+            <li><a href={l('/compare/breaker-calculator', currentLang)}>{t.nav.breakerCalculator}</a></li>
+            <li><a href={l('/charger-for/', currentLang)}>{t.nav.usbCharger}</a></li>
+            <li><a href={l('/compare/desktop-vs-laptop', currentLang)}>{t.nav.desktopVsLaptop}</a></li>
+            <li><a href={l('/methodology', currentLang)}>{t.footer.methodology}</a></li>
+            <li><a href={l('/diagnose', currentLang)}>{t.nav.diagnosticWizard}</a></li>
           </ul>
         </div>
         <div class="footer-section">
-          <h4>Company</h4>
+          <h4><a href={l('/guides', currentLang)} style="color:inherit;text-decoration:none;">{t.footer.guidesCol}</a></h4>
           <ul>
-            <li><a href="/about">About Us</a></li>
-            <li><a href="/contact">Contact</a></li>
-            <li><a href="/privacy-policy">Privacy Policy</a></li>
-            <li><a href="/terms">Terms &amp; Conditions</a></li>
-            <li><a href="/disclaimer">Disclaimer</a></li>
-            <li><a href="/editorial-policy">Editorial Policy</a></li>
-            <li><a href="/methodology">Methodology</a></li>
+            <li><a href={l('/guides/how-to-build-a-pc', currentLang)}>How to Build a PC</a></li>
+            <li><a href={l('/guides/atx-3-1-guide', currentLang)}>ATX 3.1 Guide</a></li>
+            <li><a href={l('/guides/psu-sizing-guide', currentLang)}>PSU Sizing Guide</a></li>
+            <li><a href={l('/guides/psu-efficiency-guide', currentLang)}>80+ Efficiency Guide</a></li>
+            <li><a href={l('/guides/budget-guide', currentLang)}>PC Budget Guide</a></li>
+            <li><a href={l('/guides/building-tips', currentLang)}>Building Tips</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>{t.footer.companyCol}</h4>
+          <ul>
+            <li><a href={l('/about', currentLang)}>{t.footer.contact ? t.nav.aboutUs : 'About Us'}</a></li>
+            <li><a href={l('/contact', currentLang)}>{t.footer.contact}</a></li>
+            <li><a href={l('/privacy-policy', currentLang)}>{t.footer.privacy}</a></li>
+            <li><a href={l('/terms', currentLang)}>{t.footer.terms}</a></li>
+            <li><a href={l('/disclaimer', currentLang)}>{t.footer.disclaimer}</a></li>
+            <li><a href={l('/editorial-policy', currentLang)}>{t.footer.editorialPolicy}</a></li>
+            <li><a href={l('/methodology', currentLang)}>{t.footer.methodology}</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
         <div>
-          <p>&copy; {new Date().getFullYear()} PSUCheck. All rights reserved.</p>
-          <p style="margin-top:0.25rem;">PSUCheck participates in the Amazon Associates and Newegg affiliate programs. We may earn a commission when you click affiliate links at no extra cost to you.</p>
+          <p>&copy; {new Date().getFullYear()} {t.footer.aboutTitle}. {t.footer.copyright}</p>
+          <p style="margin-top:0.25rem;">{t.footer.affiliateDisclosure}</p>
         </div>
         <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
-          <a href="/privacy-policy" style="color:var(--text-tertiary);font-size:0.75rem;">Privacy</a>
-          <a href="/terms" style="color:var(--text-tertiary);font-size:0.75rem;">Terms</a>
-          <a href="/disclaimer" style="color:var(--text-tertiary);font-size:0.75rem;">Disclaimer</a>
-          <a href="/contact" style="color:var(--text-tertiary);font-size:0.75rem;">Contact</a>
+          <a href={l('/privacy-policy', currentLang)} style="color:var(--text-tertiary);font-size:0.75rem;">{t.footer.privacy}</a>
+          <a href={l('/terms', currentLang)} style="color:var(--text-tertiary);font-size:0.75rem;">{t.footer.terms}</a>
+          <a href={l('/disclaimer', currentLang)} style="color:var(--text-tertiary);font-size:0.75rem;">{t.footer.disclaimer}</a>
+          <a href={l('/contact', currentLang)} style="color:var(--text-tertiary);font-size:0.75rem;">{t.footer.contact}</a>
         </div>
       </div>
     </div>
@@ -449,19 +413,20 @@ const schemaStr = finalSchemas.length > 0
       }
     }
     applyTheme(html.getAttribute('data-theme') || 'dark');
-    toggle.addEventListener('click', () => {
+    toggle?.addEventListener('click', () => {
       applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     });
+
     const mobileToggle = document.getElementById('nav-mobile-toggle');
     const navLinks = document.getElementById('nav-links');
-    mobileToggle.addEventListener('click', () => {
+    mobileToggle?.addEventListener('click', () => {
       const isOpen = navLinks.classList.toggle('open');
       mobileToggle.setAttribute('aria-expanded', String(isOpen));
-      mobileToggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
     });
+
     const dropdownTrigger = document.getElementById('nav-dropdown-trigger');
     const dropdownMenu = document.getElementById('nav-dropdown-menu');
-    dropdownTrigger.addEventListener('click', (e) => {
+    dropdownTrigger?.addEventListener('click', (e) => {
       const isExpanded = dropdownTrigger.getAttribute('aria-expanded') === 'true';
       dropdownTrigger.setAttribute('aria-expanded', String(!isExpanded));
       dropdownMenu.classList.toggle('show');
@@ -469,11 +434,11 @@ const schemaStr = finalSchemas.length > 0
     });
 
     document.addEventListener('click', (e) => {
-      if (!mobileToggle.contains(e.target) && !navLinks.contains(e.target)) {
+      if (mobileToggle && navLinks && !mobileToggle.contains(e.target) && !navLinks.contains(e.target)) {
         navLinks.classList.remove('open');
         mobileToggle.setAttribute('aria-expanded', 'false');
       }
-      if (dropdownTrigger && !dropdownTrigger.contains(e.target)) {
+      if (dropdownTrigger && dropdownMenu && !dropdownTrigger.contains(e.target)) {
         dropdownTrigger.setAttribute('aria-expanded', 'false');
         dropdownMenu.classList.remove('show');
       }
@@ -485,43 +450,20 @@ const schemaStr = finalSchemas.length > 0
       const links = document.querySelectorAll('.nav-links a');
       links.forEach(link => {
         const linkPath = new URL(link.href).pathname;
-        if (currentPath === linkPath || (linkPath !== '/' && currentPath.startsWith(linkPath))) {
+        if (currentPath === linkPath || (linkPath !== '/' && linkPath !== '/de' && linkPath !== '/es' && linkPath !== '/fr' && linkPath !== '/ja' && linkPath !== '/zh' && currentPath.startsWith(linkPath))) {
           link.classList.add('active');
           link.setAttribute('aria-current', 'page');
         }
       });
 
-      const dropdownTrigger = document.getElementById('nav-dropdown-trigger');
-      const dropdownMenu = document.getElementById('nav-dropdown-menu');
       if (dropdownMenu && dropdownMenu.querySelector('a.active')) {
-        dropdownTrigger.classList.add('active');
+        dropdownTrigger?.classList.add('active');
       }
     } catch (err) {
       console.warn('Active nav state calculation failed', err);
     }
-
-    // E-E-A-T Methodology Link Injection for Guides
-    try {
-      if (window.location.pathname.startsWith('/guides/')) {
-        const guideMeta = document.querySelector('.guide-meta');
-        if (guideMeta) {
-          if (!guideMeta.textContent.includes('Methodology')) {
-            const methodSpan = document.createElement('span');
-            methodSpan.innerHTML = '⚡ <strong><a href="/about" style="color:inherit;text-decoration:underline;">Verified Sizing Methodology</a></strong>';
-            const badge = guideMeta.querySelector('.badge');
-            if (badge && badge.nextSibling) {
-              guideMeta.insertBefore(methodSpan, badge.nextSibling);
-              guideMeta.insertBefore(document.createTextNode(' · '), methodSpan);
-            } else {
-              guideMeta.appendChild(methodSpan);
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('EEAT methodology injection failed', err);
-    }
   </script>
-  <SearchPalette client:idle />
+  <SearchPalette currentLang={currentLang} client:idle />
+  <VoltBotAssistant currentLang={currentLang} client:idle />
 </body>
 </html>

@@ -1,0 +1,169 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import TableOfContents from '../../../components/ui/TableOfContents';
+import MethodologyCard from '../../../components/ui/MethodologyCard.astro';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+import { getLocalizedGuides } from '../../../i18n/guides';
+import { getLocalizedGuideArticle, GUIDE_UI_LABELS } from '../../../i18n/guideArticles';
+
+const guideModules = import.meta.glob<{ default: any }>('../../guides/*.astro', { eager: true });
+
+export async function getStaticPaths() {
+  const modules = import.meta.glob<{ default: any }>('../../guides/*.astro', { eager: true });
+  const slugs = Object.keys(modules)
+    .map(path => {
+      const match = path.match(/([^\/]+)\.astro$/);
+      return match ? match[1] : '';
+    })
+    .filter(slug => slug && slug !== 'index');
+
+  const paths = [];
+  for (const lang of TARGET_LOCALES) {
+    for (const slug of slugs) {
+      paths.push({
+        params: { lang, slug },
+        props: { slug }
+      });
+    }
+  }
+  return paths;
+}
+
+const { lang, slug } = Astro.params as { lang: Locale; slug: string };
+const t = useTranslations(lang);
+const ui = GUIDE_UI_LABELS[lang] || GUIDE_UI_LABELS.en;
+const hubData = getLocalizedGuides(lang);
+
+// Find matching link in hub data for fallback title & desc
+let matchedLink = null;
+for (const cat of hubData.categories) {
+  const found = cat.links.find(link => link.href.endsWith(`/${slug}`));
+  if (found) {
+    matchedLink = found;
+    break;
+  }
+}
+
+const articleData = getLocalizedGuideArticle(slug, lang);
+
+const pageTitle = articleData?.title || (matchedLink ? `${matchedLink.name} — PSUCheck` : `Guide — PSUCheck`);
+const pageDesc = articleData?.description || matchedLink?.desc || hubData.pageSubtitle;
+
+const targetPath = `../../guides/${slug}.astro`;
+const guideMod = guideModules[targetPath];
+const FallbackComponent = guideMod ? guideMod.default : null;
+
+const faqSchema = articleData?.faqs ? {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": articleData.faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": f.answer
+    }
+  }))
+} : undefined;
+---
+
+{articleData ? (
+  <Layout
+    title={pageTitle}
+    description={pageDesc}
+    schema={faqSchema}
+    lang={lang}
+  >
+    <article class="guide-article">
+      <div class="container">
+        <nav class="guide-breadcrumb" aria-label="Breadcrumb">
+          <a href={l('/', lang)}>{t.nav.home}</a>
+          <span aria-hidden="true" style="opacity: 0.5;">›</span>
+          <a href={l('/guides/', lang)}>{t.nav.guides}</a>
+          <span aria-hidden="true" style="opacity: 0.5;">›</span>
+          <span aria-current="page" style="color: var(--text-primary); font-weight: 600;">{articleData.title}</span>
+        </nav>
+
+        <header class="guide-header">
+          <div class="guide-meta">
+            <a href={l('/methodology', lang)} class="badge badge-safe">
+              {ui.methodologyVerified}
+            </a>
+            <span>{ui.updatedPrefix} {articleData.updatedDate}</span>
+            <span style="opacity: 0.5;">•</span>
+            <span class="reading-time-badge">{articleData.readTime}</span>
+          </div>
+          <h1>{articleData.title}</h1>
+        </header>
+
+        <div class="guide-layout">
+          <main class="guide-content" id="main-content">
+            <div class="adsense-placeholder" style="margin: 1.5rem 0; padding: 1rem; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; border-radius: 4px;">
+              ADVERTISEMENT — RECOMMENDED SPONSOR
+            </div>
+
+            {articleData.sections.map(sec => (
+              <section key={sec.id} style="margin-bottom: 2rem;">
+                <h2 id={sec.id}>{sec.title}</h2>
+                {sec.paragraphs.map((p, idx) => (
+                  <p key={idx}>{p}</p>
+                ))}
+              </section>
+            ))}
+
+            {articleData.faqs.length > 0 && (
+              <section style="margin-top: 3rem;">
+                <h2 id="faq">{ui.faqHeading}</h2>
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                  {articleData.faqs.map((faq, idx) => (
+                    <div key={idx} style="padding: 1.25rem; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
+                      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 0; margin-bottom: 0.5rem;">{faq.question}</h3>
+                      <p style="margin: 0; color: var(--text-secondary); line-height: 1.6;">{faq.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <div class="related-guides" style="margin-top: 3rem; padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-subtle);">
+              <h3 style="margin-top: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">{ui.relatedToolsHeading}</h3>
+              <ul style="margin: 0.75rem 0 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li>
+                  <a href={l('/build-plan', lang)} style="color: var(--accent-primary); font-weight: 600;">
+                    {t.nav.buildBlueprint}
+                  </a> — {t.calculators.calcTitle}
+                </li>
+                <li>
+                  <a href={l('/psu-calculator', lang)} style="color: var(--accent-primary); font-weight: 600;">
+                    {t.nav.psuCalculator}
+                  </a> — {t.calculators.calcSubtitle}
+                </li>
+              </ul>
+            </div>
+          </main>
+
+          <aside class="guide-sidebar">
+            <TableOfContents client:load />
+            <MethodologyCard />
+          </aside>
+        </div>
+      </div>
+    </article>
+  </Layout>
+) : (
+  FallbackComponent && <FallbackComponent />
+)}
+
+<style>
+  .guide-layout { display: grid; grid-template-columns: 1fr; gap: 2.5rem; }
+  @media (min-width: 992px) {
+    .guide-layout { grid-template-columns: 3fr 1fr; }
+  }
+  .guide-content { font-size: 1.05rem; line-height: 1.7; color: var(--color-text-secondary); }
+  .guide-content h2 { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
+  .guide-content h3 { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  .guide-content p { margin-bottom: 1.5rem; }
+  .guide-content ul { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+  .guide-content li { margin-bottom: 0.5rem; }
+  .guide-sidebar { display: flex; flex-direction: column; gap: 2rem; }
+</style>

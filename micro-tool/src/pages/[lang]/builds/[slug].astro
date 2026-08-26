@@ -1,0 +1,350 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import buildsData from '../../../data/builds.json';
+import cpuData from '../../../data/index/cpus.index.json';
+import gpuData from '../../../data/index/gpus.index.json';
+import psuData from '../../../data/index/psus.index.json';
+import { calculateBaseDraw, calculateTransientPeak, calculateRecommendedWattage } from '../../../lib/psu';
+import { TARGET_LOCALES, useTranslations, l, formatCurrency, type Locale } from '../../../i18n';
+import { getLocalizedBuild } from '../../../i18n/builds';
+
+export async function getStaticPaths() {
+  const builds = buildsData.items;
+  const paths = [];
+  for (const lang of TARGET_LOCALES) {
+    for (const b of builds) {
+      paths.push({
+        params: { lang, slug: b.slug },
+        props: { build: b }
+      });
+    }
+  }
+  return paths;
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+const { build } = Astro.props;
+
+const loc = getLocalizedBuild(build, lang);
+
+const cpu = cpuData.items.find(c => c.id === build.cpuId) || null;
+const gpu = gpuData.items.find(g => g.id === build.gpuId) || null;
+const psu = psuData.items.find(p => p.id === build.psuId) || null;
+
+const baseDraw = calculateBaseDraw({
+  cpu: cpu as any,
+  gpu: gpu as any,
+  ram: build.ram as any,
+  storage: (build.storage || []) as any,
+  cooling: (build.cooling || null) as any,
+  fans: build.fans || 3,
+});
+
+const transientPeak = calculateTransientPeak(cpu as any, gpu as any, baseDraw);
+const recommendedWattage = calculateRecommendedWattage(
+  transientPeak,
+  psu?.atxVersion || '3.1',
+  0.25,
+  0
+);
+
+const isSafe = psu ? psu.wattage >= baseDraw : false;
+const hasHeadroom = psu ? psu.wattage >= recommendedWattage : false;
+
+const uiLabels: Record<Locale, {
+  createdBy: string;
+  totalBuildCost: string;
+  hardwareComponents: string;
+  processor: string;
+  graphicsCard: string;
+  memory: string;
+  storage: string;
+  cooling: string;
+  powerSupply: string;
+  powerDiagnostics: string;
+  sustainedDraw: string;
+  transientPeak: string;
+  compatibilityRating: string;
+  optimal: string;
+  marginal: string;
+  overload: string;
+  optimalDesc: (w: number, peak: number) => string;
+  marginalDesc: (w: number) => string;
+  overloadDesc: string;
+  customizeCta: string;
+  backToGallery: string;
+}> = {
+  en: {
+    createdBy: 'Created by',
+    totalBuildCost: 'Total Build Cost',
+    hardwareComponents: 'Hardware Components',
+    processor: 'Processor (CPU)',
+    graphicsCard: 'Graphics Card (GPU)',
+    memory: 'Memory (RAM)',
+    storage: 'Storage',
+    cooling: 'Cooling',
+    powerSupply: 'Power Supply (PSU)',
+    powerDiagnostics: 'Power & Transient Diagnostics',
+    sustainedDraw: 'Sustained System Draw',
+    transientPeak: 'Sub-1ms Transient Peak',
+    compatibilityRating: 'PSU Compatibility Rating',
+    optimal: 'Optimal Sizing',
+    marginal: 'Marginal Sizing',
+    overload: 'PSU Overload Risk',
+    optimalDesc: (w, peak) => `The selected ${w}W PSU provides robust headroom above the ${peak}W transient excursion ceiling.`,
+    marginalDesc: (w) => `The ${w}W PSU satisfies continuous load but operates near transient trip protection limits.`,
+    overloadDesc: 'The power supply capacity is below recommended thresholds for this hardware tier.',
+    customizeCta: 'Customize in Calculator →',
+    backToGallery: 'Back to Gallery'
+  },
+  de: {
+    createdBy: 'Erstellt von',
+    totalBuildCost: 'Gesamtkosten',
+    hardwareComponents: 'Hardware-Komponenten',
+    processor: 'Prozessor (CPU)',
+    graphicsCard: 'Grafikkarte (GPU)',
+    memory: 'Arbeitsspeicher (RAM)',
+    storage: 'Speicher (SSD)',
+    cooling: 'Kühlung',
+    powerSupply: 'Netzteil (PSU)',
+    powerDiagnostics: 'Leistungs- & Lastspitzen-Diagnose',
+    sustainedDraw: 'Dauerhafte Leistungsaufnahme',
+    transientPeak: 'Sub-1ms Lastspitze',
+    compatibilityRating: 'Netzteil-Kompatibilitätsbewertung',
+    optimal: 'Optimale Dimensionierung',
+    marginal: 'Grenzbereich',
+    overload: 'Überlastungsrisiko',
+    optimalDesc: (w, peak) => `Das gewählte ${w}W Netzteil bietet reichlich Sicherheitsreserven über der ${peak}W Lastspitze.`,
+    marginalDesc: (w) => `Das ${w}W Netzteil deckt Dauerlast ab, arbeitet aber nahe an den Schutzabschaltungs-Grenzen.`,
+    overloadDesc: 'Die Netzteilkapazität liegt unter den empfohlenen Grenzwerten für diese Hardware.',
+    customizeCta: 'Im Rechner anpassen →',
+    backToGallery: 'Zurück zur Übersicht'
+  },
+  es: {
+    createdBy: 'Creado por',
+    totalBuildCost: 'Coste Total Estimado',
+    hardwareComponents: 'Componentes de Hardware',
+    processor: 'Procesador (CPU)',
+    graphicsCard: 'Tarjeta Gráfica (GPU)',
+    memory: 'Memoria (RAM)',
+    storage: 'Almacenamiento (SSD)',
+    cooling: 'Refrigeración',
+    powerSupply: 'Fuente de Alimentación (PSU)',
+    powerDiagnostics: 'Diagnóstico de Consumo y Transitorios',
+    sustainedDraw: 'Consumo Continuo del Sistema',
+    transientPeak: 'Pico Transitorio (<1ms)',
+    compatibilityRating: 'Evaluación de Compatibilidad PSU',
+    optimal: 'Dimensionamiento Óptimo',
+    marginal: 'Margen Ajustado',
+    overload: 'Riesgo de Sobrecarga',
+    optimalDesc: (w, peak) => `La fuente seleccionada de ${w}W ofrece un margen de seguridad robusto frente a picos de ${peak}W.`,
+    marginalDesc: (w) => `La fuente de ${w}W cubre la carga continua pero opera cerca del límite de protección OCP.`,
+    overloadDesc: 'La capacidad de la fuente está por debajo de los umbrales recomendados para este hardware.',
+    customizeCta: 'Personalizar en la Calculadora →',
+    backToGallery: 'Volver a la Galería'
+  },
+  fr: {
+    createdBy: 'Créé par',
+    totalBuildCost: 'Coût Total Estimé',
+    hardwareComponents: 'Composants Matériels',
+    processor: 'Processeur (CPU)',
+    graphicsCard: 'Carte Graphique (GPU)',
+    memory: 'Mémoire Vive (RAM)',
+    storage: 'Stockage (SSD)',
+    cooling: 'Refroidissement',
+    powerSupply: 'Alimentation (PSU)',
+    powerDiagnostics: 'Diagnostic Électrique & Transitoires',
+    sustainedDraw: 'Consommation Continue',
+    transientPeak: 'Pic Transitoire (<1ms)',
+    compatibilityRating: 'Niveau de Compatibilité PSU',
+    optimal: 'Dimensionnement Optimal',
+    marginal: 'Marge Étroite',
+    overload: 'Risque de Surcharge',
+    optimalDesc: (w, peak) => `L'alimentation choisie de ${w}W offre une marge solide au-dessus du pic transitoire de ${peak}W.`,
+    marginalDesc: (w) => `L'alimentation de ${w}W gère la charge continue mais opère près des seuils de protection OCP.`,
+    overloadDesc: 'La puissance de l\'alimentation est inférieure aux seuils recommandés pour ce matériel.',
+    customizeCta: 'Personnaliser dans le Calculateur →',
+    backToGallery: 'Retour à la Galerie'
+  },
+  ja: {
+    createdBy: '作成者',
+    totalBuildCost: '構成合計金額',
+    hardwareComponents: '搭載パーツ構成',
+    processor: 'プロセッサ (CPU)',
+    graphicsCard: 'グラフィックボード (GPU)',
+    memory: 'メモリ (RAM)',
+    storage: 'ストレージ (SSD)',
+    cooling: '冷却クーラー',
+    powerSupply: '電源ユニット (PSU)',
+    powerDiagnostics: '消費電力・過渡スパイク診断',
+    sustainedDraw: 'システム定常消費電力',
+    transientPeak: '瞬時スパイク電力 (<1ms)',
+    compatibilityRating: '電源適合性判定',
+    optimal: '最適な容量設計',
+    marginal: '許容範囲（余裕少）',
+    overload: '容量不足・過負荷リスク',
+    optimalDesc: (w, peak) => `選択された${w}W電源は、${peak}Wの瞬時スパイク電力に対しても十分な安全マージンを確保しています。`,
+    marginalDesc: (w) => `${w}W電源は定常負荷に対応できますが、スパイク保護機能（OCP）の動作上限付近で動作します。`,
+    overloadDesc: 'この構成に対して電源容量が不足しており、高負荷時にシャットダウンする恐れがあります。',
+    customizeCta: '計算機でカスタマイズ →',
+    backToGallery: '構成一覧に戻る'
+  },
+  zh: {
+    createdBy: '创建者',
+    totalBuildCost: '整机预估预算',
+    hardwareComponents: '核心硬件配置清单',
+    processor: '处理器 (CPU)',
+    graphicsCard: '独立显卡 (GPU)',
+    memory: '运行内存 (RAM)',
+    storage: '高速固态 (SSD)',
+    cooling: '散热系统',
+    powerSupply: '电源适配 (PSU)',
+    powerDiagnostics: '功耗与瞬态尖峰诊断',
+    sustainedDraw: '持续满载运行功耗',
+    transientPeak: '亚毫秒级瞬态峰值',
+    compatibilityRating: '电源兼容性评级',
+    optimal: '黄金冗余配置',
+    marginal: '临界紧凑配置',
+    overload: '存在过载断电风险',
+    optimalDesc: (w, peak) => `所选的 ${w}W 电源在 ${peak}W 瞬态峰值冲击下仍具备充裕的安全余量。`,
+    marginalDesc: (w) => `${w}W 电源可满足日常持续运行，但在极端重载时接近过流保护(OCP)触发阈值。`,
+    overloadDesc: '所选电源额定功率低于推荐安全标准，高负载可能触发断电保护。',
+    customizeCta: '在计算器中自定配置 →',
+    backToGallery: '返回装机蓝图列表'
+  }
+};
+
+const labels = uiLabels[lang] || uiLabels.en;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": `${loc.name} — PSUCheck`,
+  "description": loc.description,
+  "url": `https://psucheck.com/${lang}/builds/${build.slug}/`,
+  "author": {
+    "@type": "Organization",
+    "name": "PSUCheck Editorial Team"
+  }
+};
+---
+
+<Layout
+  title={`${loc.name} — PSUCheck`}
+  description={loc.description}
+  schema={schema}
+>
+  <div class="calc-header" style="background:linear-gradient(180deg, var(--color-surface-sunken) 0%, var(--color-surface-base) 100%); border-bottom:1px solid var(--color-border-subtle); padding: 3rem 0 2rem;">
+    <div class="container" style="max-width:1100px; margin:0 auto; padding:0 1.5rem;">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1rem; font-size:0.8125rem; color:var(--color-text-tertiary);">
+        <a href={l('/', lang)} style="color:var(--color-text-secondary); text-decoration:none;">{t.nav.home}</a>
+        <span aria-hidden="true" style="margin:0 0.5rem;">›</span>
+        <a href={l('/builds', lang)} style="color:var(--color-text-secondary); text-decoration:none;">{t.nav.completedBuilds}</a>
+        <span aria-hidden="true" style="margin:0 0.5rem;">›</span>
+        <span style="color:var(--color-text-primary);">{loc.name}</span>
+      </nav>
+
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+        <div style="flex:1; min-width:280px;">
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+            <span class="badge badge-safe" style="text-transform:uppercase; font-size:0.75rem;">{loc.category}</span>
+            <span style="font-size:0.8125rem; color:var(--color-text-tertiary);">{labels.createdBy} @{build.creator}</span>
+          </div>
+          <h1 style="font-size:2rem; font-weight:800; color:var(--color-text-primary); margin:0 0 0.75rem; line-height:1.2;">
+            {loc.name}
+          </h1>
+          <p style="font-size:0.95rem; color:var(--color-text-secondary); max-width:750px; line-height:1.6; margin:0;">
+            {loc.description}
+          </p>
+        </div>
+
+        <div style="background:var(--color-surface-raised); border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); padding:1.25rem 1.5rem; text-align:right;">
+          <div style="font-size:0.75rem; color:var(--color-text-tertiary); text-transform:uppercase;">{labels.totalBuildCost}</div>
+          <div style="font-size:2rem; font-weight:850; font-family:var(--font-mono); color:var(--color-accent-cyan);">{formatCurrency(build.price || build.totalCost || 0, lang)}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="max-width:1100px; margin:2.5rem auto 5rem; padding:0 1.5rem;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:2rem;">
+      {/* Component Breakdown */}
+      <div class="card card-dark" style="padding:1.5rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg);">
+        <h2 style="font-size:1.25rem; font-weight:700; color:var(--color-text-primary); margin:0 0 1.25rem; border-bottom:1px solid var(--color-border-subtle); padding-bottom:0.75rem;">
+          {labels.hardwareComponents}
+        </h2>
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">{labels.processor}</span>
+            <strong style="color:var(--color-text-primary);">{cpu?.name || build.cpuId}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">{labels.graphicsCard}</span>
+            <strong style="color:var(--color-text-primary);">{gpu?.name || build.gpuId}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">{labels.memory}</span>
+            <strong style="color:var(--color-text-primary);">{build.ram.capacity}GB {build.ram.type}-{build.ram.speed}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">{labels.storage}</span>
+            <strong style="color:var(--color-text-primary);">{build.storage?.[0]?.capacity || 1000}GB {build.storage?.[0]?.type || 'NVMe'}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem;">
+            <span style="color:var(--color-text-secondary);">{labels.cooling}</span>
+            <strong style="color:var(--color-text-primary); text-transform:capitalize;">{build.cooling?.type || 'Air Cooler'}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.875rem; border-top:1px solid var(--color-border-subtle); padding-top:0.75rem;">
+            <span style="color:var(--color-text-secondary);">{labels.powerSupply}</span>
+            <strong style="color:var(--color-accent-cyan);">{psu?.name || build.psuId}</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* Power Diagnostics */}
+      <div class="card card-dark" style="padding:1.5rem; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg);">
+        <h2 style="font-size:1.25rem; font-weight:700; color:var(--color-text-primary); margin:0 0 1.25rem; border-bottom:1px solid var(--color-border-subtle); padding-bottom:0.75rem;">
+          {labels.powerDiagnostics}
+        </h2>
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:0.8125rem; color:var(--color-text-secondary);">{labels.sustainedDraw}</div>
+              <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--color-text-primary);">{baseDraw}W</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.8125rem; color:var(--color-text-secondary);">{labels.transientPeak}</div>
+              <div style="font-size:1.5rem; font-weight:800; font-family:var(--font-mono); color:var(--color-warning);">{transientPeak}W</div>
+            </div>
+          </div>
+
+          <div style="padding:1rem; background:var(--color-surface-raised); border-radius:var(--radius-md); border:1px solid var(--color-border-subtle);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span style="font-size:0.8125rem; font-weight:600; color:var(--color-text-secondary);">{labels.compatibilityRating}</span>
+              <span class={`badge ${hasHeadroom ? 'badge-safe' : isSafe ? 'badge-warning' : 'badge-danger'}`} style="font-size:0.75rem;">
+                {hasHeadroom ? labels.optimal : isSafe ? labels.marginal : labels.overload}
+              </span>
+            </div>
+            <p style="font-size:0.8125rem; color:var(--color-text-secondary); line-height:1.5; margin:0;">
+              {hasHeadroom
+                ? labels.optimalDesc(psu?.wattage || 750, transientPeak)
+                : isSafe
+                ? labels.marginalDesc(psu?.wattage || 750)
+                : labels.overloadDesc}
+            </p>
+          </div>
+
+          <div style="display:flex; gap:1rem; margin-top:0.5rem;">
+            <a href={l(`/psu-calculator?cpu=${cpu?.id || ''}&gpu=${gpu?.id || ''}`, lang)} class="btn btn-primary" style="flex:1; text-align:center; text-decoration:none; padding:0.625rem; font-size:0.8125rem;">
+              {labels.customizeCta}
+            </a>
+            <a href={l('/builds', lang)} class="btn btn-secondary" style="text-decoration:none; padding:0.625rem 1rem; font-size:0.8125rem;">
+              {labels.backToGallery}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>

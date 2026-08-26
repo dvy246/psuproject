@@ -1,0 +1,63 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import CableCompatibilitySizer from '../../../components/calculators/CableCompatibilitySizer';
+import psuData from '../../../data/index/psus.index.json';
+import { TARGET_LOCALES, type Locale, l, useTranslations } from '../../../i18n';
+import { getCableCompatibilityTranslations } from '../../../i18n/cableCompatibility';
+
+export function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({
+    params: { lang }
+  }));
+}
+
+const { lang } = Astro.params as { lang: Locale };
+const t = useTranslations(lang);
+const cct = getCableCompatibilityTranslations(lang);
+const psus = psuData.items;
+
+const pageTitle = `${cct.title} — VoltForge`;
+const pageDescription = cct.subtitle;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  lang={lang}
+>
+  <section class="compat-page" style="padding: 3rem 0 6rem;" aria-labelledby="sizer-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href={l('/', lang)}>{t.nav.home}</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <a href={l('/compare/', lang)}>{t.nav.compare}</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{cct.title}</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; margin-top: 1.5rem;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem;">Connector Safety Suite</span>
+        <h1 id="sizer-heading" style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+          {cct.title}
+        </h1>
+        <p style="font-size: 1.1rem; color: var(--color-text-secondary); max-width: 75ch; line-height: 1.6;">
+          {cct.subtitle}
+        </p>
+      </header>
+
+      <CableCompatibilitySizer client:load psus={psus as any} lang={lang} />
+
+      <section style="margin-top: 4.5rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1.25rem;">{cct.whyDifferTitle}</h2>
+        <div style="font-size: 0.9375rem; color: var(--color-text-secondary); line-height: 1.65; max-width: 75ch; display: flex; flex-direction: column; gap: 1rem;">
+          <p>
+            {cct.whyDifferP1}
+          </p>
+          <p>
+            {cct.whyDifferP2}
+          </p>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>

@@ -1,10 +1,7 @@
 /** @jsxImportSource preact */
 // ============================================================
-// PSUCheck — Cost HUD Component
+// PSUCheck — Cost HUD Component (i18n Enabled)
 // Real-time PC build cost calculator & optimizer.
-// Shows: Cost Breakdown, Stacked Distribution Bar,
-//        Budget Advice, Cost Optimization Tips.
-// Tactile controls for: Peripherals, OS, Tax, Assembly Fee.
 // ============================================================
 
 import { signal, computed } from '@preact/signals';
@@ -13,6 +10,7 @@ import type { CpuIndex, GpuIndex, RamConfig, StorageConfig, CoolingConfig, PsuIn
 import { calculateBuildCost } from '../../lib/calculate';
 import { generateOptimizationTips } from '../../lib/optimize';
 import { selectedCpu, selectedGpu } from './VirtualAssemblyDesk';
+import { useTranslations, formatCurrency, type Locale } from '../../i18n';
 
 // Component state signals for peripheral customizers
 export const selectedCase       = signal<CaseConfig | null>(null);
@@ -32,6 +30,7 @@ interface Props {
   storage: StorageConfig[];
   cooling: CoolingConfig | null;
   psu:     PsuIndex | null;
+  lang?:   Locale;
 }
 
 // Color palette map for distribution segments
@@ -49,14 +48,15 @@ const CATEGORY_COLORS: Record<string, string> = {
   Peripherals: 'oklch(65% 0.14 20)',     /* brown */
 };
 
-export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
+export function CostHUD({ cpu, gpu, ram, storage, cooling, psu, lang = 'en' }: Props) {
+  const t = useTranslations(lang);
   const hasBuild = !!(cpu || gpu || ram || storage.length > 0 || cooling || psu);
 
   // Map state to build selection parameters
   const currentBuild = computed(() => ({
     cpu,
     gpu,
-    motherboard: null, // Passed at component level in page
+    motherboard: null,
     ram,
     storage,
     psu,
@@ -79,9 +79,7 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
   const breakdown = calculateBuildCost(currentBuild.value);
   const optimizationTips = generateOptimizationTips(cpu, gpu);
 
-  // Apply optimization downgrade directly to preact store signals
   const applyGpuOptimization = useCallback((optGpuName: string) => {
-    // Find matching GPU in the data to apply
     import('../../data/index/gpus.index.json').then(gpuData => {
       const items = (gpuData.default || gpuData).items;
       const target = items.find(g => g.name === optGpuName);
@@ -92,7 +90,6 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
   }, []);
 
   const applyCpuOptimization = useCallback((optCpuName: string) => {
-    // Find matching CPU in the data to apply
     import('../../data/index/cpus.index.json').then(cpuData => {
       const items = (cpuData.default || cpuData).items;
       const target = items.find(c => c.name === optCpuName);
@@ -102,32 +99,37 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
     });
   }, []);
 
+  const subtotalLabel = lang === 'de' ? 'Zwischensumme' : lang === 'es' ? 'Subtotal' : lang === 'fr' ? 'Sous-total' : lang === 'ja' ? '小計' : lang === 'zh' ? '小计' : 'Subtotal';
+  const osAccessoriesTitle = lang === 'de' ? `${t.cost.osCost} & Zubehör` : lang === 'es' ? `${t.cost.osCost} y Periféricos` : lang === 'fr' ? `${t.cost.osCost} & Accessoires` : lang === 'ja' ? `${t.cost.osCost}＆周辺機器` : lang === 'zh' ? `${t.cost.osCost}与外设配件` : `${t.cost.osCost} & Accessories`;
+  const osNoneLabel = lang === 'de' ? 'Kein OS (Kostenlos/Testversion)' : lang === 'es' ? 'Ninguno (Gratis/Prueba)' : lang === 'fr' ? 'Aucun (Gratuit/Essai)' : lang === 'ja' ? 'なし (無料/体験版)' : lang === 'zh' ? '无操作系统 (免费开源/试用)' : 'None (Free/Trial)';
+  const osWinLabel = `Windows 11 (${formatCurrency(109, lang)})`;
+  const osLinuxLabel = lang === 'de' ? 'Linux (Kostenlos/Open Source)' : lang === 'es' ? 'Linux (Gratis/Código Abierto)' : lang === 'fr' ? 'Linux (Gratuit Open Source)' : lang === 'ja' ? 'Linux (無料オープンソース)' : lang === 'zh' ? 'Linux (免费开源发行版)' : 'Linux (Free Open Source)';
+
   return (
-    <div class="hud-panel" role="region" aria-label="PC Build Cost Diagnostics">
+    <div class="hud-panel" role="region" aria-label={t.cost.title}>
       {/* ── Section: Total Cost Verdict ── */}
       <div class="hud-section">
-        <div class="hud-label" id="hud-total-cost-label">Total Estimated Cost</div>
+        <div class="hud-label" id="hud-total-cost-label">{t.cost.totalBuildCost}</div>
         <div class="verdict-display verdict-empty" style="padding: 1.25rem;">
           <div style="display:flex;justify-content:space-between;align-items:baseline;">
             <span style="font-size: 2rem; font-weight:900; color:var(--color-accent-cyan);" class="tabular">
-              ${breakdown.totalCostWithTax}
+              {formatCurrency(breakdown.totalCostWithTax, lang)}
             </span>
             <span style="font-size:0.75rem;color:var(--color-text-tertiary);" class="tabular">
-              Subtotal: ${breakdown.totalCost}
+              {subtotalLabel}: {formatCurrency(breakdown.totalCost, lang)}
             </span>
           </div>
           <div style="font-size:0.75rem;color:var(--color-text-secondary);margin-top:0.25rem;">
-            Includes {taxRatePercent.value}% tax & ${assemblyFee.value} assembly fee
+            {t.cost.taxRate}: {taxRatePercent.value}% | {t.cost.assemblyFee}: {formatCurrency(assemblyFee.value, lang)}
           </div>
         </div>
       </div>
 
-      {/* ── Section: Visual Cost Distribution (Segmented Bar) ── */}
+      {/* ── Section: Visual Cost Distribution ── */}
       {hasBuild && (
         <div class="hud-section" aria-label="Component budget allocation chart">
-          <div class="hud-label">Budget Allocation</div>
+          <div class="hud-label">{t.cost.costDistribution}</div>
           
-          {/* Custom segmented progress bar */}
           <div style="height:14px;background:var(--color-surface-overlay);border-radius:var(--radius-full);display:flex;overflow:hidden;margin-bottom:1rem;" role="img" aria-label="Budget breakdown bar">
             {breakdown.components.map(item => {
               const pct = item.percentage;
@@ -148,7 +150,6 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
             })}
           </div>
 
-          {/* Allocation Legend List */}
           <div style="display:flex;flex-direction:column;gap:0.375rem;">
             {breakdown.components.map(item => {
               const color = CATEGORY_COLORS[item.category] || 'var(--color-border)';
@@ -159,7 +160,7 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
                     <span style="color:var(--color-text-secondary);font-weight:600;">{item.category}</span>
                   </div>
                   <div style="display:flex;gap:1rem;font-family:var(--font-mono);" class="tabular">
-                    <span style="color:var(--color-text-tertiary);">${item.price}</span>
+                    <span style="color:var(--color-text-tertiary);">{formatCurrency(item.price, lang)}</span>
                     <span style="color:var(--color-text-primary);font-weight:700;width:32px;text-align:right;">{item.percentage}%</span>
                   </div>
                 </div>
@@ -172,29 +173,29 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
       {/* ── Section: Budget Advice ── */}
       {hasBuild && (
         <div class="hud-section" style="background:var(--color-surface-raised);padding:0.875rem;border-radius:var(--radius-md);border:1px solid var(--color-border-subtle);">
-          <div class="hud-label">Budget Analysis</div>
+          <div class="hud-label">{t.cost.subtitle}</div>
           <p style="font-size:0.75rem;color:var(--color-text-secondary);line-height:1.5;">
             {breakdown.budgetAdvice}
           </p>
         </div>
       )}
 
-      {/* ── Section: Peripherals & Customs Customizer Panel ── */}
+      {/* ── Section: Peripherals Customizer Panel ── */}
       <div class="hud-section" style="background:var(--color-surface-raised);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--color-border-subtle);display:flex;flex-direction:column;gap:0.875rem;">
-        <div class="hud-label">Workbench Accessories</div>
+        <div class="hud-label">{osAccessoriesTitle}</div>
 
         {/* OS selector */}
         <div style="display:flex;align-items:center;justify-content:space-between;">
-          <label for="cost-os-select" style="font-size:0.75rem;font-weight:600;color:var(--color-text-secondary);">Operating System</label>
+          <label for="cost-os-select" style="font-size:0.75rem;font-weight:600;color:var(--color-text-secondary);">{t.cost.osCost}</label>
           <select
             id="cost-os-select"
             value={osType.value}
             onChange={(e) => { osType.value = (e.target as HTMLSelectElement).value as 'none' | 'windows' | 'linux'; }}
             style="background:var(--color-surface);border:1px solid var(--color-border-subtle);color:var(--color-text-primary);font-size:0.75rem;padding:0.25rem 0.5rem;border-radius:var(--radius-sm);min-height:36px;"
           >
-            <option value="none">None (Free/Trial)</option>
-            <option value="windows">Windows 11 ($109)</option>
-            <option value="linux">Linux (Free Open Source)</option>
+            <option value="none">{osNoneLabel}</option>
+            <option value="windows">{osWinLabel}</option>
+            <option value="linux">{osLinuxLabel}</option>
           </select>
         </div>
 
@@ -207,9 +208,9 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
               onChange={(e) => { hasMonitor.value = (e.target as HTMLInputElement).checked; }}
               style="width:16px;height:16px;"
             />
-            Add 1440p Gaming Monitor
+            {t.cost.monitorCost}
           </label>
-          <span style="font-size:0.75rem;color:var(--color-text-tertiary);font-family:var(--font-mono);" class="tabular">+$199</span>
+          <span style="font-size:0.75rem;color:var(--color-text-tertiary);font-family:var(--font-mono);" class="tabular">+{formatCurrency(199, lang)}</span>
         </div>
 
         {/* Peripherals keyboard & mouse checkbox */}
@@ -221,15 +222,15 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
               onChange={(e) => { hasPeripherals.value = (e.target as HTMLInputElement).checked; }}
               style="width:16px;height:16px;"
             />
-            Add Keyboard & Mouse Combo
+            {t.cost.peripheralsCost}
           </label>
-          <span style="font-size:0.75rem;color:var(--color-text-tertiary);font-family:var(--font-mono);" class="tabular">+$49</span>
+          <span style="font-size:0.75rem;color:var(--color-text-tertiary);font-family:var(--font-mono);" class="tabular">+{formatCurrency(49, lang)}</span>
         </div>
 
         {/* Tax Rate slider */}
         <div style="display:flex;flex-direction:column;gap:0.25rem;">
           <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:600;color:var(--color-text-secondary);">
-            <label for="tax-rate-range">Sales Tax Rate</label>
+            <label for="tax-rate-range">{t.cost.taxRate}</label>
             <span class="tabular" style="color:var(--color-accent-cyan);">{taxRatePercent.value}%</span>
           </div>
           <input
@@ -245,66 +246,56 @@ export function CostHUD({ cpu, gpu, ram, storage, cooling, psu }: Props) {
 
         {/* Assembly Fee input */}
         <div style="display:flex;align-items:center;justify-content:space-between;">
-          <label for="assembly-fee-input" style="font-size:0.75rem;font-weight:600;color:var(--color-text-secondary);">Assembly/Building Fee</label>
+          <label for="assembly-fee-input" style="font-size:0.75rem;font-weight:600;color:var(--color-text-secondary);">{t.cost.assemblyFee}</label>
           <div style="display:flex;align-items:center;position:relative;">
-            <span style="position:absolute;left:8px;font-size:0.75rem;color:var(--color-text-tertiary);">$</span>
             <input
               id="assembly-fee-input"
               type="number"
               min="0"
+              step="10"
               value={assemblyFee.value}
-              onInput={(e) => { assemblyFee.value = Math.max(0, parseInt((e.target as HTMLInputElement).value, 10) || 0); }}
-              style="background:var(--color-surface);border:1px solid var(--color-border-subtle);color:var(--color-text-primary);font-size:0.75rem;padding:0.25rem 0.5rem 0.25rem 1.25rem;border-radius:var(--radius-sm);width:80px;text-align:right;font-family:var(--font-mono);min-height:36px;"
+              onInput={(e) => { assemblyFee.value = parseInt((e.target as HTMLInputElement).value, 10) || 0; }}
+              style="width:80px;background:var(--color-surface);border:1px solid var(--color-border-subtle);color:var(--color-text-primary);font-size:0.75rem;padding:0.25rem 0.5rem;border-radius:var(--radius-sm);text-align:right;min-height:32px;"
             />
           </div>
         </div>
       </div>
 
-      {/* ── Section: Real-time Cost Optimization Tips ── */}
-      {hasBuild && optimizationTips.length > 0 && (
-        <div class="hud-section" style="border: 2px solid var(--color-warning-border); background: var(--color-warning-bg); padding:1rem; border-radius:var(--radius-md);">
-          <div class="hud-label" style="color:var(--color-warning);margin-bottom:0.5rem;">⚡ Budget Optimizations</div>
-          <div style="display:flex;flex-direction:column;gap:0.75rem;">
-            {optimizationTips.map((tip, idx) => {
-              // Parse out target name from tip
-              const match = tip.suggestion.match(/The (.*?) at \$/);
-              const targetName = match ? match[1] : '';
-
-              return (
-                <div key={idx} style="display:flex;flex-direction:column;gap:0.375rem;">
-                  <p style="font-size:0.75rem;color:var(--color-text-secondary);line-height:1.45;">
-                    {tip.suggestion}
-                  </p>
-                  <p style="font-size:0.7rem;color:var(--color-warning);font-weight:700;">
-                    Impact: {tip.performanceImpact}
-                  </p>
-                  {targetName && (
-                    <button
-                      onClick={() => {
-                        if (tip.component === 'GPU') applyGpuOptimization(targetName);
-                        if (tip.component === 'CPU') applyCpuOptimization(targetName);
-                      }}
-                      class="btn btn-secondary"
-                      style="font-size:0.7rem;padding:0.375rem;min-height:36px;width:100%;text-align:center;border-color:var(--color-warning-border);"
-                      type="button"
-                    >
-                      Apply suggestion (Save ${tip.savings})
-                    </button>
-                  )}
+      {/* ── Section: Optimization Tips ── */}
+      {optimizationTips.length > 0 && (
+        <div class="hud-section" style="background:var(--color-surface-raised);padding:0.875rem;border-radius:var(--radius-md);border:1px solid var(--color-border-subtle);">
+          <div class="hud-label" style="display:flex;align-items:center;gap:0.375rem;color:var(--color-accent-cyan);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            {t.cost.optimizationTips}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;">
+            {optimizationTips.map((tip, idx) => (
+              <div key={idx} style="background:var(--color-surface);padding:0.625rem;border-radius:var(--radius-sm);border:1px solid var(--color-border-subtle);font-size:0.75rem;">
+                <div style="font-weight:700;color:var(--color-text-primary);margin-bottom:0.25rem;">
+                  {tip.title}
                 </div>
-              );
-            })}
+                <div style="color:var(--color-text-secondary);margin-bottom:0.5rem;line-height:1.4;">
+                  {tip.description}
+                </div>
+                {tip.action && (
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    style="font-size:0.7rem;padding:2px 8px;min-height:24px;"
+                    onClick={() => {
+                      if (tip.action?.type === 'downgrade-gpu') {
+                        applyGpuOptimization(tip.action.targetGpu);
+                      } else if (tip.action?.type === 'downgrade-cpu') {
+                        applyCpuOptimization(tip.action.targetCpu);
+                      }
+                    }}
+                  >
+                    {tip.action.label}
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
-        </div>
-      )}
-
-      {/* ── Empty State ── */}
-      {!hasBuild && (
-        <div class="hud-empty" role="status">
-          <div class="hud-empty-icon" aria-hidden="true">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          </div>
-          <p class="hud-empty-text">Select components to build your custom PC estimate</p>
         </div>
       )}
     </div>

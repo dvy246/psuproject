@@ -1,5 +1,6 @@
 /** @jsxImportSource preact */
-import { useEffect, useRef, useState, useCallback } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { useTranslations, l, type Locale } from '../../i18n';
 
 interface SearchItem {
   id: string;
@@ -10,7 +11,12 @@ interface SearchItem {
   subtitle?: string;
 }
 
-export default function SearchPalette() {
+interface Props {
+  currentLang?: Locale;
+}
+
+export default function SearchPalette({ currentLang = 'en' }: Props) {
+  const t = useTranslations(currentLang);
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchItem[]>([]);
@@ -32,18 +38,21 @@ export default function SearchPalette() {
   // 2. Event Listeners for shortcut keys (Cmd+K, Escape)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Toggle on Cmd+K or Ctrl+K
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setIsOpen(prev => !prev);
       }
-      // Close on Escape
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
       }
     };
+    const handleCustomOpen = () => setIsOpen(true);
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('open-global-search', handleCustomOpen);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('open-global-search', handleCustomOpen);
+    };
   }, [isOpen]);
 
   // Focus input when opened
@@ -57,7 +66,6 @@ export default function SearchPalette() {
   // 3. Main search query matching logic
   useEffect(() => {
     if (!query.trim()) {
-      // Return top tools and calculators as default recommendations
       const defaultItems = indexRef.current.filter(item => item.type === 'tool').slice(0, 5);
       setResults(defaultItems);
       setSelectedIndex(0);
@@ -67,19 +75,14 @@ export default function SearchPalette() {
     const cleanQuery = query.toLowerCase().trim();
     const terms = cleanQuery.split(/\s+/).filter(Boolean);
 
-    // Initial filter matching all query terms
     let matched = indexRef.current.filter(item => {
       const searchStr = `${item.name} ${item.brand ?? ''} ${item.type} ${item.subtitle ?? ''}`.toLowerCase();
       return terms.every(term => searchStr.includes(term));
     });
 
-    // ── DYNAMIC MATCHING MOATS ──
-    // A. GPU + CPU Combo match
-    // e.g. "5080 with 9800x3d" or "4070 7800x3d"
     let matchedGpu: SearchItem | null = null;
     let matchedCpu: SearchItem | null = null;
 
-    // Search for a CPU and a GPU in the search query
     for (const item of indexRef.current) {
       if (item.type === 'gpu' && cleanQuery.includes(item.id.replace('rtx-', '').replace('rx-', ''))) {
         matchedGpu = item;
@@ -102,12 +105,9 @@ export default function SearchPalette() {
         brand: 'Hardware Pairing',
         subtitle: isStaticPage ? 'Pairing analysis page evaluating bottleneck and wattage constraints' : 'Calculate custom power requirements and transient spikes in PSU Calculator'
       };
-      // Inject at the top of results
       matched = [comboItem, ...matched.filter(item => item.id !== matchedGpu?.id && item.id !== matchedCpu?.id)];
     }
 
-    // B. Wattage + GPU Upgrade Sizer match
-    // e.g. "can 750w run 5090" or "850w and 4090"
     const wattageMatch = cleanQuery.match(/(\d{3,4})\s*w/i) || cleanQuery.match(/\b(\d{3,4})\b/);
     if (wattageMatch && matchedGpu) {
       const wattage = parseInt(wattageMatch[1], 10);
@@ -128,14 +128,12 @@ export default function SearchPalette() {
     setSelectedIndex(0);
   }, [query]);
 
-  // 4. Modal event listener to close when clicking outside
   const handleBackdropClick = (e: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       setIsOpen(false);
     }
   };
 
-  // 5. Keyboard Navigation inside list
   const handleInputKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -146,160 +144,100 @@ export default function SearchPalette() {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (results[selectedIndex]) {
-        window.location.href = results[selectedIndex].url;
+        window.location.href = l(results[selectedIndex].url, currentLang);
         setIsOpen(false);
       }
     }
   };
 
-  const getIcon = (type: string) => {
+  const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'cpu':
-        return (
-          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
-            <rect x="9" y="9" width="6" height="6" />
-            <line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" />
-            <line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" />
-            <line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="15" x2="23" y2="15" />
-            <line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="15" x2="4" y2="15" />
-          </svg>
-        );
-      case 'gpu':
-        return (
-          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-            <line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-        );
-      case 'psu':
-        return (
-          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <circle cx="9" cy="9" r="2" />
-            <path d="M12 12h4v4h-4z" />
-          </svg>
-        );
-      case 'guide':
-        return (
-          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-          </svg>
-        );
-      case 'tool':
-        return (
-          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-        );
-      case 'combo':
-        return (
-          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-        );
-      case 'upgrade':
-        return (
-          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="18 8 22 12 18 16" />
-            <line x1="2" y1="12" x2="22" y2="12" />
-          </svg>
-        );
-      default:
-        return (
-          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="16" x2="12" y2="12" />
-            <line x1="12" y1="8" x2="12.01" y2="8" />
-          </svg>
-        );
+      case 'cpu': return t.search.typeCpu;
+      case 'gpu': return t.search.typeGpu;
+      case 'psu': return t.search.typePsu;
+      case 'tool': return t.search.typeTool;
+      case 'guide': return t.search.typeGuide;
+      case 'combo': return t.search.typeCombo;
+      case 'upgrade': return t.search.typeUpgrade;
+      default: return type.toUpperCase();
     }
   };
-
-  // Expose trigger globally so header button can open search
-  useEffect(() => {
-    const handleOpenSearch = () => setIsOpen(true);
-    window.addEventListener('open-global-search', handleOpenSearch);
-    return () => window.removeEventListener('open-global-search', handleOpenSearch);
-  }, []);
 
   if (!isOpen) return null;
 
   return (
-    <div class="search-backdrop" onClick={handleBackdropClick} role="dialog" aria-modal="true" aria-label="Global Search">
-      <div class="search-modal" ref={modalRef}>
-        {/* Search Input */}
+    <div
+      class="search-palette-backdrop"
+      onClick={handleBackdropClick}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t.search.paletteTitle}
+    >
+      <div class="search-palette-modal" ref={modalRef}>
         <div class="search-input-wrapper">
-          <svg class="search-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="search-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <input
             ref={inputRef}
             type="text"
-            class="search-input-field"
-            placeholder="Search specs, guides, or type combos (e.g. '5080 with 9800x3d')..."
+            class="search-palette-input"
+            placeholder={t.search.placeholder}
             value={query}
             onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
             onKeyDown={handleInputKeyDown}
             aria-autocomplete="list"
             aria-controls="search-results-list"
           />
-          <span class="search-esc-badge">ESC</span>
+          <button
+            class="search-close-btn"
+            onClick={() => setIsOpen(false)}
+            aria-label={t.common.close}
+            type="button"
+          >
+            Esc
+          </button>
         </div>
 
-        {/* Results List */}
-        <div class="search-results-list" id="search-results-list" role="listbox">
+        <div class="search-results-container" id="search-results-list" role="listbox">
           {results.length > 0 ? (
-            results.map((item, idx) => (
-              <div
+            results.map((item, index) => (
+              <a
                 key={item.id}
+                href={l(item.url, currentLang)}
+                class={`search-result-item ${index === selectedIndex ? 'selected' : ''}`}
                 role="option"
-                aria-selected={idx === selectedIndex}
-                class={`search-result-item ${idx === selectedIndex ? 'search-result-item--active' : ''}`}
-                onClick={() => {
-                  window.location.href = item.url;
-                  setIsOpen(false);
-                }}
+                aria-selected={index === selectedIndex}
+                onClick={() => setIsOpen(false)}
+                onMouseEnter={() => setSelectedIndex(index)}
               >
-                <div class="search-result-icon">
-                  {getIcon(item.type)}
-                </div>
-                <div class="search-result-info">
-                  <div class="search-result-name">
-                    {item.name}
-                    {item.brand && <span class="search-result-brand">{item.brand}</span>}
+                <div class="search-item-main">
+                  <div class="search-item-title-row">
+                    <span class="search-item-name">{item.name}</span>
+                    <span class={`search-type-badge search-badge-${item.type}`}>
+                      {getTypeLabel(item.type)}
+                    </span>
                   </div>
-                  <div class="search-result-subtitle">{item.subtitle}</div>
+                  {item.subtitle && <span class="search-item-subtitle">{item.subtitle}</span>}
                 </div>
-                <div class="search-result-arrow">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </div>
-              </div>
+                <svg class="search-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </a>
             ))
           ) : (
             <div class="search-no-results">
-              No matches found for <strong style="color:var(--accent-primary);">"{query}"</strong>
-              <p style="font-size:0.75rem;color:var(--text-tertiary);margin-top:0.25rem;">Try searching for specific models like "5090", "7800x3d", "rm850x", or guides like "atx 3.1".</p>
+              <p>{t.search.noResults}</p>
             </div>
           )}
         </div>
 
-        {/* Footer shortcuts helper */}
-        <div class="search-footer">
-          <div class="search-shortcuts">
-            <span><kbd>↑↓</kbd> Navigate</span>
-            <span><kbd>Enter</kbd> Select</span>
-            <span><kbd>Esc</kbd> Close</span>
-          </div>
-          <div class="search-footer-brand">PSUCheck Search</div>
+        <div class="search-palette-footer">
+          <span class="search-footer-hint">
+            {t.search.hintKbd}
+          </span>
         </div>
       </div>
     </div>

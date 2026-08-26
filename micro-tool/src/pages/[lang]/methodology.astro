@@ -1,0 +1,92 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const schema = {
+  "@type": "AboutPage",
+  "name": `${t.footer.methodology} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/methodology`,
+  "description": t.seo.defaultDescription
+};
+---
+
+<Layout
+  title={`${t.footer.methodology} — PSUCheck`}
+  description={t.seo.defaultDescription}
+  schema={schema}
+>
+  <div class="legal-page">
+    <div class="legal-hero">
+      <div class="container">
+        <div class="badge badge-safe" style="margin-bottom:1rem;">Documentation</div>
+        <h1>{t.footer.methodology}</h1>
+        <p class="legal-meta">Verified Sizing Documentation &amp; Data Standards</p>
+      </div>
+    </div>
+
+    <div class="legal-body">
+      <div class="container">
+        <div class="legal-content">
+          <p class="about-lead" style="font-size:1.1rem;color:var(--text-secondary);line-height:1.7;">
+            Transparent, technical documentation of every formula, multiplier, and assumption built into the PSUCheck calculation engine.
+          </p>
+
+          <h2>1. Sustained System Draw (Base Draw)</h2>
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:0.8rem;margin:1rem 0;border:1px solid var(--border-subtle);">
+            Base Draw (W) = CPU PL2 + GPU TBP + RAM Typical + Storage Typical + Cooling Typical + Fans + System Overhead
+          </div>
+
+          <h2>2. Transient Power Spike Modeling</h2>
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:0.8rem;margin:1rem 0;border:1px solid var(--border-subtle);">
+            Transient Peak (W) = (CPU PL2 × 1.20) + (GPU TBP × Tier Multiplier) + Other Components
+          </div>
+
+          <h2>3. ATX 3.1 &amp; Cable Safety Checks</h2>
+          <p>
+            For all high-TBP GPUs exceeding 300W, our system requires ATX 3.1 native 12V-2x6 connectors to avoid dangerous adapter heating.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+.legal-hero {
+  padding: 4rem 0 2rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.legal-meta {
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+.legal-body {
+  padding: 3rem 0 5rem;
+}
+.legal-content {
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.legal-content h2 {
+  font-size: 1.375rem;
+  margin-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.legal-content p {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  max-width: 70ch;
+}
+</style>

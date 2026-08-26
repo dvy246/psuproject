@@ -1,20 +1,11 @@
 /** @jsxImportSource preact */
 // ============================================================
-// PSUCheck — Bay Component Base
-// Shared logic for all component bay cards.
-// Each bay: left accent border (state), selector drawer,
-//           keyboard navigation, touch targets ≥44px.
-//
-// UI-UX-Pro-Max rules applied:
-// - Touch targets ≥ 44px
-// - Color-independent status (icon + text + color)
-// - Explicit transition properties (no `transition: all`)
-// - Keyboard + screen reader compliant
-// - SVG icon box with dynamic state-based colors
+// PSUCheck — Bay Component Base (i18n Enabled)
 // ============================================================
 
 import { useRef, useCallback, useId } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
+import type { Locale } from '../../../i18n/locales';
 
 export type BayState = 'empty' | 'filled' | 'warning' | 'danger';
 
@@ -22,12 +13,14 @@ interface BayCardProps {
   icon:        ComponentChildren; // JSX SVG icon
   label:       string;
   sublabel?:   string;
+  wattageBadge?: string;
   state:       BayState;
   isOpen:      boolean;
   onToggle:    () => void;
   onClear?:    () => void;
   children:    ComponentChildren; // selector tray content
   id?:         string;
+  lang?:       Locale;
 }
 
 const STATE_BORDER: Record<BayState, string> = {
@@ -44,13 +37,6 @@ const STATE_ICON: Record<BayState, string> = {
   danger:  '✕',
 };
 
-const STATE_ARIA: Record<BayState, string> = {
-  empty:   'Empty — click to select',
-  filled:  'Filled',
-  warning: 'Warning — check compatibility',
-  danger:  'Danger — configuration issue',
-};
-
 // Icon box visual styles per state
 const ICON_BOX_STYLE: Record<BayState, string> = {
   empty:   'background:var(--color-surface-raised,rgba(255,255,255,0.04));color:var(--color-text-tertiary,#6b7280);border:1.5px solid var(--color-border-subtle,rgba(255,255,255,0.08));',
@@ -59,7 +45,7 @@ const ICON_BOX_STYLE: Record<BayState, string> = {
   danger:  'background:rgba(239,68,68,0.12);color:#ef4444;border:1.5px solid rgba(239,68,68,0.35);',
 };
 
-export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClear, children, id }: BayCardProps) {
+export function BayCard({ icon, label, sublabel, wattageBadge, state, isOpen, onToggle, onClear, children, id, lang = 'en' }: BayCardProps) {
   const trayId  = useId();
   const btnRef  = useRef<HTMLButtonElement>(null);
 
@@ -69,6 +55,8 @@ export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClea
       btnRef.current?.focus();
     }
   }, [isOpen, onToggle]);
+
+  const emptyPrompt = lang === 'de' ? 'Klicken zum Auswählen…' : lang === 'es' ? 'Clic para seleccionar…' : lang === 'fr' ? 'Cliquer pour choisir…' : lang === 'ja' ? 'クリックして選択…' : lang === 'zh' ? '点击选择硬件…' : 'Click to select…';
 
   return (
     <div class="bay-wrapper" role="listitem" onKeyDown={handleKeyDown} id={id}>
@@ -80,7 +68,7 @@ export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClea
           onClick={onToggle}
           aria-expanded={isOpen}
           aria-controls={trayId}
-          aria-label={`${label}: ${sublabel ?? STATE_ARIA[state]}. ${isOpen ? 'Click to close selector' : 'Click to open selector'}`}
+          aria-label={`${label}: ${sublabel ?? emptyPrompt}. ${isOpen ? 'Close selector' : 'Open selector'}`}
           type="button"
         >
           {/* Left: SVG icon box + state indicator dot */}
@@ -94,7 +82,6 @@ export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClea
             </div>
             <span
               class={`bay-state-dot bay-state-dot--${state}`}
-              aria-label={`Status: ${STATE_ARIA[state]}`}
               role="img"
               title={STATE_ICON[state]}
             />
@@ -107,9 +94,16 @@ export function BayCard({ icon, label, sublabel, state, isOpen, onToggle, onClea
               <span class="bay-sublabel" aria-label={`Selected: ${sublabel}`}>{sublabel}</span>
             )}
             {!sublabel && (
-              <span class="bay-sublabel bay-sublabel--empty">Click to select…</span>
+              <span class="bay-sublabel bay-sublabel--empty">{emptyPrompt}</span>
             )}
           </div>
+
+          {/* Wattage Badge Pill */}
+          {wattageBadge && (
+            <span class="bay-wattage-badge tabular" aria-label={`Power draw: ${wattageBadge}`}>
+              {wattageBadge}
+            </span>
+          )}
 
           {/* Right: chevron arrow */}
           <svg

@@ -1,18 +1,10 @@
 /** @jsxImportSource preact */
 // ============================================================
-// PSUCheck — Virtual Assembly Desk
+// PSUCheck — Virtual Assembly Desk (i18n Enabled)
 // Two-column workbench layout.
 // Left: 8-col Assembly Tray with modular bay cards.
 // Right: 4-col Sticky Diagnostics HUD.
 // Mobile: HUD collapses to bottom-sheet drawer.
-//
-// UI-UX-Pro-Max rules applied:
-// - Touch targets ≥ 44px
-// - Color-independent status (icon + text + color)
-// - Explicit transition properties (no `transition: all`)
-// - Fixed min-height on warning containers (CLS prevention)
-// - Tabular-nums on every data value
-// - Keyboard + screen reader compliant
 // ============================================================
 
 import { signal, computed } from '@preact/signals';
@@ -37,7 +29,23 @@ import type { BlueprintOutput } from '../../lib/blueprint';
 import { BuildBlueprint } from './BuildBlueprint';
 
 import caseData from '../../data/index/cases.index.json';
+import cpuData from '../../data/index/cpus.index.json';
+import gpuData from '../../data/index/gpus.index.json';
+import moboData from '../../data/index/motherboards.index.json';
+import coolerData from '../../data/index/coolers.index.json';
+import psuData from '../../data/index/psus.index.json';
+import componentData from '../../data/components.json';
+
+import { useTranslations, l, type Locale } from '../../i18n';
+
 const ALL_CASES = (caseData as any).items as CaseIndex[];
+const ALL_CPUS = (cpuData as any).items as CpuIndex[];
+const ALL_GPUS = (gpuData as any).items as GpuIndex[];
+const ALL_MOBOS = (moboData as any).items as MotherboardIndex[];
+const ALL_RAMS = (componentData as any).ram as RamConfig[];
+const ALL_STORAGES = (componentData as any).storage as StorageConfig[];
+const ALL_COOLERS = (coolerData as any).items as CoolingConfig[];
+const ALL_PSUS = (psuData as any).items as PsuIndex[];
 
 // --- Signals Store (global, shared with DiagnosticsHUD) ---
 export const selectedCpu     = signal<CpuIndex | null>(null);
@@ -74,9 +82,11 @@ const TOTAL_BAYS = 7;
 interface Props {
   mode?: 'psu' | 'cost';
   blueprintMode?: boolean;
+  lang?: Locale;
 }
 
-export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Props) {
+export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false, lang = 'en' }: Props) {
+  const t = useTranslations(lang);
   const [hudOpen, setHudOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentShareUrl, setCurrentShareUrl] = useState('');
@@ -120,54 +130,158 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
         drawerToggleRef.current?.focus();
       }
     };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [hudOpen]);
 
   const toggleDrawer = useCallback(() => {
-    setHudOpen(prev => !prev);
+    setHudOpen(prev => {
+      const next = !prev;
+      hudDrawerOpen.value = next;
+      return next;
+    });
+  }, []);
+
+  // Auto-recommend PSU whenever CPU or GPU changes and psuMode is 'auto'
+  useEffect(() => {
+    if (psuMode.value !== 'auto') return;
+    const cpu = selectedCpu.value;
+    const gpu = selectedGpu.value;
+    if (!cpu && !gpu) {
+      selectedPsu.value = null;
+      return;
+    }
+    const analysis = runFullPsuAnalysis(
+      {
+        cpu,
+        gpu,
+        ram: selectedRam.value,
+        storage: selectedStorage.value,
+        cooling: selectedCooling.value,
+        fans: fans.value,
+        ocConfig: overclockingEnabled.value ? {
+          cpuOcPercent: cpuOcPercent.value,
+          gpuOcPercent: gpuOcPercent.value,
+        } : undefined,
+      },
+      850,
+      '3.1',
+      safetyBufferPercent.value / 100,
+      psuAge.value
+    );
+
+    const neededWattage = analysis.recommendedWattage;
+    const bestPsu = ALL_PSUS
+      .filter(p => p.wattage >= neededWattage)
+      .sort((a, b) => {
+        if (a.atxVersion === '3.1' && b.atxVersion !== '3.1') return -1;
+        if (b.atxVersion === '3.1' && a.atxVersion !== '3.1') return 1;
+        return a.wattage - b.wattage;
+      })[0] ?? ALL_PSUS[ALL_PSUS.length - 1];
+
+    selectedPsu.value = bestPsu ?? null;
+  }, [selectedCpu.value, selectedGpu.value, selectedRam.value, selectedStorage.value, selectedCooling.value, psuMode.value, psuAge.value, overclockingEnabled.value, cpuOcPercent.value, gpuOcPercent.value, safetyBufferPercent.value]);
+
+  // Preset loaders
+  const handleLoadPreset = useCallback((type: 'flagship' | 'sweetspot' | 'budget' | 'studio') => {
+    if (type === 'flagship') {
+      selectedCpu.value = ALL_CPUS.find(c => c.id === 'amd-ryzen-9-9950x') || ALL_CPUS[0];
+      selectedGpu.value = ALL_GPUS.find(g => g.id === 'nvidia-rtx-5090') || ALL_GPUS[0];
+      selectedMobo.value = ALL_MOBOS.find(m => m.id === 'asus-rog-crosshair-x870e-hero') || ALL_MOBOS[0];
+      selectedRam.value = ALL_RAMS.find(r => r.capacity === 64 && r.type === 'DDR5') || ALL_RAMS[0];
+      selectedStorage.value = [ALL_STORAGES.find(s => s.type === 'NVMe' && s.capacity === 2000) || ALL_STORAGES[0]];
+      selectedCooling.value = ALL_COOLERS.find(c => c.type === 'aio-360') || ALL_COOLERS[0];
+      selectedPsu.value = ALL_PSUS.find(p => p.id === 'seasonic-vertex-gx-1000') || ALL_PSUS[0];
+      psuMode.value = 'manual';
+    } else if (type === 'sweetspot') {
+      selectedCpu.value = ALL_CPUS.find(c => c.id === 'amd-ryzen-7-9800x3d') || ALL_CPUS[1];
+      selectedGpu.value = ALL_GPUS.find(g => g.id === 'nvidia-rtx-5070-ti') || ALL_GPUS[1];
+      selectedMobo.value = ALL_MOBOS.find(m => m.id === 'msi-mag-b650-tomahawk-wifi') || ALL_MOBOS[1];
+      selectedRam.value = ALL_RAMS.find(r => r.capacity === 32 && r.type === 'DDR5') || ALL_RAMS[1];
+      selectedStorage.value = [ALL_STORAGES.find(s => s.type === 'NVMe' && s.capacity === 1000) || ALL_STORAGES[1]];
+      selectedCooling.value = ALL_COOLERS.find(c => c.type === 'aio-240') || ALL_COOLERS[1];
+      selectedPsu.value = ALL_PSUS.find(p => p.id === 'corsair-rm850x-2024') || ALL_PSUS[1];
+      psuMode.value = 'manual';
+    } else if (type === 'budget') {
+      selectedCpu.value = ALL_CPUS.find(c => c.id === 'amd-ryzen-5-7600') || ALL_CPUS[2];
+      selectedGpu.value = ALL_GPUS.find(g => g.id === 'nvidia-rtx-4060') || ALL_GPUS[2];
+      selectedMobo.value = ALL_MOBOS.find(m => m.id === 'msi-mag-b650-tomahawk-wifi') || ALL_MOBOS[2];
+      selectedRam.value = ALL_RAMS.find(r => r.capacity === 16 && r.type === 'DDR5') || ALL_RAMS[2];
+      selectedStorage.value = [ALL_STORAGES.find(s => s.type === 'NVMe' && s.capacity === 1000) || ALL_STORAGES[2]];
+      selectedCooling.value = ALL_COOLERS.find(c => c.type === 'air-tower') || ALL_COOLERS[2];
+      selectedPsu.value = ALL_PSUS.find(p => p.id === 'corsair-cx650-2023') || ALL_PSUS[2];
+      psuMode.value = 'manual';
+    } else if (type === 'studio') {
+      selectedCpu.value = ALL_CPUS.find(c => c.id === 'intel-core-ultra-9-285k') || ALL_CPUS[3];
+      selectedGpu.value = ALL_GPUS.find(g => g.id === 'nvidia-rtx-5080') || ALL_GPUS[3];
+      selectedMobo.value = ALL_MOBOS.find(m => m.id === 'asus-rog-maximus-z890-hero') || ALL_MOBOS[3];
+      selectedRam.value = ALL_RAMS.find(r => r.capacity === 64 && r.type === 'DDR5') || ALL_RAMS[0];
+      selectedStorage.value = [ALL_STORAGES.find(s => s.type === 'NVMe' && s.capacity === 2000) || ALL_STORAGES[0], ALL_STORAGES.find(s => s.type === 'NVMe' && s.capacity === 4000) || ALL_STORAGES[0]];
+      selectedCooling.value = ALL_COOLERS.find(c => c.type === 'aio-360') || ALL_COOLERS[0];
+      selectedPsu.value = ALL_PSUS.find(p => p.id === 'be-quiet-dark-power-13-1000w') || ALL_PSUS[0];
+      psuMode.value = 'manual';
+    }
+  }, []);
+
+  const handleClearAll = useCallback(() => {
+    selectedCpu.value = null;
+    selectedGpu.value = null;
+    selectedMobo.value = null;
+    selectedRam.value = null;
+    selectedStorage.value = [];
+    selectedCooling.value = null;
+    selectedPsu.value = null;
+    psuMode.value = 'auto';
+    overclockingEnabled.value = false;
+    cpuOcPercent.value = 0;
+    gpuOcPercent.value = 0;
+    safetyBufferPercent.value = 10;
+    psuAge.value = 0;
   }, []);
 
   const handleShare = useCallback(() => {
-    const query = serializeBuild(
-      selectedCpu.value,
-      selectedGpu.value,
-      selectedMobo.value,
-      selectedRam.value,
-      selectedStorage.value,
-      selectedCooling.value,
-      selectedPsu.value,
-      cpuOcPercent.value,
-      gpuOcPercent.value,
-      safetyBufferPercent.value
-    );
-    const shareUrl = `${window.location.origin}${window.location.pathname}?${query}`;
-    setCurrentShareUrl(shareUrl);
-    setIsModalOpen(true);
-  }, []);
-
-  const handleGenerateBlueprint = useCallback(() => {
-    const output = generateBlueprint({
+    const query = serializeBuild({
       cpu: selectedCpu.value,
       gpu: selectedGpu.value,
+      mobo: selectedMobo.value,
       ram: selectedRam.value,
       storage: selectedStorage.value,
       cooling: selectedCooling.value,
       psu: selectedPsu.value,
-      caseModel: selectedCase,
+      psuMode: psuMode.value,
       fans: fans.value,
-      psuAgeYears: psuAge.value,
-      cpuOcPercent: cpuOcPercent.value,
-      gpuOcPercent: gpuOcPercent.value,
+      cpuOcPercent: overclockingEnabled.value ? cpuOcPercent.value : undefined,
+      gpuOcPercent: overclockingEnabled.value ? gpuOcPercent.value : undefined,
+      safetyBufferPercent: safetyBufferPercent.value !== 10 ? safetyBufferPercent.value : undefined,
+    });
+    const url = `${window.location.origin}${window.location.pathname}${query}`;
+    setCurrentShareUrl(url);
+    setIsModalOpen(true);
+  }, []);
+
+  const handleGenerateBlueprint = useCallback(() => {
+    const out = generateBlueprint({
+      cpu: selectedCpu.value,
+      gpu: selectedGpu.value,
+      mobo: selectedMobo.value,
+      ram: selectedRam.value,
+      storage: selectedStorage.value,
+      cooling: selectedCooling.value,
+      psu: selectedPsu.value,
+      case: selectedCase,
+      fans: fans.value,
+      cpuOcPercent: overclockingEnabled.value ? cpuOcPercent.value : 0,
+      gpuOcPercent: overclockingEnabled.value ? gpuOcPercent.value : 0,
       safetyBufferPercent: safetyBufferPercent.value,
+      psuAge: psuAge.value,
     });
-    setBlueprintOutput(output);
-    requestAnimationFrame(() => {
-      const el = document.getElementById('blueprint-output');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+    setBlueprintOutput(out);
+    setTimeout(() => {
+      document.getElementById('blueprint-output')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   }, [selectedCase]);
 
+  // Derived state for quick-share metrics
   const activeCpu = selectedCpu.value;
   const activeGpu = selectedGpu.value;
   const activeRam = selectedRam.value;
@@ -208,6 +322,20 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
   const filled = filledBayCount.value;
   const progressPct = (filled / TOTAL_BAYS) * 100;
 
+  const presetsLabel = lang === 'de' ? 'Hardware-Presets:' : lang === 'es' ? 'Perfiles de Hardware:' : lang === 'fr' ? 'Profils Prédéfinis :' : lang === 'ja' ? '構成プリセット:' : lang === 'zh' ? '快捷预设方案:' : 'Instant Hardware Presets:';
+  const ageLabel = lang === 'de' ? 'Netzteil-Alter' : lang === 'es' ? 'Antigüedad Fuente' : lang === 'fr' ? 'Âge Alimentation' : lang === 'ja' ? '電源使用年数' : lang === 'zh' ? '电源已用年限' : 'PSU Age';
+  const newLabel = lang === 'de' ? 'Neu' : lang === 'es' ? 'Nueva' : lang === 'fr' ? 'Neuf' : lang === 'ja' ? '新品' : lang === 'zh' ? '全新' : 'New';
+  const yearsUnit = lang === 'de' ? 'Jahre' : lang === 'es' ? 'años' : lang === 'fr' ? 'ans' : lang === 'ja' ? '年' : lang === 'zh' ? '年' : 'yr';
+
+  const ocTitle = lang === 'de' ? 'Übertaktungs-Modus' : lang === 'es' ? 'Modo Overclocking' : lang === 'fr' ? 'Mode Overclocking' : lang === 'ja' ? 'オーバークロック設定' : lang === 'zh' ? '超频能耗微调' : 'Overclocking Mode';
+  const enabledLabel = lang === 'de' ? 'Aktiv' : lang === 'es' ? 'Activado' : lang === 'fr' ? 'Activé' : lang === 'ja' ? '有効' : lang === 'zh' ? '开启' : 'Enabled';
+  const disabledLabel = lang === 'de' ? 'Aus' : lang === 'es' ? 'Desactivado' : lang === 'fr' ? 'Désactivé' : lang === 'ja' ? '無効' : lang === 'zh' ? '关闭' : 'Disabled';
+
+  const safetyBufferTitle = lang === 'de' ? 'Sicherheits-Puffer' : lang === 'es' ? 'Margen de Seguridad' : lang === 'fr' ? 'Marge de Sécurité' : lang === 'ja' ? '安全マージンバッファ' : lang === 'zh' ? '安全冗余余量' : 'Safety Buffer';
+  const caseSelectTitle = lang === 'de' ? 'PC-Gehäuse (für Maßprüfung)' : lang === 'es' ? 'Caja de PC (para espacio)' : lang === 'fr' ? 'Boîtier PC (dégagement)' : lang === 'ja' ? 'PCケース (干渉検証)' : lang === 'zh' ? '电脑机箱 (防干涉核验)' : 'Case (for clearance checks)';
+  const selectCaseOption = lang === 'de' ? '— Gehäuse auswählen —' : lang === 'es' ? '— Selecciona una caja —' : lang === 'fr' ? '— Choisir un boîtier —' : lang === 'ja' ? '— ケースを選択 —' : lang === 'zh' ? '— 选择机箱型号 —' : '— Select a case —';
+  const printBtn = lang === 'de' ? 'Bauplan drucken' : lang === 'es' ? 'Imprimir Plano' : lang === 'fr' ? 'Imprimer le Plan' : lang === 'ja' ? '設計図を印刷' : lang === 'zh' ? '打印施工蓝图' : 'Print Blueprint';
+
   return (
     <div class="assembly-desk">
       {/* ── Desktop layout: 12-col grid ── */}
@@ -226,10 +354,10 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                   <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
                 </svg>
-                Assembly Tray
+                {t.calculators.baysTitle}
               </h2>
               <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;">
-                <p class="tray-subtitle" style="margin:0;margin-right:4px;">Select components to begin analysis</p>
+                <p class="tray-subtitle" style="margin:0;margin-right:4px;">{t.verdicts.selectPrompt}</p>
                 <button
                   onClick={handleShare}
                   class="btn btn-secondary"
@@ -238,15 +366,15 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                   type="button"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-                  {shareStatus === 'copied' ? 'Link Copied!' : 'Share Build'}
+                  {shareStatus === 'copied' ? t.common.linkCopied : t.common.shareBuild}
                 </button>
                 <a
-                  href="/builds"
+                  href={l('/builds', lang)}
                   class="btn btn-secondary"
                   style="font-size:0.7rem;padding:6px 10px;min-height:30px;display:inline-flex;align-items:center;gap:4px;text-decoration:none;"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-                  Build Gallery
+                  {t.nav.completedBuilds}
                 </a>
                 <button
                   onClick={handleGenerateBlueprint}
@@ -256,7 +384,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                   type="button"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                  Generate Blueprint
+                  {t.nav.buildBlueprint}
                 </button>
               </div>
             </div>
@@ -280,38 +408,103 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
             </div>
           </div>
 
+          {/* ── Quick-Load Hardware Presets Ribbon ── */}
+          <div class="preset-ribbon" aria-label="Hardware Benchmark Presets">
+            <div class="preset-ribbon-header">
+              <span class="preset-ribbon-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                {presetsLabel}
+              </span>
+              {filled > 0 && (
+                <button
+                  onClick={handleClearAll}
+                  class="preset-clear-btn"
+                  type="button"
+                  aria-label="Clear all components"
+                >
+                  ✕ {t.common.reset}
+                </button>
+              )}
+            </div>
+            <div class="preset-chips-grid">
+              <button
+                type="button"
+                onClick={() => handleLoadPreset('flagship')}
+                class="preset-chip"
+                title="RTX 5090 · Ryzen 9 9950X · 1000W ATX 3.1"
+              >
+                <span class="preset-chip-label">👑 Flagship 4K</span>
+                <span class="preset-chip-badge">5090 · 1000W</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLoadPreset('sweetspot')}
+                class="preset-chip"
+                title="RTX 5070 Ti · Ryzen 7 9800X3D · 850W Gold"
+              >
+                <span class="preset-chip-label">⚡ 1440p Sweetspot</span>
+                <span class="preset-chip-badge">9800X3D · 850W</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLoadPreset('budget')}
+                class="preset-chip"
+                title="RTX 4060 · Ryzen 5 7600 · 650W Bronze"
+              >
+                <span class="preset-chip-label">🎯 1080p Value</span>
+                <span class="preset-chip-badge">4060 · 650W</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLoadPreset('studio')}
+                class="preset-chip"
+                title="RTX 5080 · Core Ultra 9 285K · 1000W Platinum"
+              >
+                <span class="preset-chip-label">💼 Creator Rig</span>
+                <span class="preset-chip-badge">285K · 5080</span>
+              </button>
+            </div>
+          </div>
+
           {/* ── Bay Cards ── */}
           <div class="bays-list" role="list">
             <BayCPU
               selected={selectedCpu.value}
               onSelect={(cpu) => { selectedCpu.value = cpu; }}
+              lang={lang}
             />
             <BayGPU
               selected={selectedGpu.value}
               onSelect={(gpu) => { selectedGpu.value = gpu; }}
+              lang={lang}
             />
             <BayMotherboard
               selected={selectedMobo.value}
               selectedCpu={selectedCpu.value}
               onSelect={(mobo) => { selectedMobo.value = mobo; }}
+              lang={lang}
             />
             <BayRAM
               selected={selectedRam.value}
               onSelect={(ram) => { selectedRam.value = ram; }}
+              lang={lang}
             />
             <BayStorage
               selected={selectedStorage.value}
               onSelect={(storage) => { selectedStorage.value = storage; }}
+              lang={lang}
             />
             <BayCooling
               selected={selectedCooling.value}
               onSelect={(cooling) => { selectedCooling.value = cooling; }}
+              lang={lang}
             />
             <BayPSU
               selected={selectedPsu.value}
               mode={psuMode.value}
               onSelect={(psu) => { selectedPsu.value = psu; }}
               onModeChange={(mode) => { psuMode.value = mode; }}
+              lang={lang}
             />
 
             {/* ── P1: PSU Age Slider ── */}
@@ -326,10 +519,10 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
               >
                 <span style="display:flex;align-items:center;gap:6px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  PSU Age
+                  {ageLabel}
                 </span>
                 <span class="tabular" style="color:var(--color-accent-cyan);font-weight:700;">
-                  {psuAge.value === 0 ? 'New' : `${psuAge.value}yr`}
+                  {psuAge.value === 0 ? newLabel : `${psuAge.value} ${yearsUnit}`}
                   {psuAge.value > 3 && (
                     <span style="color:#f59e0b;font-size:0.7rem;margin-left:6px;">⚠ aging applied</span>
                   )}
@@ -343,20 +536,15 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                 step="1"
                 value={psuAge.value}
                 onInput={(e) => { psuAge.value = Number((e.target as HTMLInputElement).value); }}
-                aria-label={`PSU age: ${psuAge.value === 0 ? 'New' : `${psuAge.value} years`}. Capacitor aging drates effective wattage by 5% per year after 3 years.`}
+                aria-label={`PSU age: ${psuAge.value === 0 ? newLabel : `${psuAge.value} ${yearsUnit}`}`}
                 aria-valuemin={0}
                 aria-valuemax={15}
                 aria-valuenow={psuAge.value}
                 style="width:100%;accent-color:var(--color-accent-cyan);cursor:pointer;"
               />
               <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--color-text-tertiary);margin-top:2px;">
-                <span>New</span><span>5yr</span><span>10yr</span><span>15yr</span>
+                <span>0 {yearsUnit}</span><span>5 {yearsUnit}</span><span>10 {yearsUnit}</span><span>15 {yearsUnit}</span>
               </div>
-              {psuAge.value <= 3 && (
-                <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin-top:0.4rem;">
-                  No capacity derating below 3 years.
-                </p>
-              )}
             </div>
 
             {/* ── P2: Overclocking Mode Card ── */}
@@ -368,7 +556,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
                 <span style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;font-weight:600;color:var(--color-text-secondary);">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  Overclocking Mode
+                  {ocTitle}
                 </span>
                 <button
                   class={`mode-tab ${overclockingEnabled.value ? 'mode-tab--active' : ''}`}
@@ -377,7 +565,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                   type="button"
                   style="min-height:30px;font-size:0.7rem;padding:2px 10px;"
                 >
-                  {overclockingEnabled.value ? 'Enabled' : 'Disabled'}
+                  {overclockingEnabled.value ? enabledLabel : disabledLabel}
                 </button>
               </div>
 
@@ -386,7 +574,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                   {selectedCpu.value && (
                     <div>
                       <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--color-text-secondary);margin-bottom:0.25rem;">
-                        <label for="cpu-oc-slider">CPU Overclock</label>
+                        <label for="cpu-oc-slider">{t.calculators.cpuOverclock}</label>
                         <span class="tabular" style="color:var(--color-accent-cyan);font-weight:700;">+{cpuOcPercent.value}%</span>
                       </div>
                       <input
@@ -398,21 +586,17 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                         step="1"
                         value={cpuOcPercent.value}
                         onInput={(e) => { cpuOcPercent.value = Number((e.target as HTMLInputElement).value); }}
-                        aria-label={`CPU overclock: ${cpuOcPercent.value}% above stock`}
                         style="width:100%;accent-color:var(--color-accent-cyan);cursor:pointer;"
                       />
                       <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--color-text-tertiary);">
-                        <span>Stock</span><span>15%</span><span>30% max</span>
+                        <span>0%</span><span>15%</span><span>30%</span>
                       </div>
-                      <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin-top:0.25rem;">
-                        +{Math.round(selectedCpu.value.tdpSustained * cpuOcPercent.value / 100)}W on CPU draw
-                      </p>
                     </div>
                   )}
                   {selectedGpu.value && (
                     <div>
                       <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--color-text-secondary);margin-bottom:0.25rem;">
-                        <label for="gpu-oc-slider">GPU Overclock</label>
+                        <label for="gpu-oc-slider">{t.calculators.gpuOverclock}</label>
                         <span class="tabular" style="color:var(--color-accent-cyan);font-weight:700;">+{gpuOcPercent.value}%</span>
                       </div>
                       <input
@@ -424,21 +608,12 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                         step="1"
                         value={gpuOcPercent.value}
                         onInput={(e) => { gpuOcPercent.value = Number((e.target as HTMLInputElement).value); }}
-                        aria-label={`GPU overclock: ${gpuOcPercent.value}% above stock`}
                         style="width:100%;accent-color:var(--color-accent-cyan);cursor:pointer;"
                       />
                       <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--color-text-tertiary);">
-                        <span>Stock</span><span>15%</span><span>30% max</span>
+                        <span>0%</span><span>15%</span><span>30%</span>
                       </div>
-                      <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin-top:0.25rem;">
-                        +{Math.round(selectedGpu.value.tbp * gpuOcPercent.value / 100)}W on GPU draw
-                      </p>
                     </div>
-                  )}
-                  {!selectedCpu.value && !selectedGpu.value && (
-                    <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin:0;">
-                      Select a CPU or GPU to configure overclocking.
-                    </p>
                   )}
                 </div>
               )}
@@ -456,7 +631,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
               >
                 <span style="display:flex;align-items:center;gap:6px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  Safety Buffer
+                  {safetyBufferTitle}
                 </span>
                 <span class="tabular" style="color:var(--color-accent-cyan);font-weight:700;">
                   {safetyBufferPercent.value}%
@@ -471,17 +646,11 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                 step="5"
                 value={safetyBufferPercent.value}
                 onInput={(e) => { safetyBufferPercent.value = Number((e.target as HTMLInputElement).value); }}
-                aria-label={`Safety buffer: ${safetyBufferPercent.value}% additional wattage margin`}
                 style="width:100%;accent-color:var(--color-accent-cyan);cursor:pointer;"
               />
               <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--color-text-tertiary);margin-top:2px;">
                 <span>0%</span><span>10%</span><span>20%</span><span>30%</span>
               </div>
-              {safetyBufferPercent.value > 0 && (
-                <p style="font-size:0.7rem;color:var(--color-text-tertiary);margin-top:0.4rem;">
-                  Adds ~{Math.round(safetyBufferPercent.value * 0.5)}% to recommended wattage on top of ATX headroom.
-                </p>
-              )}
             </div>
 
             {/* ── Case Selection for Blueprint ── */}
@@ -493,7 +662,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
                 <span style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;font-weight:600;color:var(--color-text-secondary);">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
-                  Case (for clearance checks)
+                  {caseSelectTitle}
                 </span>
                 {selectedCase && (
                   <button
@@ -522,10 +691,9 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                       if (found) setSelectedCase(found);
                     }
                   }}
-                  aria-label="Select a computer case for clearance checks"
                   style="width:100%;padding:0.5rem;background:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-default);border-radius:var(--radius-sm);font-size:0.8125rem;"
                 >
-                  <option value="">— Select a case —</option>
+                  <option value="">{selectCaseOption}</option>
                   {ALL_CASES.map(c => (
                     <option key={c.id} value={c.id}>{c.name} ({c.formFactor}, {c.maxGpuLength}mm GPU max)</option>
                   ))}
@@ -550,6 +718,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                 storage={selectedStorage.value}
                 cooling={selectedCooling.value}
                 psu={selectedPsu.value}
+                lang={lang}
               />
             ) : (
               <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -565,6 +734,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                   cpuOcPercent={overclockingEnabled.value ? cpuOcPercent.value : 0}
                   gpuOcPercent={overclockingEnabled.value ? gpuOcPercent.value : 0}
                   safetyBufferPercent={safetyBufferPercent.value}
+                  lang={lang}
                 />
                 {activePsu && (
                   <PsuHealthHUD
@@ -577,6 +747,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                       activePsu.has12v2x6,
                       activePsu.has12v2x6 || activePsu.atxVersion === '3.1'
                     )}
+                    lang={lang}
                   />
                 )}
               </div>
@@ -595,7 +766,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
             <h2 style="font-size:1.25rem;font-weight:800;margin:0;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle;margin-right:0.5rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              Build Blueprint
+              {t.nav.buildBlueprint}
             </h2>
             {blueprintOutput && (
               <button
@@ -606,11 +777,11 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
                 aria-label="Print build blueprint"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                Print Blueprint
+                {printBtn}
               </button>
             )}
           </div>
-          <BuildBlueprint blueprint={blueprintOutput} />
+          <BuildBlueprint blueprint={blueprintOutput} lang={lang} />
         </section>
       )}
 
@@ -623,7 +794,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
         aria-expanded={hudOpen}
         id="mobile-hud-drawer"
       >
-        {/* Drawer toggle handle — 44px touch target */}
+        {/* Drawer toggle handle */}
         <button
           ref={drawerToggleRef}
           class="hud-drawer-handle"
@@ -662,6 +833,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
               storage={selectedStorage.value}
               cooling={selectedCooling.value}
               psu={selectedPsu.value}
+              lang={lang}
             />
           ) : (
             <DiagnosticsHUD
@@ -676,6 +848,7 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
               cpuOcPercent={overclockingEnabled.value ? cpuOcPercent.value : 0}
               gpuOcPercent={overclockingEnabled.value ? gpuOcPercent.value : 0}
               safetyBufferPercent={safetyBufferPercent.value}
+              lang={lang}
             />
           )}
         </div>
@@ -696,8 +869,8 @@ export function VirtualAssemblyDesk({ mode = 'psu', blueprintMode = false }: Pro
         totalCost={costBreakdown.totalCost}
         transientPeak={psuAnalysis.transientPeak}
         recommendedWattage={psuAnalysis.recommendedWattage}
+        lang={lang}
       />
     </div>
   );
 }
-

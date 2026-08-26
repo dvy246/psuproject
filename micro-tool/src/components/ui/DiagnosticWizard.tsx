@@ -2,6 +2,8 @@
 import { useState } from 'preact/hooks';
 import rulesData from '../../data/diagnostic-rules.json';
 import gpuData from '../../data/index/gpus.index.json';
+import { useTranslations, l, type Locale } from '../../i18n';
+import { getDiagnosticTranslations } from '../../i18n/diagnostics';
 
 interface Symptom {
   id: string;
@@ -20,7 +22,13 @@ interface Question {
   options: Option[];
 }
 
-export default function DiagnosticWizard() {
+interface Props {
+  currentLang?: Locale;
+}
+
+export default function DiagnosticWizard({ currentLang = 'en' }: Props) {
+  const t = useTranslations(currentLang);
+  const dt = getDiagnosticTranslations(currentLang);
   const [step, setStep] = useState<'select_symptom' | 'hardware_info' | 'questions' | 'results' | 'safety_alert'>('select_symptom');
   const [selectedSymptom, setSelectedSymptom] = useState<string>('');
   
@@ -119,85 +127,47 @@ export default function DiagnosticWizard() {
   };
 
   const getCauseTitle = (cause: string) => {
-    const map: Record<string, string> = {
-      psu_failure: 'Power Supply Component Failure',
-      front_panel: 'Faulty Front Panel Button / Headers',
-      outlet_issue: 'External Power Outlet or Cable Fault',
-      short_circuit: 'Short Circuit Protection (SCP) Active',
-      psu_overload: 'PSU Rail Overload / Insufficient Capacity',
-      motherboard_dead: 'Motherboard VRM or Chipset Failure',
-      psu_protection: 'Over-Current Protection (OCP) Triggered',
-      gpu_instability: 'GPU Core / VRAM Instability',
-      ram_instability: 'System RAM / XMP Instability',
-      psu_droop: 'Voltage Rail Droop Under Load',
-      cpu_thermal: 'CPU Thermal Throttling / Cooling Fail',
-      psu_transient: 'Transient Spike Excursion (GPU Triggered)',
-      motherboard_vr: 'Motherboard VRM Overheating',
-      psu_overheating: 'PSU Thermal Protection (OTP) Triggered',
-      thermal_throttling: 'System Thermal Throttling (CPU/GPU)',
-      driver_issue: 'OS File Corruption or Driver State Failure',
-      psu_ripple: 'High Voltage Ripple / Aging Capacitors',
-      normal_resonance: 'Inductor Vibration (Normal Coil Whine)',
-      psu_defect: 'PSU Inductor Defect (Abnormal Coil Whine)',
-      psu_aging: 'Capacitor Wear & Tear (PSU Aging)',
-      dirty_power: 'Dirty AC Wall Power / Harmonic Ripple',
-      cpu_voltage_droop: 'CPU Vcore Droop / Unstable Overclock',
-      psu_rail_instability: 'PSU +12V Rail Voltage Drops',
-      cpu_overclock: 'Unstable CPU Core Offset Tuning',
-      ram_defect: 'Faulty Memory Module (RAM Defect)',
-      cpu_memory_controller: 'Unstable Memory Controller (IMC) Voltage',
-      software_driver: 'Outdated GPU Driver / Windows Registry Loop',
-      system_corruption: 'Corrupt System Boot Sectors',
-      normal_zero_rpm: 'Eco/Zero-RPM Fan Mode Active',
-      fan_failure: 'PSU Fan Bearing / Motor Failure',
-      normal_low_speed: 'Eco Low-Speed fan cooling profile',
-      pending_test: 'Awaiting Paperclip Test Results'
-    };
-    return map[cause] || cause;
+    return dt.causeTitles[cause] || cause;
   };
 
   const getActionRecommendation = (topCause: string) => {
-    switch (topCause) {
-      case 'psu_failure':
-      case 'psu_droop':
-      case 'psu_transient':
-      case 'psu_overload':
-        return {
-          title: 'PSU Upgrade or Replacement Recommended',
-          text: 'The power supply appears unable to maintain stable voltage rails under load or has suffered component failure. We recommend replacing it with a high-quality model.',
-          link: '/psu-replacement-calculator',
-          linkText: 'Check Upgrade Compatibility'
-        };
-      case 'short_circuit':
-        return {
-          title: 'Isolate Hardware Short Circuits',
-          text: 'The power supply is shutting down instantly to prevent fire damage. Unplug your GPU, remove all but one RAM stick, and boot using motherboard integrated graphics to isolate the short circuit.',
-          link: '/guides/how-to-test-a-psu',
-          linkText: 'Read Troubleshooting Guide'
-        };
-      case 'pending_test':
-        return {
-          title: 'Perform the Paperclip Test',
-          text: 'To determine if the power supply is completely dead, perform a manual jump test using a paperclip on pins 16 and 17 of the 24-pin cable. Always disconnect all components before doing this test.',
-          link: '/guides/how-to-test-a-psu',
-          linkText: 'How to perform Paperclip Test'
-        };
-      case 'gpu_instability':
-      case 'normal_resonance':
-        return {
-          title: 'Isolate GPU Power Delivery',
-          text: 'The symptoms point to GPU-level instability or normal coil resonance. Try running two separate PCIe power cables from the PSU to the GPU rather than using a single daisy-chain pigtail cable.',
-          link: '/guides/gpu-power-connectors',
-          linkText: 'Read GPU Connector Guide'
-        };
-      default:
-        return {
-          title: 'Conduct a Hardware Swap Test',
-          text: 'Diagnostic indications are mixed. The most reliable way to confirm a power supply issue is to test the system using a known-working backup power supply.',
-          link: '/psu-calculator',
-          linkText: 'Recalculate Power Draw'
-        };
+    const isPsuDirect = ['psu_failure', 'psu_overload', 'psu_protection', 'psu_transient', 'psu_overheating', 'psu_droop', 'psu_ripple', 'psu_defect', 'psu_aging'].includes(topCause);
+
+    if (isPsuDirect) {
+      return {
+        title: dt.findReplacementPsuBtn,
+        text: currentLang === 'de'
+          ? 'Die Diagnose weist auf ein Problem mit der Stromversorgung hin. Überprüfen Sie Ihre Systemleistung in unserem Rechner.'
+          : currentLang === 'es'
+          ? 'El diagnóstico indica un fallo o sobrecarga en la fuente de alimentación. Recalcula el consumo de tu equipo.'
+          : currentLang === 'fr'
+          ? 'Le diagnostic indique un problème lié à l\'alimentation. Recalculez la consommation de votre configuration.'
+          : currentLang === 'ja'
+          ? '診断の結果、電源ユニットの容量不足または不具合の可能性が高いです。推奨W数を再計算してください。'
+          : currentLang === 'zh'
+          ? '诊断结果显示电源存在过载或元器件老化故障，建议重新核算整机真实功耗需求。'
+          : 'Diagnostic findings strongly indicate power supply instability or overload.',
+        link: l('/psu-calculator', currentLang),
+        linkText: t.nav.psuCalculator
+      };
     }
+
+    return {
+      title: dt.resultsHeading,
+      text: currentLang === 'de'
+        ? 'Die Messwerte sind uneinheitlich. Führen Sie einen Hardware-Tauschtest durch.'
+        : currentLang === 'es'
+        ? 'Los indicios son mixtos. Realiza una prueba cruzada con otra fuente de alimentación.'
+        : currentLang === 'fr'
+        ? 'Résultats mixtes. Effectuez un test croisé avec un autre composant.'
+        : currentLang === 'ja'
+        ? '判定が分かれています。最小構成での起動テストや代替パーツでの検証を推奨します。'
+        : currentLang === 'zh'
+        ? '检测特征较为分散，建议使用替换法对关键配件进行交叉测试。'
+        : 'Diagnostic indications are mixed. Test system components using a backup.',
+      link: l('/psu-calculator', currentLang),
+      linkText: t.nav.psuCalculator
+    };
   };
 
   const verdicts = step === 'results' ? calculateVerdicts() : [];
@@ -209,25 +179,28 @@ export default function DiagnosticWizard() {
       {step === 'select_symptom' && (
         <div>
           <h2 class="text-xl font-bold font-display" style="margin-bottom: 1.5rem; color:var(--text-primary);">
-            What is the primary symptom your PC is experiencing?
+            {dt.selectSymptomHeading}
           </h2>
           <div style="display:flex; flex-direction:column; gap:0.75rem;">
-            {symptoms.map(sym => (
-              <button
-                key={sym.id}
-                onClick={() => handleSymptomSelect(sym.id)}
-                class="card btn-card"
-                style="text-align:left; width:100%; transition:all 150ms var(--ease-out);"
-                type="button"
-              >
-                <div style="font-weight:700; color:var(--accent-primary); font-size:1.05rem; display:flex; align-items:center; gap:0.5rem;">
-                  {sym.id === 'burning-smell' ? '⚠️' : '⚡'} {sym.name}
-                </div>
-                <div style="font-size:0.875rem; color:var(--text-secondary); margin-top:0.25rem;">
-                  {sym.description}
-                </div>
-              </button>
-            ))}
+            {symptoms.map(sym => {
+              const locSym = dt.symptoms[sym.id] || sym;
+              return (
+                <button
+                  key={sym.id}
+                  onClick={() => handleSymptomSelect(sym.id)}
+                  class="card btn-card"
+                  style="text-align:left; width:100%; transition:all 150ms var(--ease-out);"
+                  type="button"
+                >
+                  <div style="font-weight:700; color:var(--accent-primary); font-size:1.05rem; display:flex; align-items:center; gap:0.5rem;">
+                    {sym.id === 'burning-smell' ? '⚠️' : '⚡'} {locSym.name}
+                  </div>
+                  <div style="font-size:0.875rem; color:var(--text-secondary); margin-top:0.25rem;">
+                    {locSym.description}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -236,18 +209,18 @@ export default function DiagnosticWizard() {
       {step === 'hardware_info' && (
         <div class="card" style="padding:1.5rem; border:1px solid var(--border-default);">
           <h2 class="text-xl font-bold font-display" style="margin-bottom: 1rem;">
-            Configure Hardware Profile
+            {dt.hardwareProfileHeading}
           </h2>
           <p class="text-secondary" style="font-size:0.875rem; margin-bottom:1.5rem;">
-            Inputting your power supply age and tier allows the engine to calibrate wear-and-tear degradation indices.
+            {dt.hardwareProfileSubtitle}
           </p>
 
           <div style="display:flex; flex-direction:column; gap:1.25rem;">
             {/* Age Slider */}
             <div>
               <label style="display:flex; justify-content:space-between; font-weight:600; font-size:0.9rem; margin-bottom:0.25rem;">
-                <span>Power Supply Age:</span>
-                <span style="color:var(--accent-primary);">{psuAge} Years</span>
+                <span>{dt.psuAgeLabel}</span>
+                <span style="color:var(--accent-primary);">{psuAge} {dt.yearsSuffix}</span>
               </label>
               <input
                 type="range"
@@ -262,22 +235,23 @@ export default function DiagnosticWizard() {
             {/* Quality Tier Selector */}
             <div>
               <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:0.5rem;">
-                Power Supply Quality Tier:
+                {dt.qualityTierLabel}
               </label>
               <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:0.5rem;">
                 {[
-                  { key: 'A', name: 'Tier A (High-End)' },
-                  { key: 'B', name: 'Tier B (Mid-Range)' },
-                  { key: 'C', name: 'Tier C (Budget)' },
-                  { key: 'Avoid', name: 'Avoid (Low-Quality)' }
-                ].map(t => (
+                  { key: 'A', name: dt.tierNames.A },
+                  { key: 'B', name: dt.tierNames.B },
+                  { key: 'C', name: dt.tierNames.C },
+                  { key: 'Avoid', name: dt.tierNames.Avoid }
+                ].map(item => (
                   <button
-                    key={t.key}
+                    key={item.key}
                     type="button"
-                    onClick={() => setPsuTier(t.key as any)}
-                    class={`btn btn-sm ${psuTier === t.key ? 'btn-primary' : 'btn-secondary'}`}
+                    title={item.name}
+                    onClick={() => setPsuTier(item.key as any)}
+                    class={`btn btn-sm ${psuTier === item.key ? 'btn-primary' : 'btn-secondary'}`}
                   >
-                    {t.key}
+                    {item.key}
                   </button>
                 ))}
               </div>
@@ -286,7 +260,7 @@ export default function DiagnosticWizard() {
             {/* GPU Selector */}
             <div>
               <label style="display:block; font-weight:600; font-size:0.9rem; margin-bottom:0.5rem;">
-                Graphics Card (GPU):
+                {dt.gpuLabel}
               </label>
               <select
                 value={gpuId}
@@ -302,8 +276,8 @@ export default function DiagnosticWizard() {
             </div>
 
             <div style="display:flex; gap:0.75rem; margin-top:1rem;">
-              <button onClick={resetWizard} class="btn btn-secondary" style="flex:1;">Back</button>
-              <button onClick={handleHardwareSubmit} class="btn btn-primary" style="flex:1;">Next Step</button>
+              <button onClick={resetWizard} class="btn btn-secondary" style="flex:1;">{dt.backBtn}</button>
+              <button onClick={handleHardwareSubmit} class="btn btn-primary" style="flex:1;">{dt.nextStepBtn}</button>
             </div>
           </div>
         </div>
@@ -313,8 +287,8 @@ export default function DiagnosticWizard() {
       {step === 'questions' && activeQuestions[currentQuestionIdx] && (
         <div class="card" style="padding:1.5rem; border:1px solid var(--border-default);">
           <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700; color:var(--text-tertiary); margin-bottom:1rem; text-transform:uppercase;">
-            <span>Question {currentQuestionIdx + 1} of {activeQuestions.length}</span>
-            <span style="color:var(--accent-primary);">{Math.round(((currentQuestionIdx) / activeQuestions.length) * 100)}% Complete</span>
+            <span>{dt.questionOf(currentQuestionIdx + 1, activeQuestions.length)}</span>
+            <span style="color:var(--accent-primary);">{dt.completePercent(Math.round(((currentQuestionIdx) / activeQuestions.length) * 100))}</span>
           </div>
 
           <h2 class="text-xl font-bold font-display" style="margin-bottom: 1.5rem; line-height:1.4;">
@@ -347,7 +321,7 @@ export default function DiagnosticWizard() {
             style="margin-top:1.5rem; width:100%;"
             type="button"
           >
-            ← Previous Question
+            {dt.previousQuestionBtn}
           </button>
         </div>
       )}
@@ -356,24 +330,24 @@ export default function DiagnosticWizard() {
       {step === 'safety_alert' && (
         <div class="card border-danger" style="padding:2rem; background:rgba(255, 68, 68, 0.05);">
           <h2 class="text-2xl font-bold text-danger" style="margin-bottom:1rem; color:var(--feedback-error-border); display:flex; align-items:center; gap:0.5rem;">
-            ⚠️ CRITICAL ELECTRICAL SAFETY ALERT
+            {dt.criticalSafetyTitle}
           </h2>
           <div style="line-height:1.6; color:var(--text-primary); display:flex; flex-direction:column; gap:1rem;">
             <p>
               Odor of hot plastic, burning insulation, visible sparks, or smoke indicate active, high-risk hardware failure inside your power supply or motherboard.
             </p>
             <p style="font-weight:700; color:var(--feedback-error-border);">
-              DO NOT attempt to boot the computer, troubleshoot components, or leave the PC connected to wall power.
+              {dt.criticalSafetyWarning}
             </p>
             <ol style="list-style-type:decimal; margin-left:1.5rem; display:flex; flex-direction:column; gap:0.5rem;">
-              <li>Immediately turn off the power switch on the back of the PSU.</li>
-              <li>Unplug the AC power cord from the wall outlet.</li>
-              <li>Wait at least 30 minutes for capacitors to discharge before removing any parts.</li>
-              <li>Do not reuse this power supply; it must be replaced.</li>
+              <li>{dt.criticalSafetyStep1}</li>
+              <li>{dt.criticalSafetyStep2}</li>
+              <li>{dt.criticalSafetyStep3}</li>
+              <li>{dt.criticalSafetyStep4}</li>
             </ol>
             <div style="margin-top:1.5rem; display:flex; gap:0.75rem;">
-              <button onClick={resetWizard} class="btn btn-secondary" style="flex:1;">Restart Diagnosis</button>
-              <a href="/psu-replacement-calculator" class="btn btn-primary" style="flex:1; text-decoration:none; text-align:center;">Find a Replacement PSU</a>
+              <button onClick={resetWizard} class="btn btn-secondary" style="flex:1;">{dt.restartDiagnosisBtn}</button>
+              <a href={l('/psu-replacement-calculator', currentLang)} class="btn btn-primary" style="flex:1; text-decoration:none; text-align:center;">{dt.findReplacementPsuBtn}</a>
             </div>
           </div>
         </div>
@@ -385,7 +359,7 @@ export default function DiagnosticWizard() {
           {/* Likelihood breakdown bento */}
           <div class="card" style="padding:2rem; border:1px solid var(--border-default);">
             <h2 class="text-2xl font-bold font-display" style="margin-bottom:1.5rem;">
-              📊 Differential Diagnosis Results
+              {dt.resultsHeading}
             </h2>
 
             <div style="display:flex; flex-direction:column; gap:1.25rem;">
@@ -396,7 +370,7 @@ export default function DiagnosticWizard() {
                       {idx === 0 ? '🏆 ' : ''}{getCauseTitle(v.cause)}
                     </span>
                     <span style={idx === 0 ? 'color:var(--accent-primary);' : 'color:var(--text-tertiary);'}>
-                      {v.percentage}% Match
+                      {v.percentage}{dt.matchSuffix}
                     </span>
                   </div>
                   <div class="progress-bar-container" style="background: var(--bg-primary); height: 8px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-subtle);">
@@ -411,23 +385,21 @@ export default function DiagnosticWizard() {
           {recommendation && (
             <div class="card border-accent" style="padding:2rem;">
               <h3 class="text-xl font-bold font-display" style="margin-bottom:0.75rem; color:var(--accent-primary);">
-                💡 Recommended Action: {recommendation.title}
+                {dt.recommendedActionHeading} {recommendation.title}
               </h3>
               <p class="text-secondary" style="line-height:1.6; margin-bottom:1.5rem; font-size:0.95rem;">
                 {recommendation.text}
               </p>
               <div style="display:flex; gap:1rem; flex-wrap:wrap;">
                 <a href={recommendation.link} class="btn btn-primary" style="text-decoration:none;">{recommendation.linkText}</a>
-                <button onClick={resetWizard} class="btn btn-secondary">Restart Diagnostics</button>
+                <button onClick={resetWizard} class="btn btn-secondary">{dt.restartDiagnosisBtn}</button>
               </div>
             </div>
           )}
 
           {/* EEAT Disclaimer block */}
           <div style="padding:1.25rem; background:var(--bg-deep); border:1px solid var(--border-subtle); border-radius:6px; font-size:0.825rem; color:var(--text-secondary); line-height:1.5;">
-            <strong>Medical-Grade Hardware Disclaimer:</strong> This diagnostic tool runs a client-side probability ruleset to narrow down faulty components. 
-            However, no software can substitute manual multi-meter sweeps or backup component swaps. 
-            Always confirm voltage stability and safety steps before purchasing replacement hardware.
+            {dt.eeatDisclaimer}
           </div>
         </div>
       )}

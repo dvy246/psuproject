@@ -1,0 +1,140 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const comparePageContent: Record<Locale, {
+  headerTitle: string;
+  headerSubtitle: string;
+  gpuUpgradeTitle: string;
+  gpuUpgradeDesc: string;
+  desktopVsLaptopTitle: string;
+  desktopVsLaptopDesc: string;
+}> = {
+  en: {
+    headerTitle: 'Comparison & Electrical Load Tools',
+    headerSubtitle: 'Side-by-side hardware spec comparison, UPS battery sizing, room circuit breaker load planning, and GPU upgrade checkers.',
+    gpuUpgradeTitle: 'GPU Upgrade Checker',
+    gpuUpgradeDesc: 'Test if your existing PSU can handle a new GPU upgrade without dangerous overloads.',
+    desktopVsLaptopTitle: 'Desktop vs Laptop Power Comparison',
+    desktopVsLaptopDesc: 'Compare desktop multi-rail power draw with laptop efficiency across daily workloads.'
+  },
+  de: {
+    headerTitle: 'Vergleichs- & Last-Werkzeuge',
+    headerSubtitle: 'Hardware-Vergleiche, USV-Batterie-Dimensionierung, Sicherungskasten-Planung und GPU-Upgrade-Prüfer.',
+    gpuUpgradeTitle: 'GPU-Upgrade Sicherheits-Checker',
+    gpuUpgradeDesc: 'Prüfen Sie, ob Ihr aktuelles Netzteil für eine neue Grafikkarte ausreicht.',
+    desktopVsLaptopTitle: 'Desktop vs. Laptop Stromverbrauch',
+    desktopVsLaptopDesc: 'Vergleichen Sie Desktop-Spitzenlasten mit der Energieeffizienz moderner Laptops.'
+  },
+  es: {
+    headerTitle: 'Herramientas de Comparación y Carga Eléctrica',
+    headerSubtitle: 'Comparativas de hardware, cálculo de batería SAI/UPS, planificación de magnetotérmicos y comprobador de actualización de GPU.',
+    gpuUpgradeTitle: 'Verificador de Actualización de GPU',
+    gpuUpgradeDesc: 'Comprueba si tu fuente actual soporta una nueva tarjeta gráfica sin sobrecargas.',
+    desktopVsLaptopTitle: 'Consumo Sobremesa vs Portátil',
+    desktopVsLaptopDesc: 'Compara el consumo eléctrico de un PC de sobremesa frente a la eficiencia de un portátil.'
+  },
+  fr: {
+    headerTitle: 'Outils de Comparaison & Charge Électrique',
+    headerSubtitle: 'Comparaisons de composants, dimensionnement d\'onduleur UPS, calcul de disjoncteur et vérification d\'upgrade GPU.',
+    gpuUpgradeTitle: 'Vérificateur d\'Upgrade GPU',
+    gpuUpgradeDesc: 'Vérifiez si votre bloc d\'alimentation actuel supporte votre future carte graphique.',
+    desktopVsLaptopTitle: 'Consommation PC Fixe vs Portable',
+    desktopVsLaptopDesc: 'Comparez la consommation d\'une tour de bureau avec l\'efficacité énergétique d\'un PC portable.'
+  },
+  ja: {
+    headerTitle: 'パーツ比較・電気負荷ツール一覧',
+    headerSubtitle: '詳細スペック比較、UPSバッテリー容量計算、ブレーカー負荷シミュレーション、GPU換装診断。',
+    gpuUpgradeTitle: 'グラボ換装・電源適合チェッカー',
+    gpuUpgradeDesc: '現在お使いの電源ユニットで最新グラフィックボードにアップグレード可能か診断。',
+    desktopVsLaptopTitle: 'デスクトップ vs ノートPC 消費電力比較',
+    desktopVsLaptopDesc: '据え置きデスクトップの消費電力と省電力ノートPCの年間電気代を比較。'
+  },
+  zh: {
+    headerTitle: '硬件对比与用电负载工具箱',
+    headerSubtitle: '硬件规格横向对比、UPS不间断电源计算、房间空开跳闸规划与显卡升级兼容性检测。',
+    gpuUpgradeTitle: '显卡升级与电源容量体检',
+    gpuUpgradeDesc: '一键测试当前在用电源能否支撑升级更高规格的新显卡。',
+    desktopVsLaptopTitle: '台式机 vs 游戏本 功耗与电费对比',
+    desktopVsLaptopDesc: '对比台式主机多路供电功耗与移动笔记本全天候运行电费。'
+  }
+};
+
+const c = comparePageContent[lang] || comparePageContent.en;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": `${t.common.compare} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/compare/`,
+  "description": c.headerSubtitle
+};
+---
+
+<Layout
+  title={`${t.common.compare} — PSUCheck`}
+  description={c.headerSubtitle}
+  schema={[schema]}
+>
+  <div class="compare-page container" style="padding-top: 2rem; padding-bottom: 5rem;">
+    <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1.5rem;">
+      <a href={l('/', lang)}>{t.nav.home}</a>
+      <span aria-hidden="true" style="margin:0 0.5rem; opacity:0.5;">›</span>
+      <span aria-current="page">{t.common.compare}</span>
+    </nav>
+
+    <header style="margin-bottom: 3rem;">
+      <h1 style="font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 900; line-height: 1.2;">
+        {c.headerTitle}
+      </h1>
+      <p style="font-size: 1.05rem; color: var(--text-secondary); margin-top: 0.75rem; max-width: 65ch;">
+        {c.headerSubtitle}
+      </p>
+    </header>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+      <a href={l('/compare/gpu-upgrade-checker', lang)} class="card card-dark" style="padding: 1.5rem; text-decoration: none; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔄</div>
+        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.25rem;">{c.gpuUpgradeTitle}</h2>
+        <p style="font-size: 0.85rem; color: var(--color-text-secondary);">{c.gpuUpgradeDesc}</p>
+      </a>
+
+      <a href={l('/compare/breaker-calculator', lang)} class="card card-dark" style="padding: 1.5rem; text-decoration: none; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔌</div>
+        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.25rem;">{t.breaker.title}</h2>
+        <p style="font-size: 0.85rem; color: var(--color-text-secondary);">{t.breaker.subtitle}</p>
+      </a>
+
+      <a href={l('/compare/ups-calculator', lang)} class="card card-dark" style="padding: 1.5rem; text-decoration: none; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔋</div>
+        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.25rem;">{t.ups.title}</h2>
+        <p style="font-size: 0.85rem; color: var(--color-text-secondary);">{t.ups.subtitle}</p>
+      </a>
+
+      <a href={l('/compare/desktop-vs-laptop', lang)} class="card card-dark" style="padding: 1.5rem; text-decoration: none; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💻</div>
+        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.25rem;">{c.desktopVsLaptopTitle}</h2>
+        <p style="font-size: 0.85rem; color: var(--color-text-secondary);">{c.desktopVsLaptopDesc}</p>
+      </a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+</style>

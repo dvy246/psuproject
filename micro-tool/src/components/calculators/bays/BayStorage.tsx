@@ -3,14 +3,18 @@ import { useState, useCallback } from 'preact/hooks';
 import { BayCard } from './BayCard';
 import type { StorageConfig } from '../../../types/components';
 import componentData from '../../../data/components.json';
-
 import { StorageIcon } from './BayIcons';
+import { formatCurrency, type Locale } from '../../../i18n';
 
 const ALL_STORAGE: StorageConfig[] = componentData.storage as StorageConfig[];
 
-interface Props { selected: StorageConfig[]; onSelect: (s: StorageConfig[]) => void; }
+interface Props {
+  selected: StorageConfig[];
+  onSelect: (s: StorageConfig[]) => void;
+  lang?: Locale;
+}
 
-export function BayStorage({ selected, onSelect }: Props) {
+export function BayStorage({ selected, onSelect, lang = 'en' }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => setIsOpen(p => !p), []);
   const clear  = useCallback(() => { onSelect([]); setIsOpen(false); }, [onSelect]);
@@ -30,9 +34,12 @@ export function BayStorage({ selected, onSelect }: Props) {
     ? selected.map(s => `${s.capacity >= 1000 ? `${s.capacity/1000}TB` : `${s.capacity}GB`} ${s.type}`).join(' + ')
     : undefined;
 
+  const storageLabel = lang === 'de' ? 'Speicher / SSD' : lang === 'es' ? 'Almacenamiento' : lang === 'fr' ? 'Stockage / SSD' : lang === 'ja' ? 'ストレージ (SSD/HDD)' : lang === 'zh' ? '存储硬盘 (SSD/HDD)' : 'Storage';
+  const hintText = lang === 'de' ? 'Mehrere Laufwerke wählbar. Erneut klicken zum Abwählen.' : lang === 'es' ? 'Selecciona varios discos. Clic de nuevo para desmarcar.' : lang === 'fr' ? 'Sélectionnez plusieurs disques. Cliquez à nouveau pour désélectionner.' : lang === 'ja' ? '複数ドライブ選択可能。再クリックで解除。' : lang === 'zh' ? '可多选硬盘配置，再次点击即可取消选中。' : 'Select multiple drives. Click again to deselect.';
+
   return (
-    <BayCard icon={<StorageIcon />} label="Storage" sublabel={sublabel} state={selected.length ? 'filled' : 'empty'} isOpen={isOpen} onToggle={toggle} onClear={selected.length ? clear : undefined}>
-      <p class="selector-hint">Select multiple drives. Click again to deselect.</p>
+    <BayCard icon={<StorageIcon />} label={storageLabel} sublabel={sublabel} state={selected.length ? 'filled' : 'empty'} isOpen={isOpen} onToggle={toggle} onClear={selected.length ? clear : undefined} lang={lang}>
+      <p class="selector-hint">{hintText}</p>
       <div class="selector-options-grid" role="listbox" aria-label="Storage options" aria-multiselectable="true">
         {ALL_STORAGE.map(s => {
           const k = key(s);
@@ -41,7 +48,7 @@ export function BayStorage({ selected, onSelect }: Props) {
             <button key={k} role="option" aria-selected={isSelected} class={`hw-option ${isSelected ? 'selected' : ''}`} onClick={() => toggle_item(s)} type="button">
               <div class="hw-option-name">{s.capacity >= 1000 ? `${s.capacity/1000}TB` : `${s.capacity}GB`} {s.type}</div>
               <div class="hw-option-specs"><span class="hw-spec tabular">{s.typicalWatts}W</span></div>
-              <div class="hw-option-price tabular">${s.price}</div>
+              <div class="hw-option-price tabular">{formatCurrency(s.price, lang)}</div>
             </button>
           );
         })}

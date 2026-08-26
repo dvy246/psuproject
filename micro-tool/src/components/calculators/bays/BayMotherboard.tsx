@@ -3,8 +3,8 @@ import { useState, useCallback } from 'preact/hooks';
 import { BayCard } from './BayCard';
 import type { MotherboardIndex, CpuIndex } from '../../../types/components';
 import moboData from '../../../data/index/motherboards.index.json';
-
 import { MotherboardIcon } from './BayIcons';
+import { formatCurrency, type Locale } from '../../../i18n';
 
 const ALL_MOBOS = moboData.items as MotherboardIndex[];
 
@@ -12,9 +12,10 @@ interface Props {
   selected: MotherboardIndex | null;
   selectedCpu: CpuIndex | null;
   onSelect: (mobo: MotherboardIndex | null) => void;
+  lang?: Locale;
 }
 
-export function BayMotherboard({ selected, selectedCpu, onSelect }: Props) {
+export function BayMotherboard({ selected, selectedCpu, onSelect, lang = 'en' }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => setIsOpen(p => !p), []);
   const clear  = useCallback(() => { onSelect(null); setIsOpen(false); }, [onSelect]);
@@ -29,19 +30,23 @@ export function BayMotherboard({ selected, selectedCpu, onSelect }: Props) {
     ? ALL_MOBOS.filter(m => m.socket === selectedCpu.socket)
     : ALL_MOBOS;
 
+  const mismatchLabel = lang === 'de' ? 'Sockel-Inkompatibilität' : lang === 'es' ? 'Socket incompatible' : lang === 'fr' ? 'Socket incompatible' : lang === 'ja' ? 'ソケット不一致' : lang === 'zh' ? 'CPU插槽不兼容' : 'Socket mismatch';
+  const label = lang === 'de' ? 'Mainboard' : lang === 'es' ? 'Placa Base' : lang === 'fr' ? 'Carte Mère' : lang === 'ja' ? 'マザーボード' : lang === 'zh' ? '主板' : 'Motherboard';
+
   return (
     <BayCard
       icon={<MotherboardIcon />}
-      label="Motherboard"
-      sublabel={selected ? `${selected.name}${!compatible ? ' ✕ Socket mismatch' : ''}` : undefined}
+      label={label}
+      sublabel={selected ? `${selected.name}${!compatible ? ` ✕ ${mismatchLabel}` : ''}` : undefined}
       state={state}
       isOpen={isOpen}
       onToggle={toggle}
       onClear={selected ? clear : undefined}
+      lang={lang}
     >
       {selectedCpu && (
         <p class="selector-hint">
-          Showing {options.length} boards compatible with {selectedCpu.socket} socket
+          {options.length} {selectedCpu.socket}
         </p>
       )}
       <div class="selector-options-grid" role="listbox" aria-label="Motherboard options">
@@ -64,14 +69,9 @@ export function BayMotherboard({ selected, selectedCpu, onSelect }: Props) {
               <span class="hw-spec">{m.chipset}</span>
               <span class="hw-spec">{m.formFactor}</span>
             </div>
-            <div class="hw-option-price tabular">${m.price}</div>
+            <div class="hw-option-price tabular">{formatCurrency(m.price, lang)}</div>
           </button>
         ))}
-        {options.length === 0 && (
-          <p style="padding:1rem;color:var(--color-text-tertiary);font-size:0.875rem;">
-            No boards found for {selectedCpu?.socket} socket.
-          </p>
-        )}
       </div>
     </BayCard>
   );

@@ -1,0 +1,53 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import DiagnosticWizard from '../../../components/ui/DiagnosticWizard';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `${t.diagnostics.title} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/diagnose`,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": t.diagnostics.subtitle,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+---
+
+<Layout
+  title={`${t.diagnostics.title} ${t.seo.titleSuffix}`}
+  description={t.diagnostics.subtitle}
+  schema={[schema]}
+>
+  <div class="diagnose-page-container">
+    <div class="container" style="max-width: 900px; padding: 2.5rem 1rem 6rem;">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 2rem;">
+        <a href={l('/', lang)}>{t.nav.home}</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{t.diagnostics.title}</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem; text-align: center;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">
+          {t.diagnostics.title}
+        </div>
+        <h1 style="font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.15;">
+          {t.diagnostics.title}
+        </h1>
+        <p style="font-size: 1.05rem; color: var(--color-text-secondary); max-width: 65ch; margin: 0 auto; line-height: 1.6;">
+          {t.diagnostics.subtitle}
+        </p>
+      </header>
+
+      <DiagnosticWizard client:load currentLang={lang} />
+    </div>
+  </div>
+</Layout>

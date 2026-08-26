@@ -1,0 +1,99 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const schema = {
+  "@type": "ContactPage",
+  "name": `${t.footer.contact} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/contact`,
+  "description": t.seo.defaultDescription
+};
+---
+
+<Layout
+  title={`${t.footer.contact} — PSUCheck`}
+  description={t.seo.defaultDescription}
+  schema={schema}
+>
+  <div class="contact-page">
+    <section class="contact-hero">
+      <div class="container">
+        <h1>{t.footer.contact}</h1>
+        <p class="contact-lead">
+          Found a data error? Missing a component? Have a methodology question? We want to hear from you.
+        </p>
+      </div>
+    </section>
+
+    <section class="contact-body">
+      <div class="container">
+        <div class="two-column" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items:start; gap:3rem;">
+          <div>
+            <h2 style="font-size:1.5rem;margin-bottom:1.5rem;">Why contact us?</h2>
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="contact-reason card">
+                <div class="contact-reason-icon">🔧</div>
+                <div>
+                  <h3 style="font-size:1rem;margin-bottom:0.25rem;">Data Corrections</h3>
+                  <p style="font-size:0.875rem;">If a TDP figure, price, or spec is wrong or stale, let us know. We commit to reviewing corrections within 48 hours.</p>
+                </div>
+              </div>
+              <div class="contact-reason card">
+                <div class="contact-reason-icon">➕</div>
+                <div>
+                  <h3 style="font-size:1rem;margin-bottom:0.25rem;">Missing Components</h3>
+                  <p style="font-size:0.875rem;">If your CPU, GPU, or PSU isn't in our database, submit the model name and we'll add it in the next update cycle.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card card-accent" style="padding:2rem;">
+              <h2 style="font-size:1.25rem;margin-bottom:1rem;">Email Us Directly</h2>
+              <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:1.5rem;">
+                Drop us a note anytime and our hardware verification team will get back to you.
+              </p>
+              <a href="mailto:support@psucheck.com" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:0.5rem;">
+                ✉ contact@psucheck.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+.contact-hero {
+  padding: 5rem 0 3rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.contact-lead {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-top: 1rem;
+  max-width: 55ch;
+}
+.contact-body {
+  padding: 4rem 0;
+}
+.contact-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.contact-reason-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+</style>

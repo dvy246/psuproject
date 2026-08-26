@@ -1,0 +1,96 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { VirtualAssemblyDesk } from '../../components/calculators/VirtualAssemblyDesk';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `${t.nav.buildBlueprint} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/build-plan`,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": t.seo.buildPlanDescription,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+};
+---
+
+<Layout
+  title={t.seo.buildPlanTitle}
+  description={t.seo.buildPlanDescription}
+  schema={[schema]}
+>
+  <section class="calc-hero" aria-labelledby="blueprint-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href={l('/', lang)}>{t.nav.home}</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{t.nav.buildBlueprint}</span>
+          </div>
+          <h1 id="blueprint-hero-heading" class="calc-h1">
+            {t.nav.buildBlueprint}
+          </h1>
+          <p class="calc-subtitle">
+            {t.hero.subtitle}
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Calculator features">
+          <span class="badge badge-safe">Clearance Checks</span>
+          <span class="badge badge-safe">Build Order</span>
+          <span class="badge badge-safe">Cable Plan</span>
+          <span class="badge badge-safe">Print-Ready</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <VirtualAssemblyDesk client:load mode="psu" blueprintMode={true} lang={lang} />
+</Layout>
+
+<style>
+.calc-hero {
+  padding: 4rem 0 2.5rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.calc-hero-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+.calc-h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.calc-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 60ch;
+  line-height: 1.65;
+  margin-top: 0.75rem;
+}
+.calc-hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+</style>

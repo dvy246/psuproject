@@ -1,14 +1,20 @@
 import { h } from 'preact';
 import { useState, useMemo } from 'preact/hooks';
 import type { CpuIndex, GpuIndex, PsuIndex } from '../../types/components';
+import { useTranslations, l, formatCurrency, type Locale } from '../../i18n';
+import { getGpuUpgradeTranslations } from '../../i18n/gpuUpgrade';
 
 interface Props {
   cpus: CpuIndex[];
   gpus: GpuIndex[];
   psus: PsuIndex[];
+  lang?: Locale;
 }
 
-export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
+export default function GpuUpgradeChecker({ cpus, gpus, psus, lang = 'en' }: Props) {
+  const t = useTranslations(lang);
+  const gut = getGpuUpgradeTranslations(lang);
+
   // Input states
   const [currentGpuId, setCurrentGpuId] = useState<string>(gpus.find(g => g.id.includes('3070'))?.id || gpus[0]?.id || '');
   const [targetGpuId, setTargetGpuId] = useState<string>(gpus.find(g => g.id.includes('5080'))?.id || gpus[1]?.id || '');
@@ -45,7 +51,6 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
     const effectiveCapacity = Math.round(ratedWattage * (1 - agingLossFactor));
 
     // Compatibility check logic
-    // We require a 15% safety buffer for ATX 2.x standard style calculations
     const safetyBuffer = 0.15;
     const isSafe = effectiveCapacity >= targetTransientPeak * (1 + safetyBuffer * 0.5);
     const isBorderline = effectiveCapacity >= targetTransientPeak && effectiveCapacity < targetTransientPeak * (1 + safetyBuffer * 0.5);
@@ -101,16 +106,14 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
     recommendedPsus
   } = calculations;
 
-  const getVerdictClass = (v: typeof verdict) => {
+  const getVerdictClass = (v: string) => {
     if (v === 'safe') return 'badge badge-safe';
     if (v === 'borderline') return 'badge badge-warning';
     return 'badge badge-danger';
   };
 
-  const getVerdictLabel = (v: typeof verdict) => {
-    if (v === 'safe') return 'Safe & Compatible';
-    if (v === 'borderline') return 'Borderline Headroom';
-    return 'Upgrade Required';
+  const getVerdictLabel = (v: 'safe' | 'borderline' | 'upgrade_required') => {
+    return gut.verdictLabels[v] || v;
   };
 
   return (
@@ -118,13 +121,13 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
       {/* Inputs Deck */}
       <div class="card" style="padding: 1.5rem; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 1.25rem;">
         <h3 style="font-size: 1rem; font-weight: 700; margin: 0; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">
-          GPU Upgrade Parameters
+          {gut.paramsHeading}
         </h3>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem;">
           <div>
             <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">
-              Current Graphics Card (GPU)
+              {gut.currentGpuLabel}
             </label>
             <select
               value={currentGpuId}
@@ -139,7 +142,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
 
           <div>
             <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">
-              Target Upgrade GPU
+              {gut.targetGpuLabel}
             </label>
             <select
               value={targetGpuId}
@@ -154,7 +157,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
 
           <div>
             <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">
-              Current PSU Rated Wattage
+              {gut.currentWattageLabel}
             </label>
             <select
               value={ratedWattage}
@@ -162,15 +165,15 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
               style="width: 100%; min-height: 40px; background: var(--bg-deep); border: 1px solid var(--border-subtle); color: var(--text-primary); border-radius: var(--radius-md); padding: 0 0.5rem; font-size: 0.875rem;"
             >
               {[450, 500, 550, 600, 650, 700, 750, 800, 850, 1000, 1200, 1300, 1500, 1600].map(w => (
-                <option value={w}>{w}W PSU</option>
+                <option value={w}>{w}W</option>
               ))}
             </select>
           </div>
 
           <div>
             <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-              <span>Current PSU Age</span>
-              <span style="font-family: var(--font-mono); color: var(--color-accent-cyan);">{psuAgeYears} Years</span>
+              <span>{gut.psuAgeLabel}</span>
+              <span style="font-family: var(--font-mono); color: var(--color-accent-cyan);">{psuAgeYears} {gut.yearsSuffix}</span>
             </label>
             <input
               type="range"
@@ -185,7 +188,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
 
           <div style="grid-column: span 1;">
             <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">
-              System CPU
+              {gut.systemCpuLabel}
             </label>
             <select
               value={selectedCpuId}
@@ -205,30 +208,20 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
         {/* Main Verdict Card */}
         <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); position: relative; overflow: hidden;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1rem;">
-            <span style="font-size: 0.875rem; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Upgrade Sizing Verdict</span>
+            <span style="font-size: 0.875rem; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">{gut.verdictHeading}</span>
             <span class={getVerdictClass(verdict)}>{getVerdictLabel(verdict)}</span>
           </div>
 
           <div style="font-size: 1rem; line-height: 1.6; color: var(--color-text-primary);">
-            {verdict === 'safe' ? (
-              <p>
-                Yes! Your <strong>{ratedWattage}W power supply</strong> is fully compatible and retains adequate safety margin for upgrading to the <strong>{targetGpu.name}</strong>. The target configuration produces peak transient spikes of <strong>{targetTransientPeak}W</strong>, which fits safely within your aged PSU's effective capacity of <strong>{effectiveCapacity}W</strong>.
-              </p>
-            ) : verdict === 'borderline' ? (
-              <p>
-                Your <strong>{ratedWattage}W power supply</strong> is borderline. The upgraded configuration peak draw reaches <strong>{targetTransientPeak}W</strong>, which is extremely close to your PSU's effective capacity of <strong>{effectiveCapacity}W</strong>. While the system may boot, we recommend upgrading to at least a <strong>{recommendedWattage}W</strong> PSU to avoid shutdowns under heavy load spikes.
-              </p>
-            ) : (
-              <p>
-                No. Your <strong>{ratedWattage}W power supply</strong> does not have enough headroom for the <strong>{targetGpu.name}</strong>. The upgraded system peak spikes reach <strong>{targetTransientPeak}W</strong>, which exceeds your PSU's aged capacity limit of <strong>{effectiveCapacity}W</strong>. You must upgrade your PSU.
-              </p>
-            )}
+            <p>
+              {gut.getVerdictText(verdict, ratedWattage, targetGpu.name, targetTransientPeak, effectiveCapacity, recommendedWattage)}
+            </p>
           </div>
 
           {/* Connector changes warning */}
           {connectorChanged && targetIs12v2x6 && (
             <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); font-size: 0.875rem; color: #f59e0b;">
-              <strong>⚠ Connector Transition Alert:</strong> Upgrading from {currentGpu.name} to {targetGpu.name} changes your power connector from <strong>{currentGpu.connectorType.toUpperCase()}</strong> to <strong>{targetGpu.connectorType.toUpperCase()}</strong>. Ensure your new GPU includes adapters or select a native ATX 3.1 PSU with a native 12V-2x6 cable to prevent melting risks.
+              <strong>⚠ {gut.connectorAlert(currentGpu.name, targetGpu.name, currentGpu.connectorType.toUpperCase(), targetGpu.connectorType.toUpperCase())}</strong>
             </div>
           )}
         </div>
@@ -236,21 +229,21 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
         {/* Delta Comparison Table */}
         <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);">
           <h3 style="font-size: 1rem; font-weight: 700; margin: 0 0 1rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">
-            Power Requirements Comparison
+            {gut.comparisonHeading}
           </h3>
           <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
               <thead>
                 <tr style="border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary);">
-                  <th style="padding: 0.5rem 0.75rem;">Metric</th>
-                  <th style="padding: 0.5rem 0.75rem;">Current ({currentGpu.name})</th>
-                  <th style="padding: 0.5rem 0.75rem;">Upgraded ({targetGpu.name})</th>
-                  <th style="padding: 0.5rem 0.75rem;">Change (Delta)</th>
+                  <th style="padding: 0.5rem 0.75rem;">{gut.tableHeaders.metric}</th>
+                  <th style="padding: 0.5rem 0.75rem;">{gut.tableHeaders.current(currentGpu.name)}</th>
+                  <th style="padding: 0.5rem 0.75rem;">{gut.tableHeaders.upgraded(targetGpu.name)}</th>
+                  <th style="padding: 0.5rem 0.75rem;">{gut.tableHeaders.delta}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style="border-bottom: 1px solid var(--border-subtle);">
-                  <td style="padding: 0.75rem; font-weight: 700;">GPU Rated TBP</td>
+                  <td style="padding: 0.75rem; font-weight: 700;">{gut.metrics.gpuTbp}</td>
                   <td style="padding: 0.75rem;">{currentGpu.tbp}W</td>
                   <td style="padding: 0.75rem;">{targetGpu.tbp}W</td>
                   <td style={{ padding: '0.75rem', fontWeight: 700, color: (targetGpu.tbp - currentGpu.tbp) >= 0 ? '#ef4444' : '#10b981' }}>
@@ -258,7 +251,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
                   </td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-subtle);">
-                  <td style="padding: 0.75rem; font-weight: 700;">Sustained System Draw</td>
+                  <td style="padding: 0.75rem; font-weight: 700;">{gut.metrics.sustainedDraw}</td>
                   <td style="padding: 0.75rem;">{currentBaseDraw}W</td>
                   <td style="padding: 0.75rem;">{targetBaseDraw}W</td>
                   <td style={{ padding: '0.75rem', fontWeight: 700, color: baseDelta >= 0 ? '#ef4444' : '#10b981' }}>
@@ -266,7 +259,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
                   </td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-subtle);">
-                  <td style="padding: 0.75rem; font-weight: 700;">Peak Transient Spike</td>
+                  <td style="padding: 0.75rem; font-weight: 700;">{gut.metrics.transientPeak}</td>
                   <td style="padding: 0.75rem; color: var(--color-warning-text);">{currentTransientPeak}W</td>
                   <td style="padding: 0.75rem; color: var(--color-warning-text);">{targetTransientPeak}W</td>
                   <td style={{ padding: '0.75rem', fontWeight: 700, color: peakDelta >= 0 ? '#ef4444' : '#10b981' }}>
@@ -274,11 +267,11 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
                   </td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-subtle);">
-                  <td style="padding: 0.75rem; font-weight: 700;">Power Connector</td>
+                  <td style="padding: 0.75rem; font-weight: 700;">{gut.metrics.connector}</td>
                   <td style="padding: 0.75rem;">{currentGpu.connectorType.toUpperCase()}</td>
                   <td style="padding: 0.75rem;">{targetGpu.connectorType.toUpperCase()}</td>
                   <td style={{ padding: '0.75rem', fontWeight: 700, color: connectorChanged ? '#f59e0b' : 'inherit' }}>
-                    {connectorChanged ? 'Different' : 'Same'}
+                    {connectorChanged ? gut.connectorDifferent : gut.connectorSame}
                   </td>
                 </tr>
               </tbody>
@@ -291,7 +284,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
       {verdict !== 'safe' && recommendedPsus.length > 0 && (
         <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);">
           <h3 style="font-size: 1rem; font-weight: 700; margin: 0 0 1rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">
-            Recommended ATX 3.1 PSUs for the Upgrade ({recommendedWattage}W+)
+            {gut.recommendedPsusHeading(recommendedWattage)}
           </h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem;">
             {recommendedPsus.map(p => (
@@ -306,8 +299,8 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus }: Props) {
                   </div>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
-                  <span style="font-size: 1.15rem; font-weight: 800; color: var(--color-accent-cyan); font-family: var(--font-mono);">${p.price}</span>
-                  <a href={`/psu/${p.id}/`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">View Specs →</a>
+                  <span style="font-size: 1.15rem; font-weight: 800; color: var(--color-accent-cyan); font-family: var(--font-mono);">{formatCurrency(p.price, lang)}</span>
+                  <a href={l(`/psu/${p.id}/`, lang)} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">{gut.viewSpecs}</a>
                 </div>
               </div>
             ))}

@@ -1,0 +1,111 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import buildsData from '../../../data/builds.json';
+import cpuData from '../../../data/index/cpus.index.json';
+import gpuData from '../../../data/index/gpus.index.json';
+import psuData from '../../../data/index/psus.index.json';
+import { TARGET_LOCALES, useTranslations, l, formatCurrency, type Locale } from '../../../i18n';
+import { getLocalizedBuild } from '../../../i18n/builds';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const cpus = new Map(cpuData.items.map(c => [c.id, c.name]));
+const gpus = new Map(gpuData.items.map(g => [g.id, g.name]));
+const psus = new Map(psuData.items.map(p => [p.id, p.name]));
+const builds = buildsData.items;
+
+const pageSubtitles: Record<Locale, string> = {
+  en: 'Explore community hardware configurations with real-time transient spike calculations and budget distributions.',
+  de: 'Entdecken Sie optimierte PC-Baupläne mit Echtzeit-Lastspitzen-Berechnung und Budget-Verteilung.',
+  es: 'Explora configuraciones de la comunidad con cálculos de picos transitorios y distribución de presupuesto.',
+  fr: 'Découvrez des configurations PC optimisées avec calcul des pics de puissance et répartition du budget.',
+  ja: '突入電力計算と予算配分が最適化されたコミュニティPC構成図を探索。',
+  zh: '探索包含实时瞬态尖峰计算与预算分布的精选社区装机蓝图。'
+};
+
+const viewBlueprintText: Record<Locale, string> = {
+  en: 'View Blueprint →',
+  de: 'Bauplan ansehen →',
+  es: 'Ver Plano de Montaje →',
+  fr: 'Voir le Schéma →',
+  ja: '構成図を見る →',
+  zh: '查看装机蓝图 →'
+};
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": `${t.nav.completedBuilds} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/builds/`,
+  "description": pageSubtitles[lang] || pageSubtitles.en
+};
+---
+
+<Layout
+  title={`${t.nav.completedBuilds} — PSUCheck`}
+  description={pageSubtitles[lang] || pageSubtitles.en}
+  schema={[schema]}
+>
+  <section class="gallery-hero" aria-labelledby="gallery-heading" style="padding: 2rem 0 5rem;">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1.5rem;">
+        <a href={l('/', lang)}>{t.nav.home}</a>
+        <span aria-hidden="true" style="margin:0 0.5rem; opacity:0.5;">›</span>
+        <span aria-current="page">{t.nav.completedBuilds}</span>
+      </nav>
+
+      <header style="margin-bottom: 2.5rem;">
+        <h1 id="gallery-heading" style="font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 900; line-height: 1.2;">
+          {t.nav.completedBuilds}
+        </h1>
+        <p style="font-size: 1.05rem; color: var(--text-secondary); margin-top: 0.75rem; max-width: 65ch;">
+          {pageSubtitles[lang] || pageSubtitles.en}
+        </p>
+      </header>
+
+      <div class="builds-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+        {builds.map(b => {
+          const loc = getLocalizedBuild(b, lang);
+          const cost = b.price || b.totalCost || 0;
+          return (
+            <article class="card card-dark" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                  <span class="badge badge-accent" style="font-size: 0.75rem;">{loc.category}</span>
+                  <span class="tabular" style="font-weight: 800; color: var(--color-accent-cyan); font-size: 1.1rem;">{formatCurrency(cost, lang)}</span>
+                </div>
+                <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.5rem;">{loc.name}</h2>
+                <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 1rem;">{loc.description}</p>
+                <div style="font-size: 0.8rem; color: var(--color-text-tertiary); display: flex; flex-direction: column; gap: 0.25rem;">
+                  <div><strong style="color:var(--color-text-secondary);">CPU:</strong> {cpus.get(b.cpuId) || b.cpuId}</div>
+                  <div><strong style="color:var(--color-text-secondary);">GPU:</strong> {gpus.get(b.gpuId) || b.gpuId}</div>
+                  <div><strong style="color:var(--color-text-secondary);">PSU:</strong> {psus.get(b.psuId) || b.psuId}</div>
+                </div>
+              </div>
+              <div style="margin-top: 1.25rem; padding-top: 0.75rem; border-top: 1px solid var(--color-border-subtle); display: flex; justify-content: flex-end;">
+                <a href={l(`/builds/${b.slug}/`, lang)} class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.75rem;">{viewBlueprintText[lang] || viewBlueprintText.en}</a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+</style>

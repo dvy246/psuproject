@@ -1,13 +1,15 @@
 import { h } from 'preact';
 import type { PsuHealthScore } from '../../types/components';
+import type { Locale } from '../../i18n/locales';
 
 interface Props {
   psuAgeYears: number;
   psuWattage: number;
   health: PsuHealthScore;
+  lang?: Locale;
 }
 
-export default function PsuHealthHUD({ psuAgeYears, psuWattage, health }: Props) {
+export default function PsuHealthHUD({ psuAgeYears, psuWattage, health, lang = 'en' }: Props) {
   const getRatingColor = (rating: string) => {
     if (rating === 'good') return 'var(--color-safe)';
     if (rating === 'warning') return 'var(--color-warning)';
@@ -28,6 +30,18 @@ export default function PsuHealthHUD({ psuAgeYears, psuWattage, health }: Props)
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (health.score / 100) * circumference;
 
+  const title = lang === 'de' ? 'Netzteil-Zustand & Alterung' : lang === 'es' ? 'Estado de Salud de la Fuente' : lang === 'fr' ? 'État de Santé Alimentation' : lang === 'ja' ? '電源ユニット健全性ステータス' : lang === 'zh' ? '电源健康度与老化状态' : 'PSU Health Status';
+  const scoreLabel = lang === 'de' ? 'Punkte' : lang === 'es' ? 'Puntos' : lang === 'fr' ? 'Score' : lang === 'ja' ? 'スコア' : lang === 'zh' ? '健康评分' : 'Score';
+  const ratedLabel = lang === 'de' ? 'Nennleistung:' : lang === 'es' ? 'Potencia Nominal:' : lang === 'fr' ? 'Puissance Nominale :' : lang === 'ja' ? '公称定格出力:' : lang === 'zh' ? '标称额定功率:' : 'Rated Output:';
+  const effectiveLabel = lang === 'de' ? 'Effektive Kapazität:' : lang === 'es' ? 'Capacidad Efectiva:' : lang === 'fr' ? 'Capacité Réelle :' : lang === 'ja' ? '実効出力容量:' : lang === 'zh' ? '老化实效功率:' : 'Effective Capacity:';
+  const degradationLabel = lang === 'de' ? 'Kapazitätsverlust:' : lang === 'es' ? 'Degradación:' : lang === 'fr' ? 'Dégradation :' : lang === 'ja' ? '経年劣化損耗:' : lang === 'zh' ? '老化容量损耗:' : 'Degradation:';
+
+  const ratingLabel = (rating: string) => {
+    if (rating === 'good') return lang === 'de' ? 'Gut' : lang === 'es' ? 'Óptimo' : lang === 'fr' ? 'Optimal' : lang === 'ja' ? '良好' : lang === 'zh' ? '优良' : 'Good';
+    if (rating === 'warning') return lang === 'de' ? 'Warnung' : lang === 'es' ? 'Atención' : lang === 'fr' ? 'Attention' : lang === 'ja' ? '要警戒' : lang === 'zh' ? '老化预警' : 'Warning';
+    return lang === 'de' ? 'Kritisch' : lang === 'es' ? 'Crítico' : lang === 'fr' ? 'Critique' : lang === 'ja' ? '危険' : lang === 'zh' ? '严重老化' : 'Critical';
+  };
+
   return (
     <div class="card" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--border-subtle); background: var(--bg-secondary); border-radius: var(--radius-lg);">
       <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;">
@@ -35,10 +49,10 @@ export default function PsuHealthHUD({ psuAgeYears, psuWattage, health }: Props)
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style={`color: ${ratingColor}`}>
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          PSU Health Status
+          {title}
         </h3>
         <span class="badge" style={`background: ${ratingBg}; color: ${ratingColor}; font-weight: 700; font-size: 0.65rem; text-transform: uppercase; padding: 2px 6px; border-radius: 4px;`}>
-          {health.rating}
+          {ratingLabel(health.rating)}
         </span>
       </header>
 
@@ -67,7 +81,7 @@ export default function PsuHealthHUD({ psuAgeYears, psuWattage, health }: Props)
               {health.score}
             </span>
             <span style="font-size: 0.55rem; color: var(--text-tertiary); text-transform: uppercase; font-weight: 700; margin-top: 1px; letter-spacing: 0.05em;">
-              Score
+              {scoreLabel}
             </span>
           </div>
         </div>
@@ -75,17 +89,17 @@ export default function PsuHealthHUD({ psuAgeYears, psuWattage, health }: Props)
         {/* Wattage capacity card */}
         <div style="flex: 1; min-width: 130px; display: flex; flex-direction: column; gap: 0.4rem;">
           <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
-            <span>Rated Output:</span>
+            <span>{ratedLabel}</span>
             <strong style="color: var(--text-primary); font-family: var(--font-mono);">{psuWattage}W</strong>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
-            <span>Effective Capacity:</span>
+            <span>{effectiveLabel}</span>
             <strong style={`color: ${psuAgeYears > 3 ? 'var(--color-warning)' : 'var(--text-primary)'}; font-family: var(--font-mono);`}>
               {health.effectiveCapacity}W
             </strong>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
-            <span>Degradation:</span>
+            <span>{degradationLabel}</span>
             <strong style={`color: ${health.degradationPercent > 0 ? ratingColor : 'var(--text-tertiary)'}; font-family: var(--font-mono);`}>
               -{health.degradationPercent}%
             </strong>
@@ -94,41 +108,10 @@ export default function PsuHealthHUD({ psuAgeYears, psuWattage, health }: Props)
       </div>
 
       {/* Narrative */}
-      <div style="padding: 0.5rem 0.75rem; background: var(--color-surface-raised); border-left: 2px solid var(--border-accent); border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.45;">
-        {health.narrative}
-      </div>
-
-      {/* Timeline tracker */}
-      <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
-          <span>Degradation Timeline</span>
-          <span>Age: {psuAgeYears} Yr</span>
+      {health.narrative && (
+        <div style="padding: 0.5rem 0.75rem; background: var(--color-surface-raised); border-left: 2px solid var(--border-accent); border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.45;">
+          {health.narrative}
         </div>
-        <div style="position: relative; height: 26px; background: var(--color-surface-raised); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); display: flex; align-items: center; overflow: hidden; padding: 0 4px;">
-          {/* Progress fill indicating degradation */}
-          <div
-            style={`position: absolute; top: 0; bottom: 0; left: 0; right: ${100 - health.score}%; background: linear-gradient(90deg, var(--color-safe) 0%, var(--color-warning) 60%, var(--color-danger) 100%); opacity: 0.12; transition: right 0.35s ease;`}
-          />
-          {/* Label checkpoints */}
-          <div style="width: 100%; display: flex; justify-content: space-between; z-index: 1; font-size: 0.6rem; font-weight: 700; color: var(--text-tertiary); padding: 0 4px; font-family: var(--font-mono);">
-            <span>0Y (100%)</span>
-            <span>5Y (90%)</span>
-            <span>8Y (75%)</span>
-            <span>12Y (55%)</span>
-            <span>15Y (EOL)</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Replacement check CTA */}
-      {health.score < 70 && (
-        <a
-          href="/psu-replacement-calculator"
-          style="display: block; text-align: center; text-decoration: none; padding: 6px 12px; font-size: 0.7rem; font-weight: 700; border-radius: var(--radius-md); background: rgba(0, 145, 234, 0.08); border: 1px solid var(--border-accent); color: var(--color-accent-cyan); transition: all 0.2s;"
-          class="hover-glow"
-        >
-          Verify replacement status ➔
-        </a>
       )}
     </div>
   );

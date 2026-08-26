@@ -1,0 +1,159 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { PsuIndex } from '../../types/components';
+import psuData from '../../data/index/psus.index.json';
+import { TARGET_LOCALES, useTranslations, l, formatCurrency, type Locale } from '../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const psus = psuData.items as PsuIndex[];
+const tierAPsus = psus.filter(p => p.qualityTier === 'A').slice(0, 8);
+const tierBPsus = psus.filter(p => p.qualityTier === 'B').slice(0, 8);
+const tierCPsus = psus.filter(p => p.qualityTier === 'C').slice(0, 8);
+
+const effLabelMap: Record<string, string> = {
+  '80plus': '80+',
+  bronze: '80+ Bronze',
+  silver: '80+ Silver',
+  gold: '80+ Gold',
+  platinum: '80+ Platinum',
+  titanium: '80+ Titanium'
+};
+---
+
+<Layout
+  title={t.seo.bestPsuTitle}
+  description={t.seo.bestPsuDescription}
+>
+  <section class="best-psu-page" aria-labelledby="best-psu-heading" style="padding: 3rem 0 6rem;">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 2rem;">
+        <a href={l('/', lang)}>{t.nav.home || 'Home'}</a>
+        <span aria-hidden="true" style="margin: 0 0.5rem; opacity: 0.5;">›</span>
+        <span aria-current="page">{t.bestPsu.title}</span>
+      </nav>
+
+      <header class="page-header" style="margin-bottom: 3rem;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--color-accent-cyan); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">
+          {lang === 'de' ? 'Kaufberater 2026' : lang === 'es' ? 'Guía de Compra 2026' : lang === 'fr' ? 'Guide d\'Achat 2026' : lang === 'ja' ? '2026年 おすすめ購入ガイド' : lang === 'zh' ? '2026年度电源选购指南' : "2026 Buyer's Guide"}
+        </div>
+        <h1 id="best-psu-heading" style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1;">
+          {t.bestPsu.title} <span class="gradient-text">2026</span>
+        </h1>
+        <p style="font-size: 1.1rem; color: var(--color-text-secondary); max-width: 70ch; line-height: 1.6;">
+          {t.bestPsu.subtitle}
+        </p>
+      </header>
+
+      {/* --- Section: Tier A --- */}
+      <section style="margin-bottom: 4rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--color-safe); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--color-safe);">★</span> {t.bestPsu.tierA}
+        </h2>
+        <div class="cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+          {tierAPsus.map(p => (
+            <article class="card card-dark" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                  <span class="badge badge-safe" style="font-size: 0.7rem; font-weight: 700;">Tier A</span>
+                  <span class="badge" style="background: var(--color-surface-overlay); color: var(--color-text-tertiary); font-size: 0.7rem;">{effLabelMap[p.efficiency] || p.efficiency}</span>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--color-text-primary);">{p.name}</h3>
+                <div style="font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 1rem;">
+                  <span class="tabular" style="font-weight: 700; color: var(--color-accent-cyan);">{p.wattage}W</span>
+                  <span style="margin: 0 0.5rem;">·</span>
+                  <span>{p.modularity}</span>
+                  <span style="margin: 0 0.5rem;">·</span>
+                  <span>ATX {p.atxVersion}</span>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--color-border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                <span class="tabular" style="font-weight: 800; font-size: 1.1rem; color: var(--color-text-primary);">{formatCurrency(p.priceUsd, lang)}</span>
+                <a href={l(`/psu/${p.id}`, lang)} class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.75rem;">{t.common.details}</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* --- Section: Tier B --- */}
+      <section style="margin-bottom: 4rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--color-warning); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--color-warning);">◆</span> {t.bestPsu.tierB}
+        </h2>
+        <div class="cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+          {tierBPsus.map(p => (
+            <article class="card card-dark" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                  <span class="badge badge-warning" style="font-size: 0.7rem; font-weight: 700;">Tier B</span>
+                  <span class="badge" style="background: var(--color-surface-overlay); color: var(--color-text-tertiary); font-size: 0.7rem;">{effLabelMap[p.efficiency] || p.efficiency}</span>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--color-text-primary);">{p.name}</h3>
+                <div style="font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 1rem;">
+                  <span class="tabular" style="font-weight: 700; color: var(--color-accent-cyan);">{p.wattage}W</span>
+                  <span style="margin: 0 0.5rem;">·</span>
+                  <span>{p.modularity}</span>
+                  <span style="margin: 0 0.5rem;">·</span>
+                  <span>ATX {p.atxVersion}</span>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--color-border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                <span class="tabular" style="font-weight: 800; font-size: 1.1rem; color: var(--color-text-primary);">{formatCurrency(p.priceUsd, lang)}</span>
+                <a href={l(`/psu/${p.id}`, lang)} class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.75rem;">{t.common.details}</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* --- Section: Tier C --- */}
+      <section>
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--color-text-tertiary); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--color-text-tertiary);">●</span> {t.bestPsu.tierC}
+        </h2>
+        <div class="cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+          {tierCPsus.map(p => (
+            <article class="card card-dark" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                  <span class="badge" style="background: var(--color-surface-raised); color: var(--color-text-secondary); font-size: 0.7rem; font-weight: 700;">Tier C</span>
+                  <span class="badge" style="background: var(--color-surface-overlay); color: var(--color-text-tertiary); font-size: 0.7rem;">{effLabelMap[p.efficiency] || p.efficiency}</span>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--color-text-primary);">{p.name}</h3>
+                <div style="font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 1rem;">
+                  <span class="tabular" style="font-weight: 700; color: var(--color-accent-cyan);">{p.wattage}W</span>
+                  <span style="margin: 0 0.5rem;">·</span>
+                  <span>{p.modularity}</span>
+                  <span style="margin: 0 0.5rem;">·</span>
+                  <span>ATX {p.atxVersion}</span>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--color-border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                <span class="tabular" style="font-weight: 800; font-size: 1.1rem; color: var(--color-text-primary);">{formatCurrency(p.priceUsd, lang)}</span>
+                <a href={l(`/psu/${p.id}`, lang)} class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.75rem;">{t.common.details}</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+</style>

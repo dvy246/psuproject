@@ -1,33 +1,53 @@
 /** @jsxImportSource preact */
 import type { BlueprintOutput, ClearanceCheck, ComponentListItem, CablePlan } from '../../lib/blueprint';
+import { useTranslations, formatCurrency, type Locale } from '../../i18n';
 
 interface Props {
   blueprint: BlueprintOutput | null;
+  lang?: Locale;
 }
 
-export function BuildBlueprint({ blueprint }: Props) {
+export function BuildBlueprint({ blueprint, lang = 'en' }: Props) {
+  const t = useTranslations(lang);
+
   if (!blueprint) {
+    const emptyTitle = lang === 'de' ? 'Bauplan & Montage-Anleitung' : lang === 'es' ? 'Plano de Montaje y Compatibilidad' : lang === 'fr' ? 'Plan de Montage PC' : lang === 'ja' ? '組立設計図・ブループリント' : lang === 'zh' ? '装机施工蓝图与步骤指引' : 'Build Blueprint';
+    const emptyText = lang === 'de' ? 'Wählen Sie Ihre Komponenten im oberen Montage-Deck aus und klicken Sie auf "Bauplan erstellen", um Kompatibilitätstests, Reihenfolge und Werkzeugliste zu erhalten.' : lang === 'es' ? 'Selecciona tus componentes en la bandeja superior y pulsa "Generar Plano" para obtener el checklist de compatibilidad y orden de montaje.' : lang === 'fr' ? 'Sélectionnez vos composants ci-dessus puis cliquez sur "Générer le Plan" pour obtenir l\'ordre de montage et les vérifications.' : lang === 'ja' ? '上部のパーツトレイでコンポーネントを選択し、「設計図を生成」をクリックすると、互換性検証、組み立て順序、必要工具一覧が表示されます。' : lang === 'zh' ? '请在上方组件托盘中选择硬件配置，随后点击「生成装机施工图」以获取全套兼容性核验、装机先后工序、所需工具清单及注意事项。' : 'Select your components in the Assembly Tray above, then click Generate Blueprint to receive a complete build plan with compatibility checks, build order, tool list, and more.';
+
     return (
       <div class="blueprint-empty-state">
-        <h2>Build Blueprint</h2>
-        <p>
-          Select your components in the Assembly Tray above, then click
-          <strong> Generate Blueprint </strong>
-          to receive a complete build plan with compatibility checks, build order, tool list, and more.
-        </p>
+        <h2>{emptyTitle}</h2>
+        <p>{emptyText}</p>
       </div>
     );
   }
 
   const { summary } = blueprint;
 
+  const totalChecksLabel = lang === 'de' ? 'Prüfungen' : lang === 'es' ? 'Pruebas' : lang === 'fr' ? 'Tests' : lang === 'ja' ? '検証総数' : lang === 'zh' ? '检测总项' : 'Total Checks';
+  const passedLabel = lang === 'de' ? 'Bestanden' : lang === 'es' ? 'Superadas' : lang === 'fr' ? 'Réussis' : lang === 'ja' ? '適合' : lang === 'zh' ? '通过' : 'Passed';
+  const failedLabel = lang === 'de' ? 'Fehlgeschlagen' : lang === 'es' ? 'Fallidas' : lang === 'fr' ? 'Échecs' : lang === 'ja' ? '不適合' : lang === 'zh' ? '冲突' : 'Failed';
+  const unknownLabel = lang === 'de' ? 'Unbekannt' : lang === 'es' ? 'Pendiente' : lang === 'fr' ? 'Inconnu' : lang === 'ja' ? '未確認' : lang === 'zh' ? '待定' : 'Unknown';
+
+  const secComponents = lang === 'de' ? 'Ausgewählte Komponenten' : lang === 'es' ? 'Componentes Seleccionados' : lang === 'fr' ? 'Composants Sélectionnés' : lang === 'ja' ? '選択されたハードウェア一覧' : lang === 'zh' ? '已选装机硬件清单' : 'Selected Components';
+  const secChecks = lang === 'de' ? 'Kompatibilitäts- & Maßprüfungen' : lang === 'es' ? 'Pruebas de Compatibilidad y Espacio' : lang === 'fr' ? 'Vérifications de Compatibilité & Dégagement' : lang === 'ja' ? '互換性・物理クリアランス検証' : lang === 'zh' ? '物理尺寸与硬件兼容性检测' : 'Compatibility & Clearance Checks';
+  const secPower = lang === 'de' ? 'Netzteil- & Lastanalyse' : lang === 'es' ? 'Análisis de Fuente y Consumo' : lang === 'fr' ? 'Analyse Alimentation & Énergie' : lang === 'ja' ? '電源ユニット・電力要求分析' : lang === 'zh' ? '电源容量与供电深度分析' : 'Power Supply Analysis';
+  const secOrder = lang === 'de' ? 'Empfohlene Montagereihenfolge' : lang === 'es' ? 'Orden de Montaje Recomendado' : lang === 'fr' ? 'Ordre d\'Assemblage Recommandé' : lang === 'ja' ? '推奨組み立て手順' : lang === 'zh' ? '推荐硬件装机先后工序' : 'Build Order';
+  const secTools = lang === 'de' ? 'Benötigte Werkzeuge' : lang === 'es' ? 'Herramientas Necesarias' : lang === 'fr' ? 'Outils Requis' : lang === 'ja' ? '必要な工具・備品' : lang === 'zh' ? '所需装机工具清单' : 'Tools Needed';
+  const secTime = lang === 'de' ? 'Geschätzte Montagezeit' : lang === 'es' ? 'Tiempo Estimado de Montaje' : lang === 'fr' ? 'Temps d\'Assemblage Estimé' : lang === 'ja' ? '想定組み立て所要時間' : lang === 'zh' ? '预计装机耗时' : 'Estimated Build Time';
+
+  const catCol = lang === 'de' ? 'Kategorie' : lang === 'es' ? 'Categoría' : lang === 'fr' ? 'Catégorie' : lang === 'ja' ? '区分' : lang === 'zh' ? '硬件类别' : 'Category';
+  const compCol = lang === 'de' ? 'Komponente' : lang === 'es' ? 'Componente' : lang === 'fr' ? 'Composant' : lang === 'ja' ? 'パーツ名' : lang === 'zh' ? '组件型号' : 'Component';
+  const priceCol = lang === 'de' ? 'Preis' : lang === 'es' ? 'Precio' : lang === 'fr' ? 'Prix' : lang === 'ja' ? '価格' : lang === 'zh' ? '参考价格' : 'Price';
+  const statusCol = lang === 'de' ? 'Status' : lang === 'es' ? 'Estado' : lang === 'fr' ? 'Statut' : lang === 'ja' ? '状態' : lang === 'zh' ? '规格状态' : 'Status';
+
   return (
     <div class="blueprint-container" id="blueprint-output">
-      {/* Print header — hidden on screen, shown on print */}
+      {/* Print header */}
       <div class="blueprint-print-header">
-        <h1>PC Build Blueprint</h1>
+        <h1>VoltForge — PC Build Blueprint</h1>
         <p>
-          Generated by PSUCheck.com — {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          Generated by VoltForge — {new Date().toLocaleDateString(lang, { year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
 
@@ -35,38 +55,38 @@ export function BuildBlueprint({ blueprint }: Props) {
       <div class="blueprint-summary-grid">
         <div class="blueprint-summary-stat">
           <div class="stat-value">{summary.totalChecks}</div>
-          <div class="stat-label">Total Checks</div>
+          <div class="stat-label">{totalChecksLabel}</div>
         </div>
         <div class="blueprint-summary-stat">
           <div class="stat-value" style={summary.checksFailed > 0 ? 'color: var(--status-danger);' : 'color: var(--status-safe);'}>
             {summary.checksPassed}
           </div>
-          <div class="stat-label">Passed</div>
+          <div class="stat-label">{passedLabel}</div>
         </div>
         <div class="blueprint-summary-stat">
           <div class="stat-value" style={summary.checksFailed > 0 ? 'color: var(--status-danger);' : ''}>
             {summary.checksFailed}
           </div>
-          <div class="stat-label">Failed</div>
+          <div class="stat-label">{failedLabel}</div>
         </div>
         <div class="blueprint-summary-stat">
           <div class="stat-value" style={summary.checksUnknown > 0 ? 'color: var(--status-warning);' : ''}>
             {summary.checksUnknown}
           </div>
-          <div class="stat-label">Unknown</div>
+          <div class="stat-label">{unknownLabel}</div>
         </div>
       </div>
 
       {/* Component List */}
       <section class="blueprint-section" aria-labelledby="bp-components-heading">
-        <h2 id="bp-components-heading">Selected Components</h2>
+        <h2 id="bp-components-heading">{secComponents}</h2>
         <table class="blueprint-table">
           <thead>
             <tr>
-              <th scope="col">Category</th>
-              <th scope="col">Component</th>
-              <th scope="col">Price</th>
-              <th scope="col">Status</th>
+              <th scope="col">{catCol}</th>
+              <th scope="col">{compCol}</th>
+              <th scope="col">{priceCol}</th>
+              <th scope="col">{statusCol}</th>
             </tr>
           </thead>
           <tbody>
@@ -74,11 +94,11 @@ export function BuildBlueprint({ blueprint }: Props) {
               <tr key={item.category + item.name}>
                 <td style="font-weight:600;color:var(--text-primary);">{item.category}</td>
                 <td>{item.name}</td>
-                <td style="font-variant-numeric:tabular-nums;">${item.price}</td>
+                <td style="font-variant-numeric:tabular-nums;">{formatCurrency(item.price, lang)}</td>
                 <td>
                   {item.verified
                     ? <span class="badge badge-safe">Verified</span>
-                    : <span class="badge badge-warning">Unconfirmed Specs</span>
+                    : <span class="badge badge-warning">Unconfirmed</span>
                   }
                 </td>
               </tr>
@@ -89,10 +109,10 @@ export function BuildBlueprint({ blueprint }: Props) {
 
       {/* Compatibility / Clearance Checks */}
       <section class="blueprint-section" aria-labelledby="bp-clearance-heading">
-        <h2 id="bp-clearance-heading">Compatibility &amp; Clearance Checks</h2>
+        <h2 id="bp-clearance-heading">{secChecks}</h2>
         {blueprint.clearanceChecks.length === 0 && (
           <p style="color:var(--text-tertiary); font-style:italic;">
-            No clearance checks performed. Select a case and components to enable checks.
+            No clearance checks performed.
           </p>
         )}
         {blueprint.clearanceChecks.map((check, idx) => (
@@ -117,25 +137,25 @@ export function BuildBlueprint({ blueprint }: Props) {
       {/* Power Analysis */}
       {blueprint.powerAnalysis && (
         <section class="blueprint-section" aria-labelledby="bp-power-heading">
-          <h2 id="bp-power-heading">Power Supply Analysis</h2>
+          <h2 id="bp-power-heading">{secPower}</h2>
           <table class="blueprint-table">
             <tbody>
               <tr>
-                <td style="font-weight:600;color:var(--text-primary);">Sustained Draw</td>
+                <td style="font-weight:600;color:var(--text-primary);">{t.calculators.continuousLoad}</td>
                 <td style="font-variant-numeric:tabular-nums;">{blueprint.powerAnalysis.baseDraw}W</td>
               </tr>
               <tr>
-                <td style="font-weight:600;color:var(--text-primary);">Transient Peak</td>
+                <td style="font-weight:600;color:var(--text-primary);">{t.calculators.transientSpike}</td>
                 <td style="font-variant-numeric:tabular-nums;">{blueprint.powerAnalysis.transientPeak}W</td>
               </tr>
               <tr>
-                <td style="font-weight:600;color:var(--text-primary);">Recommended PSU</td>
+                <td style="font-weight:600;color:var(--text-primary);">{t.calculators.recommendedWattage}</td>
                 <td style="font-variant-numeric:tabular-nums;font-weight:700;color:var(--color-accent-cyan);">
                   &ge;{blueprint.powerAnalysis.recommendedWattage}W
                 </td>
               </tr>
               <tr>
-                <td style="font-weight:600;color:var(--text-primary);">Headroom</td>
+                <td style="font-weight:600;color:var(--text-primary);">{t.calculators.safetyBuffer}</td>
                 <td style="font-variant-numeric:tabular-nums;">
                   {blueprint.powerAnalysis.headroom}W ({blueprint.powerAnalysis.headroomPercent}%)
                 </td>
@@ -148,28 +168,6 @@ export function BuildBlueprint({ blueprint }: Props) {
                   </span>
                 </td>
               </tr>
-              {blueprint.powerAnalysis.perRail && (
-                <>
-                  <tr>
-                    <td style="font-weight:600;color:var(--text-primary);">+12V Rail</td>
-                    <td style="font-variant-numeric:tabular-nums;">
-                      {blueprint.powerAnalysis.perRail.v12Amps}A / {blueprint.powerAnalysis.perRail.v12Watts}W
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight:600;color:var(--text-primary);">+5V Rail</td>
-                    <td style="font-variant-numeric:tabular-nums;">
-                      {blueprint.powerAnalysis.perRail.v5Amps}A / {blueprint.powerAnalysis.perRail.v5Watts}W
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="font-weight:600;color:var(--text-primary);">+3.3V Rail</td>
-                    <td style="font-variant-numeric:tabular-nums;">
-                      {blueprint.powerAnalysis.perRail.v3_3Amps}A / {blueprint.powerAnalysis.perRail.v3_3Watts}W
-                    </td>
-                  </tr>
-                </>
-              )}
             </tbody>
           </table>
         </section>
@@ -177,10 +175,7 @@ export function BuildBlueprint({ blueprint }: Props) {
 
       {/* Build Order */}
       <section class="blueprint-section blueprint-build-order" aria-labelledby="bp-order-heading">
-        <h2 id="bp-order-heading">Build Order</h2>
-        <p style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:1rem;">
-          Recommended assembly sequence. Steps may vary based on component clearance and case layout.
-        </p>
+        <h2 id="bp-order-heading">{secOrder}</h2>
         <ol style="padding-left:1.25rem;margin:0;">
           {blueprint.buildOrder.map(step => (
             <li key={step.order}>
@@ -191,70 +186,9 @@ export function BuildBlueprint({ blueprint }: Props) {
         </ol>
       </section>
 
-      {/* Thermal Paste */}
-      {blueprint.thermalPasteAdvice && (
-        <section class="blueprint-section" aria-labelledby="bp-paste-heading">
-          <h2 id="bp-paste-heading">Thermal Paste Application</h2>
-          <div style="display:flex;flex-direction:column;gap:0.5rem;">
-            <p style="font-size:0.9375rem;font-weight:700;color:var(--text-primary);">
-              Recommended method: {blueprint.thermalPasteAdvice.pattern}
-            </p>
-            <p style="font-size:0.8125rem;color:var(--text-secondary);">
-              {blueprint.thermalPasteAdvice.rationale}
-            </p>
-            <p style="font-size:0.75rem;color:var(--text-tertiary);">
-              Source: {blueprint.thermalPasteAdvice.source}
-            </p>
-          </div>
-        </section>
-      )}
-
-      {/* Cable Plan */}
-      {blueprint.cablePlan && (
-        <section class="blueprint-section" aria-labelledby="bp-cable-heading">
-          <h2 id="bp-cable-heading">Cable Plan</h2>
-          <ul style="padding-left:1.25rem;margin:0;display:flex;flex-direction:column;gap:0.5rem;">
-            {blueprint.cablePlan.cablesNeeded.map((cable, idx) => (
-              <li key={idx} style="font-size:0.875rem;color:var(--text-secondary);">{cable}</li>
-            ))}
-          </ul>
-          {!blueprint.cablePlan.daisyChainSafe && (
-            <p style="font-size:0.8125rem;color:var(--status-danger);margin-top:0.75rem;padding:0.5rem;background:var(--status-danger-bg);border-radius:var(--radius-md);">
-              ⚠ {blueprint.cablePlan.connectorType === '12v-2x6'
-                ? 'Do not use daisy-chain PCIe adapters for 12V-2x6 GPUs. Use the native cable or a dedicated adapter.'
-                : `This GPU requires ${blueprint.cablePlan.connectorCount} PCIe cables. Run separate cables from the PSU for each connector — do not use the daisy-chain pigtail on a single cable.`}
-            </p>
-          )}
-        </section>
-      )}
-
-      {/* PSU Installation */}
-      {blueprint.psuInstallationNote && (
-        <section class="blueprint-section" aria-labelledby="bp-psu-install-heading">
-          <h2 id="bp-psu-install-heading">PSU Installation</h2>
-          <p style="font-size:0.875rem;color:var(--text-secondary);">
-            <strong style="color:var(--text-primary);">Position:</strong> {blueprint.psuInstallationNote.position}<br />
-            <strong style="color:var(--text-primary);">Fan direction:</strong> {blueprint.psuInstallationNote.fanDirection}<br />
-            {blueprint.psuInstallationNote.note && (
-              <><strong style="color:var(--text-primary);">Note:</strong> {blueprint.psuInstallationNote.note}</>
-            )}
-          </p>
-        </section>
-      )}
-
-      {/* GPU Sag */}
-      {blueprint.gpuSagAdvice && (
-        <section class="blueprint-section" aria-labelledby="bp-sag-heading">
-          <h2 id="bp-sag-heading">GPU Support Note</h2>
-          <p style="font-size:0.875rem;color:var(--status-warning);padding:0.5rem;background:var(--status-warning-bg);border-radius:var(--radius-md);">
-            {blueprint.gpuSagAdvice}
-          </p>
-        </section>
-      )}
-
-      {/* Tool Checklist */}
+      {/* Tools Checklist */}
       <section class="blueprint-section" aria-labelledby="bp-tools-heading">
-        <h2 id="bp-tools-heading">Tools Needed</h2>
+        <h2 id="bp-tools-heading">{secTools}</h2>
         <ul style="padding-left:0;margin:0;list-style:none;display:flex;flex-direction:column;gap:0.5rem;">
           {blueprint.toolChecklist.map((tool, idx) => (
             <li key={idx} style="display:flex;align-items:center;gap:0.5rem;font-size:0.875rem;color:var(--text-secondary);">
@@ -270,19 +204,11 @@ export function BuildBlueprint({ blueprint }: Props) {
 
       {/* Build Time */}
       <section class="blueprint-section" aria-labelledby="bp-time-heading">
-        <h2 id="bp-time-heading">Estimated Build Time</h2>
+        <h2 id="bp-time-heading">{secTime}</h2>
         <p style="font-size:1.25rem;font-weight:800;color:var(--color-accent-cyan);">
-          ~{blueprint.estimatedBuildTime.minutes} minutes
-        </p>
-        <p style="font-size:0.75rem;color:var(--text-tertiary);">
-          {blueprint.estimatedBuildTime.note}
+          ~{blueprint.estimatedBuildTime.minutes} {lang === 'de' ? 'Minuten' : lang === 'es' ? 'minutos' : lang === 'fr' ? 'minutes' : lang === 'ja' ? '分' : lang === 'zh' ? '分钟' : 'minutes'}
         </p>
       </section>
-
-      {/* Print Footer */}
-      <div class="blueprint-footer-print">
-        Generated at PSUCheck.com/build-plan — {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-      </div>
     </div>
   );
 }

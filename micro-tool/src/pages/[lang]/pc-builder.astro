@@ -1,0 +1,138 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { VirtualAssemblyDesk } from '../../components/calculators/VirtualAssemblyDesk';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `${t.cost.title} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/pc-builder`,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "description": t.seo.pcBuilderDescription,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "PC build cost calculation",
+    "Budget allocation visual charts",
+    "Real-time hardware optimization advice",
+    "Sales tax and custom assembly fee inclusion",
+    "OS and peripheral load calculation"
+  ]
+};
+---
+
+<Layout
+  title={t.seo.pcBuilderTitle}
+  description={t.seo.pcBuilderDescription}
+  schema={[schema]}
+>
+  <!-- Builder Hero -->
+  <section class="calc-hero" aria-labelledby="builder-hero-heading">
+    <div class="container">
+      <div class="calc-hero-inner">
+        <div>
+          <div class="calc-breadcrumb" aria-label="Breadcrumb">
+            <a href={l('/', lang)}>{t.nav.home}</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{t.nav.pcBuilder}</span>
+          </div>
+          <h1 id="builder-hero-heading" class="calc-h1">
+            {t.cost.title}
+          </h1>
+          <p class="calc-subtitle">
+            {t.cost.subtitle}
+          </p>
+        </div>
+        <div class="calc-hero-badges" aria-label="Calculator features">
+          <span class="badge badge-safe">📊 Cost Breakdown</span>
+          <span class="badge badge-safe">💡 Savings Optimizer</span>
+          <span class="badge badge-safe">💼 Tax &amp; Fees Config</span>
+          <span class="badge badge-safe">🎮 Peripheral Pricing</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology trust strip -->
+  <div class="methodology-strip" role="complementary" aria-label="Pricing sources">
+    <div class="container">
+      <div class="methodology-strip-inner">
+        <span class="method-label">Pricing Data:</span>
+        <span class="method-item">Quarterly Updated Retail Averages</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">Real Manufacturer MSRP</span>
+        <span class="method-sep" aria-hidden="true">·</span>
+        <span class="method-item">No Fabricated Pricing</span>
+        <a href={l('/about#methodology', lang)} class="method-link">{t.footer.methodology} →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== VIRTUAL ASSEMBLY DESK (Preact Island in Cost Mode) ===== -->
+  <VirtualAssemblyDesk client:load mode="cost" lang={lang} />
+</Layout>
+
+<style>
+.calc-hero {
+  padding: 4rem 0 2.5rem;
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.calc-hero-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.calc-breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.calc-breadcrumb a { color: var(--text-tertiary); }
+.calc-breadcrumb a:hover { color: var(--accent-primary); }
+.calc-h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.calc-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 60ch;
+  line-height: 1.65;
+  margin-top: 0.75rem;
+}
+.calc-hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.methodology-strip {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.625rem 0;
+}
+.methodology-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+.method-label { font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+.method-item { color: var(--text-secondary); }
+.method-sep { color: var(--border-default); }
+.method-link { color: var(--accent-primary); margin-left: auto; font-weight: 600; white-space: nowrap; }
+.method-link:hover { text-decoration: underline; }
+</style>

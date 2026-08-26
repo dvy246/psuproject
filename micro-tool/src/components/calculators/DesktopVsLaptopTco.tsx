@@ -1,24 +1,18 @@
 import { useState } from 'preact/hooks';
+import { useTranslations, formatCurrency, type Locale } from '../../i18n';
+import { getDesktopVsLaptopTranslations } from '../../i18n/desktopVsLaptop';
 
-interface TcoPreset {
-  name: string;
-  loadWatts: number;
+interface Props {
+  lang?: Locale;
 }
 
-const DESKTOP_PRESETS: TcoPreset[] = [
-  { name: 'Budget PC (Ryzen 5 + RTX 4060)', loadWatts: 180 },
-  { name: 'Mid-Range PC (Ryzen 7 + RTX 4070 SUPER)', loadWatts: 350 },
-  { name: 'High-End PC (Ryzen 7 + RTX 5080)', loadWatts: 550 },
-  { name: 'Enthusiast PC (Intel i9 + RTX 5090)', loadWatts: 800 }
-];
+export default function DesktopVsLaptopTco({ lang = 'en' }: Props) {
+  const t = useTranslations(lang);
+  const dlt = getDesktopVsLaptopTranslations(lang);
 
-const LAPTOP_PRESETS: TcoPreset[] = [
-  { name: 'Thin & Light (MacBook Pro / Office)', loadWatts: 30 },
-  { name: 'Productivity Laptop (Dell XPS / Creator)', loadWatts: 85 },
-  { name: 'High-End Gaming Laptop (ASUS G14 / Blade)', loadWatts: 180 }
-];
+  const desktopPresets = dlt.desktopPresets;
+  const laptopPresets = dlt.laptopPresets;
 
-export default function DesktopVsLaptopTco() {
   // States for Desktop specs
   const [desktopPresetIdx, setDesktopPresetIdx] = useState(1); // Mid-range default
   const [desktopCustomWatts, setDesktopCustomWatts] = useState(350);
@@ -36,12 +30,11 @@ export default function DesktopVsLaptopTco() {
   const [timeHorizon, setTimeHorizon] = useState(5); // 5 years
 
   // Setup actual watts
-  const desktopWatts = isDesktopCustom ? desktopCustomWatts : DESKTOP_PRESETS[desktopPresetIdx].loadWatts;
-  // Idle load is assumed to be 20% of peak under standard office tasks
+  const desktopWatts = isDesktopCustom ? desktopCustomWatts : (desktopPresets[desktopPresetIdx]?.loadWatts || 350);
   const desktopIdleWatts = Math.round(desktopWatts * 0.2);
 
-  const laptopWatts = isLaptopCustom ? laptopCustomWatts : LAPTOP_PRESETS[laptopPresetIdx].loadWatts;
-  const laptopIdleWatts = Math.round(laptopWatts * 0.15); // Laptops idle lower
+  const laptopWatts = isLaptopCustom ? laptopCustomWatts : (laptopPresets[laptopPresetIdx]?.loadWatts || 180);
+  const laptopIdleWatts = Math.round(laptopWatts * 0.15);
 
   // Calculations
   const gamingHoursPerYear = hoursGaming * 365;
@@ -71,11 +64,11 @@ export default function DesktopVsLaptopTco() {
       <div class="tco-control-grid">
         {/* Left Side: Parameters */}
         <div class="card card-dark" style="padding: 1.5rem; display:flex; flex-direction:column; gap:1.25rem;">
-          <h2 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">1. Sizing Presets</h2>
+          <h2 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">{dlt.presetsHeading}</h2>
           
           {/* Desktop Selection */}
           <div>
-            <label class="input-label" style="display:block; margin-bottom:0.5rem; font-weight:700;">Desktop Config</label>
+            <label class="input-label" style="display:block; margin-bottom:0.5rem; font-weight:700;">{dlt.desktopConfigLabel}</label>
             <div style="display:grid; grid-template-columns:1fr; gap:0.5rem;">
               <select
                 class="form-input"
@@ -91,14 +84,14 @@ export default function DesktopVsLaptopTco() {
                   }
                 }}
               >
-                {DESKTOP_PRESETS.map((preset, idx) => (
+                {desktopPresets.map((preset, idx) => (
                   <option key={idx} value={idx.toString()}>{preset.name} ({preset.loadWatts}W)</option>
                 ))}
-                <option value="custom">Custom Power Rating</option>
+                <option value="custom">{dlt.customPowerRating}</option>
               </select>
               {isDesktopCustom && (
                 <div style="margin-top:0.25rem;">
-                  <label style="font-size:0.75rem; color:var(--text-tertiary);">Custom Gaming Load (W): {desktopCustomWatts}W</label>
+                  <label style="font-size:0.75rem; color:var(--text-tertiary);">{dlt.customLoadLabel(desktopCustomWatts)}</label>
                   <input
                     type="range"
                     min="50"
@@ -115,7 +108,7 @@ export default function DesktopVsLaptopTco() {
 
           {/* Laptop Selection */}
           <div>
-            <label class="input-label" style="display:block; margin-bottom:0.5rem; font-weight:700;">Laptop Config</label>
+            <label class="input-label" style="display:block; margin-bottom:0.5rem; font-weight:700;">{dlt.laptopConfigLabel}</label>
             <div style="display:grid; grid-template-columns:1fr; gap:0.5rem;">
               <select
                 class="form-input"
@@ -131,14 +124,14 @@ export default function DesktopVsLaptopTco() {
                   }
                 }}
               >
-                {LAPTOP_PRESETS.map((preset, idx) => (
+                {laptopPresets.map((preset, idx) => (
                   <option key={idx} value={idx.toString()}>{preset.name} ({preset.loadWatts}W)</option>
                 ))}
-                <option value="custom">Custom Power Rating</option>
+                <option value="custom">{dlt.customPowerRating}</option>
               </select>
               {isLaptopCustom && (
                 <div style="margin-top:0.25rem;">
-                  <label style="font-size:0.75rem; color:var(--text-tertiary);">Custom Gaming Load (W): {laptopCustomWatts}W</label>
+                  <label style="font-size:0.75rem; color:var(--text-tertiary);">{dlt.customLoadLabel(laptopCustomWatts)}</label>
                   <input
                     type="range"
                     min="15"
@@ -155,13 +148,13 @@ export default function DesktopVsLaptopTco() {
 
           <hr style="border: 0; border-top:1px solid var(--color-border-subtle); margin:0.5rem 0;" />
 
-          <h2 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">2. Usage & Cost Parameters</h2>
+          <h2 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">{dlt.usageHeading}</h2>
 
           {/* Gaming Hours */}
           <div>
             <div style="display:flex; justify-content:space-between; font-size:0.875rem; color:var(--text-secondary); margin-bottom:0.25rem;">
-              <span>Heavy Usage (Gaming/Load)</span>
-              <span class="tabular" style="font-weight:700; color:var(--text-primary);">{hoursGaming} hr/day</span>
+              <span>{dlt.heavyUsageLabel}</span>
+              <span class="tabular" style="font-weight:700; color:var(--text-primary);">{hoursGaming} {dlt.hrDaySuffix}</span>
             </div>
             <input
               type="range"
@@ -177,8 +170,8 @@ export default function DesktopVsLaptopTco() {
           {/* Idle Hours */}
           <div>
             <div style="display:flex; justify-content:space-between; font-size:0.875rem; color:var(--text-secondary); margin-bottom:0.25rem;">
-              <span>Light Usage (Office/Idle)</span>
-              <span class="tabular" style="font-weight:700; color:var(--text-primary);">{hoursOffice} hr/day</span>
+              <span>{dlt.lightUsageLabel}</span>
+              <span class="tabular" style="font-weight:700; color:var(--text-primary);">{hoursOffice} {dlt.hrDaySuffix}</span>
             </div>
             <input
               type="range"
@@ -194,8 +187,8 @@ export default function DesktopVsLaptopTco() {
           {/* Electricity Rate */}
           <div>
             <div style="display:flex; justify-content:space-between; font-size:0.875rem; color:var(--text-secondary); margin-bottom:0.25rem;">
-              <span>Electricity Rate</span>
-              <span class="tabular" style="font-weight:700; color:var(--text-primary);">${kwhRate.toFixed(2)}/kWh</span>
+              <span>{dlt.electricityRateLabel}</span>
+              <span class="tabular" style="font-weight:700; color:var(--text-primary);">{formatCurrency(kwhRate, lang)}{dlt.rateSuffix}</span>
             </div>
             <input
               type="range"
@@ -211,8 +204,8 @@ export default function DesktopVsLaptopTco() {
           {/* Timeline */}
           <div>
             <div style="display:flex; justify-content:space-between; font-size:0.875rem; color:var(--text-secondary); margin-bottom:0.25rem;">
-              <span>Timeline Horizon</span>
-              <span class="tabular" style="font-weight:700; color:var(--text-primary);">{timeHorizon} Years</span>
+              <span>{dlt.timelineLabel}</span>
+              <span class="tabular" style="font-weight:700; color:var(--text-primary);">{timeHorizon} {dlt.yearsSuffix}</span>
             </div>
             <input
               type="range"
@@ -229,31 +222,31 @@ export default function DesktopVsLaptopTco() {
         {/* Right Side: Projections & Chart */}
         <div class="card card-dark" style="padding: 1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem;">
           <div>
-            <h2 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">3. Cost Comparison Projections</h2>
+            <h2 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">{dlt.projectionsHeading}</h2>
             
             {/* Verdict Box */}
             <div style={`margin-top:1.25rem; padding:1.25rem; border-radius:var(--radius-lg); border: 2px solid ${betterOption === 'Laptop' ? 'var(--color-accent-cyan)' : 'var(--color-accent-purple)'}; background:rgba(0, 229, 255, 0.03);`}>
-              <span style="font-size:0.6875rem; font-weight:700; text-transform:uppercase; color:var(--text-tertiary); letter-spacing:0.06em;">Efficiency Verdict</span>
+              <span style="font-size:0.6875rem; font-weight:700; text-transform:uppercase; color:var(--text-tertiary); letter-spacing:0.06em;">{dlt.efficiencyVerdict}</span>
               <h3 style="font-size:1.25rem; font-weight:800; margin:0.25rem 0 0.5rem; color:var(--text-primary);">
-                The {betterOption} Saves You Money
+                {dlt.verdictTitle(betterOption)}
               </h3>
               <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.5; margin:0;">
-                By using a {betterOption === 'Laptop' ? 'laptop' : 'desktop'}, you reduce your electric bill by approximately <strong>${savingsPerYear} per year</strong>, saving <strong>${savingsHorizon} over your {timeHorizon}-year timeline</strong>.
+                {dlt.verdictDesc(betterOption, savingsPerYear, savingsHorizon, timeHorizon, lang)}
               </p>
             </div>
 
             {/* Comparison Metrics */}
             <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1.5rem;">
               <div class="tco-comp-row">
-                <span style="color:var(--text-secondary);">Operating Mode Draw</span>
+                <span style="color:var(--text-secondary);">{dlt.operatingDraw}</span>
                 <span class="tabular" style="font-weight:700;"><span style="color:var(--color-accent-purple);">{desktopWatts}W</span> vs <span style="color:var(--color-accent-cyan);">{laptopWatts}W</span></span>
               </div>
               <div class="tco-comp-row">
-                <span style="color:var(--text-secondary);">Idle/Office Mode Draw</span>
+                <span style="color:var(--text-secondary);">{dlt.idleDraw}</span>
                 <span class="tabular" style="font-weight:700;"><span style="color:var(--color-accent-purple);">{desktopIdleWatts}W</span> vs <span style="color:var(--color-accent-cyan);">{laptopIdleWatts}W</span></span>
               </div>
               <div class="tco-comp-row">
-                <span style="color:var(--text-secondary);">Annual Power Consumption</span>
+                <span style="color:var(--text-secondary);">{dlt.annualConsumption}</span>
                 <span class="tabular" style="font-weight:700;"><span style="color:var(--color-accent-purple);">{Math.round(totalDesktopKwhYear)} kWh</span> vs <span style="color:var(--color-accent-cyan);">{Math.round(totalLaptopKwhYear)} kWh</span></span>
               </div>
             </div>
@@ -263,8 +256,8 @@ export default function DesktopVsLaptopTco() {
           <div style="display:flex; flex-direction:column; gap:1rem;">
             <div>
               <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary); margin-bottom:0.25rem;">
-                <span>Desktop PC {timeHorizon}-Yr Cost</span>
-                <span class="tabular" style="font-weight:700; color:var(--color-accent-purple);">${Math.round(desktopCostHorizon)}</span>
+                <span>{dlt.desktopCostTitle(timeHorizon)}</span>
+                <span class="tabular" style="font-weight:700; color:var(--color-accent-purple);">{formatCurrency(desktopCostHorizon, lang)}</span>
               </div>
               <div style="height:24px; background:var(--color-bg-secondary); border-radius:4px; overflow:hidden;">
                 <div style={`height:100%; background:linear-gradient(90deg, var(--color-accent-purple), #c084fc); width:${Math.max(10, Math.min(100, (desktopCostHorizon / Math.max(desktopCostHorizon, laptopCostHorizon)) * 100))}%`}></div>
@@ -273,8 +266,8 @@ export default function DesktopVsLaptopTco() {
 
             <div>
               <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary); margin-bottom:0.25rem;">
-                <span>Laptop {timeHorizon}-Yr Cost</span>
-                <span class="tabular" style="font-weight:700; color:var(--color-accent-cyan);">${Math.round(laptopCostHorizon)}</span>
+                <span>{dlt.laptopCostTitle(timeHorizon)}</span>
+                <span class="tabular" style="font-weight:700; color:var(--color-accent-cyan);">{formatCurrency(laptopCostHorizon, lang)}</span>
               </div>
               <div style="height:24px; background:var(--color-bg-secondary); border-radius:4px; overflow:hidden;">
                 <div style={`height:100%; background:linear-gradient(90deg, var(--color-accent-cyan), #38bdf8); width:${Math.max(10, Math.min(100, (laptopCostHorizon / Math.max(desktopCostHorizon, laptopCostHorizon)) * 100))}%`}></div>

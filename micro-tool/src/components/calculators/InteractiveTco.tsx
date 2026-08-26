@@ -1,9 +1,7 @@
 /** @jsxImportSource preact */
 // ============================================================
-// PSUCheck — Interactive TCO Calculator
+// PSUCheck — Interactive TCO Calculator (i18n Enabled)
 // Reactive to: selected CPU, GPU, RAM, Storage, Cooling.
-// Custom inputs: electricity rate, daily hours, calculation period.
-// Compares: Bronze, Gold, Platinum, Titanium 80 PLUS Tiers.
 // ============================================================
 
 import { useState } from 'preact/hooks';
@@ -17,8 +15,9 @@ import {
   fans
 } from './VirtualAssemblyDesk';
 import { calculateBaseDraw } from '../../lib/psu';
+import { useTranslations, formatCurrency, type Locale } from '../../i18n';
 
-// Purchase average baseline costs per tier (realistic averages for standard 750W-850W units)
+// Purchase average baseline costs per tier
 const PURCHASE_COSTS = {
   bronze: 65,
   gold: 125,
@@ -34,33 +33,29 @@ const TIER_EFFICIENCY = {
   titanium: 0.94,
 };
 
-export function InteractiveTco() {
+interface Props {
+  lang?: Locale;
+}
+
+export function InteractiveTco({ lang = 'en' }: Props) {
+  const t = useTranslations(lang);
   const [rate, setRate] = useState<number>(0.15); // $0.15 per kWh default
   const [hours, setHours] = useState<number>(6);   // 6 hours/day default
   const [years, setYears] = useState<number>(5);   // 5 years period default
 
-  // Calculate sustained base draw dynamically based on selected workbench items
   const baseDraw = computed(() => {
-    const cpuVal = selectedCpu.value;
-    const gpuVal = selectedGpu.value;
-    const ramVal = selectedRam.value;
-    const storageVal = selectedStorage.value;
-    const coolingVal = selectedCooling.value;
-    const fansVal = fans.value;
-
     return calculateBaseDraw({
-      cpu: cpuVal,
-      gpu: gpuVal,
-      ram: ramVal,
-      storage: storageVal,
-      cooling: coolingVal,
-      fans: fansVal
+      cpu: selectedCpu.value,
+      gpu: selectedGpu.value,
+      ram: selectedRam.value,
+      storage: selectedStorage.value,
+      cooling: selectedCooling.value,
+      fans: fans.value
     });
   });
 
   const activeDraw = baseDraw.value;
 
-  // Calculate total costs (Purchase + Lifetime Electricity)
   const calcTco = (tier: 'bronze' | 'gold' | 'platinum' | 'titanium') => {
     const eff = TIER_EFFICIENCY[tier];
     const wallWatts = activeDraw / eff;
@@ -81,14 +76,37 @@ export function InteractiveTco() {
   const platinum = calcTco('platinum');
   const titanium = calcTco('titanium');
 
-  // Find max value to calibrate bar chart scaling
   const maxCost = Math.max(bronze.total, gold.total, platinum.total, titanium.total, 1);
-
-  // Quick calculations for the verdict note
   const goldSavings = bronze.electricity - gold.electricity;
   const platSavings = bronze.electricity - platinum.electricity;
   const goldBreakeven = (PURCHASE_COSTS.gold - PURCHASE_COSTS.bronze) / (goldSavings / years || 1);
-  const platBreakeven = (PURCHASE_COSTS.platinum - PURCHASE_COSTS.bronze) / (platSavings / years || 1);
+
+  const hrDayText = lang === 'de' ? 'Std./Tag' : lang === 'es' ? 'h/día' : lang === 'fr' ? 'h/jour' : lang === 'ja' ? '時間/日' : lang === 'zh' ? '小时/天' : 'hrs/day';
+  const yearSuffix = lang === 'de' ? 'Jahre Analyse' : lang === 'es' ? 'Años de Análisis' : lang === 'fr' ? 'Ans d\'Analyse' : lang === 'ja' ? '年間の試算' : lang === 'zh' ? '年期深度测算' : 'Years Analysis';
+  const singleYearSuffix = lang === 'de' ? '1 Jahr Analyse' : lang === 'es' ? '1 Año de Análisis' : lang === 'fr' ? '1 An d\'Analyse' : lang === 'ja' ? '1年間の試算' : lang === 'zh' ? '1年期深度测算' : '1 Year Analysis';
+
+  const formatSummary = () => {
+    const savingsStr = formatCurrency(goldSavings, lang);
+    const diffStr = formatCurrency(PURCHASE_COSTS.gold - PURCHASE_COSTS.bronze, lang);
+    const beStr = `${goldBreakeven.toFixed(1)} ${lang === 'de' ? 'Jahren' : lang === 'es' ? 'años' : lang === 'fr' ? 'ans' : lang === 'ja' ? '年' : lang === 'zh' ? '年' : 'years'}`;
+
+    if (lang === 'de') {
+      return `Das Upgrade von Bronze auf Gold spart ca. ${savingsStr} an Stromkosten über ${years} Jahre. Der Aufpreis von ca. ${diffStr} amortisiert sich in ${beStr}.`;
+    }
+    if (lang === 'es') {
+      return `Actualizar de Bronze a Gold ahorra ${savingsStr} en electricidad durante ${years} años. El sobrecoste de ~${diffStr} se amortiza en ${beStr}.`;
+    }
+    if (lang === 'fr') {
+      return `Passer de Bronze à Gold économise ${savingsStr} d'électricité sur ${years} ans. Le surcoût d'environ ${diffStr} est amorti en ${beStr}.`;
+    }
+    if (lang === 'ja') {
+      return `BronzeからGoldへアップグレードすることで、${years}年間で約${savingsStr}の電気代を節約できます。約${diffStr}の本体差額は約${beStr}で回収可能です。`;
+    }
+    if (lang === 'zh') {
+      return `由铜牌升级至金牌电源，${years} 年内可节省电费支出 ${savingsStr}。约 ${diffStr} 的初始差价可在 ${beStr} 内完全收回。`;
+    }
+    return `Upgrading from Bronze to Gold saves ${savingsStr} in electricity over ${years} years. The ~${diffStr} higher upfront cost pays for itself in ${beStr}.`;
+  };
 
   return (
     <div class="tco-interactive-wrapper card" style="padding: 2rem; background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg);">
@@ -96,187 +114,124 @@ export function InteractiveTco() {
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
         {/* Active sustained draw stat */}
         <div style="display:flex; flex-direction:column; gap:0.25rem;">
-          <span style="font-size:0.75rem;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;">Active Build Draw</span>
+          <span style="font-size:0.75rem;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;">{t.calculators.continuousLoad}</span>
           <span style="font-size:1.75rem;font-weight:900;color:var(--color-accent-cyan);" class="tabular">{activeDraw}W</span>
-          <span style="font-size:0.7rem;color:var(--color-text-secondary);">Sustained power baseline</span>
+          <span style="font-size:0.7rem;color:var(--color-text-tertiary);">{t.calculators.baysTitle}</span>
         </div>
 
-        {/* Electricity rate input */}
+        {/* Electricity Rate Input */}
         <div style="display:flex; flex-direction:column; gap:0.25rem;">
-          <label for="tco-rate" style="font-size:0.75rem;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;">Electricity Cost</label>
-          <div style="position:relative; display:flex; align-items:center;">
-            <span style="position:absolute; left:10px; font-size:0.875rem; color:var(--color-text-tertiary); font-family:var(--font-mono); font-weight:700;">$</span>
+          <label for="tco-rate" style="font-size:0.75rem;font-weight:700;color:var(--color-text-secondary);">{t.tco.kwhRate}</label>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
             <input
               id="tco-rate"
               type="number"
-              step="0.01"
               min="0.01"
+              max="1.00"
+              step="0.01"
               value={rate}
-              onInput={(e) => setRate(Math.max(0.01, parseFloat((e.target as HTMLInputElement).value) || 0.01))}
-              style="width: 100%; min-height: 40px; padding-left: 24px; padding-right: 48px; background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); color: var(--color-text-primary); border-radius: var(--radius-md); font-family:var(--font-mono); font-size:0.875rem;"
+              onInput={(e) => setRate(parseFloat((e.target as HTMLInputElement).value) || 0.15)}
+              style="width:90px; padding:0.4rem 0.6rem; border-radius:var(--radius-sm); border:1px solid var(--color-border); background:var(--color-surface-raised); color:var(--color-text-primary); font-size:0.9rem;"
             />
-            <span style="position:absolute; right:10px; font-size:0.75rem; color:var(--color-text-tertiary); font-weight:700;">/ kWh</span>
+            <span style="font-size:0.75rem;color:var(--color-text-tertiary);">/ kWh</span>
           </div>
-          <span style="font-size:0.7rem;color:var(--color-text-secondary);">US avg is ~$0.15 - $0.17</span>
         </div>
 
-        {/* Daily hours slider */}
+        {/* Daily Hours Slider */}
         <div style="display:flex; flex-direction:column; gap:0.25rem;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label for="tco-hours" style="font-size:0.75rem;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;">Daily Usage</label>
-            <span style="font-size:0.875rem;font-weight:700;color:var(--color-accent-cyan);" class="tabular">{hours} hrs</span>
+            <label for="tco-hours" style="font-size:0.75rem;font-weight:700;color:var(--color-text-secondary);">{t.tco.dailyHours}</label>
+            <span style="font-size:0.85rem;font-weight:700;color:var(--color-accent-cyan);" class="tabular">{hours} {hrDayText}</span>
           </div>
           <input
             id="tco-hours"
             type="range"
             min="1"
             max="24"
+            step="1"
             value={hours}
             onInput={(e) => setHours(parseInt((e.target as HTMLInputElement).value, 10))}
-            style="width: 100%; height: 6px; background: var(--color-surface-raised); border-radius: 3px; accent-color: var(--color-accent-cyan); cursor: pointer; min-height:30px;"
+            style="width:100%; accent-color:var(--color-accent-cyan);"
           />
-          <span style="font-size:0.7rem;color:var(--color-text-secondary);">Gaming & productivity load time</span>
         </div>
 
-        {/* Calculation period years */}
+        {/* Period Selector */}
         <div style="display:flex; flex-direction:column; gap:0.25rem;">
-          <label for="tco-years" style="font-size:0.75rem;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;">Calculation Period</label>
+          <label for="tco-years" style="font-size:0.75rem;font-weight:700;color:var(--color-text-secondary);">{t.tco.fiveYearCost}</label>
           <select
             id="tco-years"
             value={years}
             onChange={(e) => setYears(parseInt((e.target as HTMLSelectElement).value, 10))}
-            style="width:100%; min-height:40px; background:var(--color-surface-raised); border:1px solid var(--color-border-subtle); color:var(--color-text-primary); border-radius:var(--radius-md); padding:0 0.5rem; font-size:0.875rem;"
+            style="padding:0.4rem 0.6rem; border-radius:var(--radius-sm); border:1px solid var(--color-border); background:var(--color-surface-raised); color:var(--color-text-primary); font-size:0.85rem;"
           >
-            <option value={1}>1 Year</option>
-            <option value={3}>3 Years</option>
-            <option value={5}>5 Years</option>
-            <option value={7}>7 Years</option>
-            <option value={10}>10 Years</option>
+            <option value="1">{singleYearSuffix}</option>
+            <option value="3">3 {yearSuffix}</option>
+            <option value="5">5 {yearSuffix}</option>
+            <option value="7">7 {yearSuffix}</option>
+            <option value="10">10 {yearSuffix}</option>
           </select>
-          <span style="font-size:0.7rem;color:var(--color-text-secondary);">PSU typical warranty: 5-10 yrs</span>
         </div>
       </div>
 
-      {/* Dynamic Graph Chart */}
-      <div style="display:flex; flex-direction:column; gap:1.25rem; margin-top:2rem;">
+      {/* Visual Bar Comparison Grid */}
+      <div style="display:flex; flex-direction:column; gap:1.25rem; margin-bottom: 2rem;">
         {/* Bronze */}
-        <div class="tco-tier">
-          <div style="display:flex; justify-content:space-between; font-size:0.8125rem; font-weight:600; color:var(--color-text-secondary); margin-bottom:0.25rem;">
-            <span>80+ Bronze</span>
-            <span class="tabular">${bronze.total} total cost</span>
+        <div style="display:flex; flex-direction:column; gap:0.35rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700;">
+            <span style="color:#cd7f32;">80 PLUS Bronze (82% Eff.)</span>
+            <span class="tabular">{formatCurrency(bronze.total, lang)}</span>
           </div>
-          <div class="tco-bar-wrap" style="height:12px; background:var(--color-surface-raised); border-radius:6px; overflow:hidden; display:flex;">
-            <div
-              style={{
-                width: `${(bronze.total / maxCost) * 100}%`,
-                background: 'oklch(68% 0.22 15)', /* rose accent for highest cost */
-                height: '100%',
-                transition: 'width 300ms ease-out',
-                borderRadius: '6px'
-              }}
-              title={`Bronze: $${bronze.purchase} unit + $${bronze.electricity} electricity`}
-            />
-          </div>
-          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--color-text-tertiary); margin-top:0.125rem;">
-            <span>Purchase: ${bronze.purchase}</span>
-            <span class="tabular">Electricity: ${bronze.electricity}</span>
+          <div style="height:24px; width:100%; background:var(--color-surface-overlay); border-radius:var(--radius-sm); display:flex; overflow:hidden;">
+            <div style={{ width: `${(bronze.purchase / maxCost) * 100}%`, background: 'rgba(205, 127, 50, 0.4)' }} title="Purchase Cost" />
+            <div style={{ width: `${(bronze.electricity / maxCost) * 100}%`, background: '#cd7f32' }} title="Electricity Cost" />
           </div>
         </div>
 
         {/* Gold */}
-        <div class="tco-tier">
-          <div style="display:flex; justify-content:space-between; font-size:0.8125rem; font-weight:600; color:var(--color-text-secondary); margin-bottom:0.25rem;">
-            <span>80+ Gold</span>
-            <span class="tabular">${gold.total} total cost</span>
+        <div style="display:flex; flex-direction:column; gap:0.35rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700;">
+            <span style="color:#eab308;">80 PLUS Gold (90% Eff.)</span>
+            <span class="tabular">{formatCurrency(gold.total, lang)}</span>
           </div>
-          <div class="tco-bar-wrap" style="height:12px; background:var(--color-surface-raised); border-radius:6px; overflow:hidden; display:flex;">
-            <div
-              style={{
-                width: `${(gold.total / maxCost) * 100}%`,
-                background: 'oklch(80% 0.16 65)', /* gold/amber */
-                height: '100%',
-                transition: 'width 300ms ease-out',
-                borderRadius: '6px'
-              }}
-              title={`Gold: $${gold.purchase} unit + $${gold.electricity} electricity`}
-            />
-          </div>
-          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--color-text-tertiary); margin-top:0.125rem;">
-            <span>Purchase: ${gold.purchase}</span>
-            <span class="tabular">Electricity: ${gold.electricity} (Saves ${bronze.electricity - gold.electricity})</span>
+          <div style="height:24px; width:100%; background:var(--color-surface-overlay); border-radius:var(--radius-sm); display:flex; overflow:hidden;">
+            <div style={{ width: `${(gold.purchase / maxCost) * 100}%`, background: 'rgba(234, 179, 8, 0.4)' }} title="Purchase Cost" />
+            <div style={{ width: `${(gold.electricity / maxCost) * 100}%`, background: '#eab308' }} title="Electricity Cost" />
           </div>
         </div>
 
         {/* Platinum */}
-        <div class="tco-tier">
-          <div style="display:flex; justify-content:space-between; font-size:0.8125rem; font-weight:600; color:var(--color-text-secondary); margin-bottom:0.25rem;">
-            <span style="display:flex;align-items:center;gap:6px;">
-              80+ Platinum
-              {platinum.total < bronze.total && (
-                <span class="badge-safe" style="font-size:9px;padding:1px 5px;">Best ROI Value</span>
-              )}
-            </span>
-            <span class="tabular" style={platinum.total < bronze.total ? "color:var(--color-safe);font-weight:700;" : ""}>
-              ${platinum.total} total cost
-            </span>
+        <div style="display:flex; flex-direction:column; gap:0.35rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700;">
+            <span style="color:#06b6d4;">80 PLUS Platinum (92% Eff.)</span>
+            <span class="tabular">{formatCurrency(platinum.total, lang)}</span>
           </div>
-          <div class="tco-bar-wrap" style="height:12px; background:var(--color-surface-raised); border-radius:6px; overflow:hidden; display:flex;">
-            <div
-              style={{
-                width: `${(platinum.total / maxCost) * 100}%`,
-                background: 'oklch(75% 0.18 152)', /* emerald */
-                height: '100%',
-                transition: 'width 300ms ease-out',
-                borderRadius: '6px'
-              }}
-              title={`Platinum: $${platinum.purchase} unit + $${platinum.electricity} electricity`}
-            />
-          </div>
-          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--color-text-tertiary); margin-top:0.125rem;">
-            <span>Purchase: ${platinum.purchase}</span>
-            <span class="tabular">Electricity: ${platinum.electricity} (Saves ${bronze.electricity - platinum.electricity})</span>
+          <div style="height:24px; width:100%; background:var(--color-surface-overlay); border-radius:var(--radius-sm); display:flex; overflow:hidden;">
+            <div style={{ width: `${(platinum.purchase / maxCost) * 100}%`, background: 'rgba(6, 182, 212, 0.4)' }} title="Purchase Cost" />
+            <div style={{ width: `${(platinum.electricity / maxCost) * 100}%`, background: '#06b6d4' }} title="Electricity Cost" />
           </div>
         </div>
 
         {/* Titanium */}
-        <div class="tco-tier">
-          <div style="display:flex; justify-content:space-between; font-size:0.8125rem; font-weight:600; color:var(--color-text-secondary); margin-bottom:0.25rem;">
-            <span>80+ Titanium</span>
-            <span class="tabular">${titanium.total} total cost</span>
+        <div style="display:flex; flex-direction:column; gap:0.35rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700;">
+            <span style="color:#a855f7;">80 PLUS Titanium (94% Eff.)</span>
+            <span class="tabular">{formatCurrency(titanium.total, lang)}</span>
           </div>
-          <div class="tco-bar-wrap" style="height:12px; background:var(--color-surface-raised); border-radius:6px; overflow:hidden; display:flex;">
-            <div
-              style={{
-                width: `${(titanium.total / maxCost) * 100}%`,
-                background: 'oklch(85% 0.18 195)', /* cyan */
-                height: '100%',
-                transition: 'width 300ms ease-out',
-                borderRadius: '6px'
-              }}
-              title={`Titanium: $${titanium.purchase} unit + $${titanium.electricity} electricity`}
-            />
-          </div>
-          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--color-text-tertiary); margin-top:0.125rem;">
-            <span>Purchase: ${titanium.purchase}</span>
-            <span class="tabular">Electricity: ${titanium.electricity} (Saves ${bronze.electricity - titanium.electricity})</span>
+          <div style="height:24px; width:100%; background:var(--color-surface-overlay); border-radius:var(--radius-sm); display:flex; overflow:hidden;">
+            <div style={{ width: `${(titanium.purchase / maxCost) * 100}%`, background: 'rgba(168, 85, 247, 0.4)' }} title="Purchase Cost" />
+            <div style={{ width: `${(titanium.electricity / maxCost) * 100}%`, background: '#a855f7' }} title="Electricity Cost" />
           </div>
         </div>
       </div>
 
-      {/* Advisory Verdict Box */}
-      <div style="margin-top: 2rem; padding: 1rem; background: var(--color-surface-raised); border-radius: var(--radius-md); border: 1px solid var(--color-border-subtle); font-size: 0.8125rem; color: var(--color-text-secondary); line-height: 1.5;">
-        {goldSavings > 0 ? (
-          <p>
-            <strong>💡 ROI VERDICT:</strong> Upgrading from Bronze to a Gold power supply saves
-            <strong> ${goldSavings}</strong> in electricity over {years} years. Given the ${PURCHASE_COSTS.gold - PURCHASE_COSTS.bronze} purchase premium,
-            the Gold unit will **break even in {goldBreakeven.toFixed(1)} years**, after which it generates pure net savings.
-            {platSavings > (PURCHASE_COSTS.platinum - PURCHASE_COSTS.bronze) && (
-              <span> A Platinum unit saves <strong>${platSavings}</strong> in electricity and breaks even in **{platBreakeven.toFixed(1)} years** — making it the optimal financial choice.</span>
-            )}
-          </p>
-        ) : (
-          <p>Select components in the tray above to see custom electricity break-even thresholds.</p>
-        )}
+      {/* Summary / Break-even verdict */}
+      <div style="background:var(--color-surface-raised); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--color-border-subtle); display:flex; flex-direction:column; gap:0.5rem; font-size:0.85rem; line-height:1.5;">
+        <div style="font-weight:700; color:var(--color-accent-cyan);">
+          💡 {t.tco.efficiencySavings}
+        </div>
+        <p style="color:var(--color-text-secondary); margin:0;">
+          {formatSummary()}
+        </p>
       </div>
     </div>
   );

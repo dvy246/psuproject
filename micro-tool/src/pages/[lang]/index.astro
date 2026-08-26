@@ -1,0 +1,909 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+
+const indexContent: Record<Locale, {
+  statsCpus: string;
+  statsGpus: string;
+  statsPsus: string;
+  statsOracle: string;
+  pillarsHeading: string;
+  discoveryHeading: string;
+  buildsCardDesc: string;
+  guidesCardDesc: string;
+}> = {
+  en: {
+    statsCpus: 'Modern CPUs',
+    statsGpus: 'Modern GPUs',
+    statsPsus: 'PSU Models',
+    statsOracle: 'Oracle Combinations',
+    pillarsHeading: 'Three tools. One place.',
+    discoveryHeading: 'Discovery Suite',
+    buildsCardDesc: 'Explore community hardware blueprints and optimized configurations.',
+    guidesCardDesc: 'In-depth guides for ATX standards, transient spikes, and cable safety.'
+  },
+  de: {
+    statsCpus: 'Aktuelle CPUs',
+    statsGpus: 'Aktuelle GPUs',
+    statsPsus: 'Netzteil-Modelle',
+    statsOracle: 'Oracle-Kombinationen',
+    pillarsHeading: 'Drei Werkzeuge. Eine Plattform.',
+    discoveryHeading: 'Entdecker-Suite',
+    buildsCardDesc: 'Erkunden Sie optimierte PC-Baupläne und Hardware-Kombinationen.',
+    guidesCardDesc: 'Detaillierte Leitfäden zu ATX 3.1, Lastspitzen und Kabelsicherheit.'
+  },
+  es: {
+    statsCpus: 'CPUs Modernas',
+    statsGpus: 'GPUs Modernas',
+    statsPsus: 'Modelos de Fuente',
+    statsOracle: 'Combinaciones del Oráculo',
+    pillarsHeading: 'Tres herramientas. Un solo lugar.',
+    discoveryHeading: 'Centro de Descubrimiento',
+    buildsCardDesc: 'Explora planos de hardware de la comunidad y montajes optimizados.',
+    guidesCardDesc: 'Guías técnicas sobre estándares ATX, picos de tensión y cables.'
+  },
+  fr: {
+    statsCpus: 'Processeurs Récents',
+    statsGpus: 'Cartes Graphiques',
+    statsPsus: 'Modèles d\'Alimentation',
+    statsOracle: 'Combinaisons de l\'Oracle',
+    pillarsHeading: 'Trois outils. Un seul endroit.',
+    discoveryHeading: 'Suite d\'Exploration',
+    buildsCardDesc: 'Explorez des schémas de montage PC et des configurations équilibrées.',
+    guidesCardDesc: 'Guides approfondis sur les normes ATX, les transitoires et les câbles.'
+  },
+  ja: {
+    statsCpus: '最新CPUデータベース',
+    statsGpus: '最新GPUデータベース',
+    statsPsus: '電源ユニット一覧',
+    statsOracle: '組み合わせ判定パターン',
+    pillarsHeading: '3つの診断ツールを1か所に集約',
+    discoveryHeading: 'ツール＆リファレンス一覧',
+    buildsCardDesc: 'コミュニティ作成の自作PC構成図と最適化プランを探索。',
+    guidesCardDesc: 'ATX 3.1規格、過渡電力スパイク、配線安全に関する専門ガイド。'
+  },
+  zh: {
+    statsCpus: '主流CPU芯片',
+    statsGpus: '主流独立显卡',
+    statsPsus: '严选电源型号',
+    statsOracle: '万种装机组合矩阵',
+    pillarsHeading: '三大专业工具，一站搞定装机',
+    discoveryHeading: '硬件探索与工具矩阵',
+    buildsCardDesc: '探索精选社区硬件配置蓝图与高性价比装机方案。',
+    guidesCardDesc: '深入剖析ATX 3.1电源规范、瞬态尖峰与线材安全标准。'
+  }
+};
+
+const ic = indexContent[lang] || indexContent.en;
+
+const websiteSchema = {
+  "@type": "WebApplication",
+  "name": `${t.hero.titleLine1} ${t.hero.titleHighlight} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}`,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": t.seo.defaultDescription,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "PSU wattage recommendation with transient spike modeling",
+    "ATX 3.1 compliance checker",
+    "PC build cost estimator with pie chart",
+    "5-year total cost of ownership calculator",
+    "Cable-Melt Prevention Auditor",
+    "Per-rail current analysis"
+  ]
+};
+---
+
+<Layout
+  title={t.seo.defaultTitle}
+  description={t.seo.defaultDescription}
+  schema={[websiteSchema]}
+>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="hero-retro-grid">
+        <div class="retro-grid-plane"></div>
+        <div class="retro-grid-fade"></div>
+      </div>
+      <div class="hero-glow hero-glow-1"></div>
+      <div class="hero-glow hero-glow-2"></div>
+    </div>
+
+    <div class="container hero-inner">
+      <div class="hero-left-column">
+        <div class="hero-badge">
+          <a href={l('/guides/atx-3-1-guide', lang)} class="hero-pill-badge" aria-label="ATX 3.1 & PCIe 5.1 Verified Engine">
+            <span class="hero-pill-dot" aria-hidden="true"></span>
+            <span class="hero-pill-text">{t.hero.badge}</span>
+            <svg class="hero-pill-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+
+        <h1 id="hero-heading" class="hero-h1">
+          {t.hero.titleLine1}<br/>
+          <span class="gradient-text">{t.hero.titleHighlight}</span><br/>
+          <span>{t.hero.titleLine2}</span>
+        </h1>
+
+        <p class="hero-sub">
+          {t.hero.subtitle}
+        </p>
+
+        <div class="hero-ctas">
+          <a href={l('/psu-calculator', lang)} class="btn btn-primary btn-hero-cta" id="cta-psu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            {t.nav.psuCalculator}
+          </a>
+          <a href={l('/pc-builder', lang)} class="btn btn-secondary btn-hero-secondary" id="cta-builder">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            {t.nav.pcBuilder}
+          </a>
+        </div>
+
+        <!-- Live stat counters -->
+        <div class="hero-stats" aria-label="Hardware database coverage">
+          <div class="hero-stat">
+            <span class="hero-stat-num tabular-nums">23</span>
+            <span class="hero-stat-label">{ic.statsCpus}</span>
+          </div>
+          <div class="hero-stat-divider" aria-hidden="true"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-num tabular-nums">25</span>
+            <span class="hero-stat-label">{ic.statsGpus}</span>
+          </div>
+          <div class="hero-stat-divider" aria-hidden="true"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-num tabular-nums">35</span>
+            <span class="hero-stat-label">{ic.statsPsus}</span>
+          </div>
+          <div class="hero-stat-divider" aria-hidden="true"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-num tabular-nums">7,440+</span>
+            <span class="hero-stat-label">{ic.statsOracle}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right-column">
+        <div class="hero-visual-wrapper">
+          <div class="hero-visual-glow" aria-hidden="true"></div>
+          
+          <div class="cpu-3d-scene" id="cpu-scene">
+            <div class="telemetry-grid" aria-hidden="true">
+              <div class="telemetry-line">SYS.READY: +12V_LINE_STABLE</div>
+              <div class="telemetry-line">ATX_3.1_AUDIT: OK</div>
+              <div class="telemetry-line">VOLTAGE_RIPPLE: &lt;15mV</div>
+            </div>
+            
+            <div class="cpu-package">
+              <div class="cpu-pcb">
+                <div class="pcb-contacts gold-contacts-lt"></div>
+                <div class="pcb-contacts gold-contacts-rt"></div>
+                <div class="pcb-contacts gold-contacts-lb"></div>
+                <div class="pcb-contacts gold-contacts-rb"></div>
+                <div class="pcb-tracers"></div>
+
+                <div class="cpu-ihs">
+                  <div class="ihs-surface">
+                    <div class="cpu-branding">
+                      <span class="brand-class">PSUCHECK CORE</span>
+                      <span class="brand-model">VF-9800X3D</span>
+                      <span class="brand-spec">TRANS.MULTIPLIER: 2.1x</span>
+                    </div>
+                    <div class="ihs-core-glow"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="circular-diagnostics" aria-hidden="true">
+              <svg class="diag-ring" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" stroke="#00e5ff" stroke-width="1.5" fill="none" stroke-dasharray="283" stroke-dashoffset="75" />
+              </svg>
+              <div class="diag-text">DIAG_READY</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    function initCpuInteraction() {
+      const scene = document.getElementById('cpu-scene');
+      const pkg = scene?.querySelector('.cpu-package');
+      if (!scene || !pkg) return;
+
+      let rx = 22;
+      let ry = -22;
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+
+      scene.addEventListener('mousemove', (e) => {
+        if (isDragging) return;
+        const rect = scene.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        
+        const currentRy = (x / (rect.width / 2)) * 35; 
+        const currentRx = -(y / (rect.height / 2)) * 35; 
+
+        pkg.style.setProperty('--rx', `${currentRx}deg`);
+        pkg.style.setProperty('--ry', `${currentRy}deg`);
+      });
+
+      scene.addEventListener('mouseleave', () => {
+        if (isDragging) return;
+        pkg.style.setProperty('--rx', '22deg');
+        pkg.style.setProperty('--ry', '-22deg');
+      });
+
+      scene.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        pkg.style.transition = 'none';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        ry += dx * 0.5;
+        rx -= dy * 0.5;
+
+        pkg.style.setProperty('--rx', `${rx}deg`);
+        pkg.style.setProperty('--ry', `${ry}deg`);
+
+        startX = e.clientX;
+        startY = e.clientY;
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        pkg.style.transition = 'transform 0.5s ease-out';
+      });
+
+      scene.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        pkg.style.transition = 'none';
+      });
+
+      scene.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+
+        ry += dx * 0.5;
+        rx -= dy * 0.5;
+
+        pkg.style.setProperty('--rx', `${rx}deg`);
+        pkg.style.setProperty('--ry', `${ry}deg`);
+
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      });
+
+      scene.addEventListener('touchend', () => {
+        isDragging = false;
+        pkg.style.transition = 'transform 0.5s ease-out';
+      });
+    }
+
+    initCpuInteraction();
+    document.addEventListener('astro:after-swap', initCpuInteraction);
+  </script>
+
+  <!-- ===== THREE PILLARS ===== -->
+  <section class="pillars-section" aria-labelledby="pillars-heading">
+    <div class="container">
+      <div class="section-eyebrow">{t.nav.calculatorsDropdown}</div>
+      <h2 id="pillars-heading">{ic.pillarsHeading}</h2>
+
+      <div class="pillars-grid">
+        <a href={l('/psu-calculator', lang)} class="pillar-card gradient-border" id="pillar-psu">
+          <div class="pillar-icon" aria-hidden="true">⚡</div>
+          <h3>{t.nav.psuCalculator}</h3>
+          <p>
+            {t.hero.subtitle}
+          </p>
+          <span class="pillar-cta">{t.nav.psuCalculator} →</span>
+        </a>
+
+        <a href={l('/pc-builder', lang)} class="pillar-card gradient-border" id="pillar-builder">
+          <div class="pillar-icon" aria-hidden="true">🖥️</div>
+          <h3>{t.nav.pcBuilder}</h3>
+          <p>
+            {t.cost.subtitle}
+          </p>
+          <span class="pillar-cta">{t.nav.pcBuilder} →</span>
+        </a>
+
+        <a href={l('/psu-checker', lang)} class="pillar-card gradient-border" id="pillar-checker">
+          <div class="pillar-icon" aria-hidden="true">🔄</div>
+          <h3>{t.nav.psuChecker}</h3>
+          <p>
+            {t.bestPsu.subtitle}
+          </p>
+          <span class="pillar-cta">{t.nav.psuChecker} →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DISCOVERY MATRIX / CARDS ===== -->
+  <section style="padding: 4rem 0 5rem; background: var(--color-surface);">
+    <div class="container">
+      <div style="margin-bottom: 2.5rem;">
+        <div class="section-eyebrow">{t.nav.calculatorsDropdown}</div>
+        <h2 style="font-size: clamp(1.5rem, 3.5vw, 2.25rem); font-weight: 850;">
+          {t.nav.brand} {ic.discoveryHeading}
+        </h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+        <a href={l('/best-psu', lang)} class="card card-dark" style="padding: 1.5rem; text-decoration: none; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">🏆</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.5rem;">{t.bestPsu.title}</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">{t.bestPsu.subtitle}</p>
+        </a>
+
+        <a href={l('/diagnose', lang)} class="card card-dark" style="padding: 1.5rem; text-decoration: none; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">🩺</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.5rem;">{t.diagnostics.title}</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">{t.diagnostics.subtitle}</p>
+        </a>
+
+        <a href={l('/builds', lang)} class="card card-dark" style="padding: 1.5rem; text-decoration: none; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">🎨</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.5rem;">{t.nav.completedBuilds}</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">{ic.buildsCardDesc}</p>
+        </a>
+
+        <a href={l('/guides', lang)} class="card card-dark" style="padding: 1.5rem; text-decoration: none; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 1.5rem; margin-bottom: 0.75rem;">📚</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.5rem;">{t.nav.guides}</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.5;">{ic.guidesCardDesc}</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+/* ---- Hero ---- */
+.hero {
+  position: relative;
+  padding: 5rem 0 4.5rem;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== 21st.dev RetroGrid 3D Perspective Plane ===== */
+.hero-retro-grid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  perspective: 200px;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+.retro-grid-plane {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(65deg);
+  transform-origin: 50% 0%;
+  height: 300vh;
+  width: 600vw;
+  margin-left: -250vw;
+  background-image: 
+    linear-gradient(to right, rgba(0, 229, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 229, 255, 0.12) 1px, transparent 1px);
+  background-repeat: repeat;
+  background-size: 55px 55px;
+  animation: grid-scroll 25s linear infinite;
+  will-change: transform;
+}
+:global([data-theme="light"]) .retro-grid-plane {
+  background-image: 
+    linear-gradient(to right, rgba(2, 132, 199, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(2, 132, 199, 0.1) 1px, transparent 1px);
+}
+.retro-grid-fade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 30%, transparent 0%, var(--bg-deep) 85%);
+  pointer-events: none;
+}
+:global([data-theme="light"]) .retro-grid-fade {
+  background: radial-gradient(ellipse 70% 60% at 50% 30%, transparent 0%, #f8f9fc 85%);
+}
+@keyframes grid-scroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(55px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .retro-grid-plane { animation: none; }
+}
+
+/* ===== 21st.dev Pill Badge ===== */
+.hero-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: border-color 200ms ease, background-color 200ms ease, transform 200ms ease;
+  backdrop-filter: blur(8px);
+}
+:global([data-theme="light"]) .hero-pill-badge {
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  color: #0369a1;
+}
+.hero-pill-badge:hover {
+  border-color: var(--accent-primary);
+  background: rgba(0, 229, 255, 0.14);
+  transform: translateY(-1px);
+}
+:global([data-theme="light"]) .hero-pill-badge:hover {
+  border-color: #0284c7;
+  background: rgba(2, 132, 199, 0.14);
+}
+.hero-pill-badge:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+.hero-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--status-safe);
+  box-shadow: 0 0 8px var(--status-safe);
+}
+.hero-pill-arrow {
+  transition: transform 200ms ease;
+}
+.hero-pill-badge:hover .hero-pill-arrow {
+  transform: translateX(3px);
+}
+
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.25;
+  animation: hero-float 10s ease-in-out infinite;
+  pointer-events: none;
+}
+.hero-glow-1 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.2) 0%, transparent 70%);
+  top: -120px;
+  left: 5%;
+  animation-delay: 0s;
+}
+.hero-glow-2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(124, 77, 255, 0.18) 0%, transparent 70%);
+  top: 40px;
+  right: 10%;
+  animation-delay: 4s;
+}
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow { animation: none; }
+}
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+@media (min-width: 1024px) {
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    text-align: left;
+  }
+}
+.hero-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 2;
+}
+.hero-right-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  margin-top: 2rem;
+}
+@media (min-width: 1024px) {
+  .hero-right-column {
+    margin-top: 0;
+  }
+}
+.hero-visual-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 1;
+}
+.hero-visual-glow {
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.15) 0%, rgba(124, 77, 255, 0.08) 50%, transparent 70%);
+  filter: blur(40px);
+  z-index: 0;
+  pointer-events: none;
+  animation: visual-pulse 6s ease-in-out infinite alternate;
+}
+@keyframes visual-pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.05); opacity: 1.2; }
+}
+.telemetry-grid {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: rgba(0, 229, 255, 0.7);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.telemetry-line {
+  white-space: nowrap;
+}
+.circular-diagnostics {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.diag-ring {
+  width: 24px;
+  height: 24px;
+  transform: rotate(-90deg);
+  animation: diag-rotate 12s linear infinite;
+}
+@keyframes diag-rotate {
+  100% { transform: rotate(270deg); }
+}
+.diag-text {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 800;
+  color: #00e5ff;
+  letter-spacing: 0.05em;
+}
+
+/* ---- 3D CPU Simulator ---- */
+.cpu-3d-scene {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+  background: radial-gradient(135deg, rgba(13, 20, 38, 0.7) 0%, rgba(8, 12, 24, 0.9) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  z-index: 1;
+}
+
+:global([data-theme="light"]) .cpu-3d-scene {
+  background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid rgba(0, 145, 234, 0.25);
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.1), 0 1px 3px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff;
+}
+
+:global([data-theme="light"]) .hero-visual-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(0, 145, 234, 0.15) 0%, rgba(124, 77, 255, 0.08) 50%, transparent 70%);
+}
+
+:global([data-theme="light"]) .telemetry-grid {
+  color: #0284c7;
+  font-weight: 700;
+}
+
+:global([data-theme="light"]) .diag-ring circle {
+  stroke: #0284c7;
+}
+
+:global([data-theme="light"]) .diag-text {
+  color: #0284c7;
+  font-weight: 800;
+}
+
+:global([data-theme="light"]) .cpu-pcb {
+  box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.25), 0 10px 15px -3px rgba(15, 23, 42, 0.12), inset 0 0 15px rgba(0, 230, 118, 0.25);
+}
+.cpu-package {
+  width: 230px;
+  height: 230px;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 22deg)) rotateY(var(--ry, -22deg));
+  transition: transform 0.15s ease-out;
+  position: relative;
+}
+.cpu-pcb {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0b3d1b 0%, #051e0d 100%);
+  border: 2px solid #b7950b;
+  border-radius: 8px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 230, 118, 0.2);
+  transform-style: preserve-3d;
+}
+.pcb-contacts {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #f1c40f;
+  box-shadow: 0 0 4px #f1c40f;
+}
+.gold-contacts-lt { top: 6px; left: 6px; border-radius: 2px 0 0 0; }
+.gold-contacts-rt { top: 6px; right: 6px; border-radius: 0 2px 0 0; }
+.gold-contacts-lb { bottom: 6px; left: 6px; border-radius: 0 0 0 2px; }
+.gold-contacts-rb { bottom: 6px; right: 6px; border-radius: 0 0 2px 0; }
+.pcb-tracers {
+  position: absolute;
+  inset: 15px;
+  border: 1px dashed rgba(241, 196, 15, 0.15);
+  pointer-events: none;
+  background-image: 
+    radial-gradient(rgba(0, 229, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(241, 196, 15, 0.05) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+.cpu-ihs {
+  position: absolute;
+  inset: 32px;
+  background: linear-gradient(145deg, #2c3e50 0%, #1a252f 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  transform: translateZ(12px);
+  transform-style: preserve-3d;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.15);
+}
+.ihs-surface {
+  position: absolute;
+  inset: 1px;
+  background: linear-gradient(135deg, #626a73 0%, #31373e 50%, #212529 100%);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+.ihs-surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 30%, rgba(255, 255, 255, 0.08) 50%, transparent 70%);
+  pointer-events: none;
+}
+.cpu-branding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  color: rgba(255, 255, 255, 0.8);
+  transform: translateZ(8px);
+  user-select: none;
+}
+.brand-class {
+  font-size: 0.5625rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: var(--accent-primary);
+  text-shadow: 0 0 5px var(--accent-glow);
+}
+.brand-model {
+  font-size: 1.125rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+.brand-spec {
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+}
+.ihs-core-glow {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.12) 0%, transparent 60%);
+  top: -30px;
+  left: -30px;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.hero-badge { display: flex; }
+.hero-h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+.hero-sub {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  max-width: 58ch;
+  line-height: 1.65;
+}
+.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.hero-stat { text-align: left; }
+.hero-stat-num {
+  display: block;
+  font-size: 1.875rem;
+  font-weight: 900;
+  background: var(--accent-gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.hero-stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.25rem;
+}
+.hero-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border-subtle);
+}
+
+/* ---- Section helpers ---- */
+.section-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-primary);
+  margin-bottom: 0.75rem;
+}
+
+/* ---- Pillars ---- */
+.pillars-section { padding: 5rem 0; }
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.pillar-card {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 250ms var(--ease-out), box-shadow 250ms var(--ease-out);
+}
+.pillar-card:hover {
+  transform: translateY(-4px);
+  text-decoration: none;
+}
+.pillar-card h3 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+.pillar-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+.pillar-card:hover h3 { color: var(--text-primary); }
+.pillar-card:hover p { color: var(--text-secondary); }
+.pillar-icon { font-size: 2rem; }
+.pillar-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  padding: 0;
+}
+.pillar-features li {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  padding-left: 1.25rem;
+  position: relative;
+  line-height: 1.5;
+}
+.pillar-card:hover .pillar-features li {
+  color: var(--text-secondary);
+}
+.pillar-features li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent-cyan, var(--accent-primary));
+}
+.pillar-cta {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent-cyan, var(--accent-primary));
+  margin-top: auto;
+  padding-top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.pillar-card:hover .pillar-cta {
+  color: var(--color-accent-cyan, var(--accent-primary));
+  text-decoration: underline;
+}
+</style>
