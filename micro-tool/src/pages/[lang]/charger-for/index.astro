@@ -64,7 +64,7 @@ const brands = Array.from(new Set(laptops.map(l => l.brand)));
                     </div>
                     <div class="laptop-action" style="margin-top: 1.5rem; display:flex; justify-content:space-between; align-items:center;">
                       <span style="font-size:0.75rem; color:var(--text-tertiary); font-family:var(--font-mono);">{laptop.batteryCapacityWh}Wh Battery</span>
-                      <a href={l(`/charger-for/${laptop.id}`, lang)} class="btn btn-secondary btn-sm">Sizing Analysis →</a>
+                      <a href={`/charger-for/${laptop.id}`} class="btn btn-secondary btn-sm">Sizing Analysis →</a>
                     </div>
                   </div>
                 ))}

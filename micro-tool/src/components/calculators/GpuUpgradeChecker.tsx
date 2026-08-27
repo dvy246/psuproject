@@ -300,7 +300,7 @@ export default function GpuUpgradeChecker({ cpus, gpus, psus, lang = 'en' }: Pro
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
                   <span style="font-size: 1.15rem; font-weight: 800; color: var(--color-accent-cyan); font-family: var(--font-mono);">{formatCurrency(p.price, lang)}</span>
-                  <a href={l(`/psu/${p.id}/`, lang)} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">{gut.viewSpecs}</a>
+                  <a href={`/psu/${p.id}`} class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 12px; min-height: 32px;">{gut.viewSpecs}</a>
                 </div>
               </div>
             ))}

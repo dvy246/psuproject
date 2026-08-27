@@ -314,7 +314,7 @@ export default function VoltBotAssistant({ currentLang = 'en' }: Props) {
         url: '/compatibility/',
       },
       options: [
-        { label: '📖 Read ATX 3.1 & 12V-2x6 Cable Guide', action: () => handleGoToPage('/guides/atx-3-1-vs-3-0-power-supply-guide') },
+        { label: '📖 Read ATX 3.1 & 12V-2x6 Cable Guide', action: () => handleGoToPage('/guides/atx-3-1-guide') },
         { label: '🔄 Start Over', action: () => startConversation() },
       ],
     });

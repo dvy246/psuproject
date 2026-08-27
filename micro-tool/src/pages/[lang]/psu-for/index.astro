@@ -67,7 +67,7 @@ const tierLabels: Record<string, string> = {
             <h2 class="tier-title">{tierLabels[tier]}</h2>
             <div class="gpu-grid">
               {tierGpus.map(gpu => (
-                <a href={l(`/psu-for/${gpu.slug}`, lang)} class="gpu-card" key={gpu.id}>
+                <a href={`/psu-for/${gpu.id}`} class="gpu-card" key={gpu.id}>
                   <div class="gpu-card-header">
                     <span class="gpu-name">{gpu.name}</span>
                     <span class="gpu-tbp">{gpu.tbp}W TBP</span>

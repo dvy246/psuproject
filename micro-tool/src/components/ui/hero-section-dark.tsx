@@ -113,7 +113,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
             <div className="space-y-6 max-w-3xl mx-auto text-center">
               {title && (
                 <a
-                  href="/guides/atx-3-1-vs-3-0-power-supply-guide"
+                  href="/guides/atx-3-1-guide"
                   className="inline-flex items-center gap-1.5 text-xs font-mono text-cyan-700 dark:text-cyan-400 group mx-auto px-4 py-1.5 bg-cyan-500/10 dark:bg-cyan-500/10 border border-cyan-500/20 rounded-full w-fit hover:border-cyan-500/40 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none"
                 >
                   <span>{title}</span>
