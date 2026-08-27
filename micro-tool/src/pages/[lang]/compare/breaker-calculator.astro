@@ -1,0 +1,108 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import BreakerAuditor from '../../../components/calculators/BreakerAuditor';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+import { ELECTRICAL_TRANSLATIONS } from '../../../i18n/electrical';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+const elec = ELECTRICAL_TRANSLATIONS[lang] || ELECTRICAL_TRANSLATIONS.en;
+
+const pageTitle = `${elec.breaker.title} — PSUCheck`;
+const pageDescription = elec.breaker.desc;
+
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `${elec.breaker.title} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/compare/breaker-calculator`,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": pageDescription,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "inLanguage": lang
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={[webAppSchema]}
+  lang={lang}
+>
+  <section class="breaker-page" aria-labelledby="breaker-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href={l('/', lang)}>{t.nav.home}</a>
+        <span aria-hidden="true">›</span>
+        <a href={l('/compare', lang)}>{t.footer.calculatorsCol}</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{t.nav.breakerCalculator}</span>
+      </nav>
+
+      <header class="breaker-header">
+        <div class="section-eyebrow">🔌 {t.nav.breakerCalculator}</div>
+        <h1 id="breaker-heading">
+          {elec.breaker.title}
+        </h1>
+        <p class="breaker-intro">
+          {elec.breaker.desc}
+        </p>
+      </header>
+
+      {/* === PREACT BREAKER AUDITOR ISLAND === */}
+      <div style="margin-bottom: 3rem;">
+        <BreakerAuditor client:load lang={lang} />
+      </div>
+
+      {/* === RELATED LINKS === */}
+      <section class="links-section" aria-labelledby="links-heading" style="margin-top: 3rem; padding-top: 2rem; border-top:1px solid var(--color-border-subtle);">
+        <h2 id="links-heading" style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom:1rem;">{t.nav.calculatorsDropdown}</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem;">
+          <a href={l('/compare/ups-calculator', lang)} class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">{t.nav.upsCalculator}</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">{elec.ups.desc}</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+          <a href={l('/psu-calculator', lang)} class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">{t.nav.psuCalculator}</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">{t.hero.subtitle}</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.breaker-page {
+  padding: 3rem 0 6rem;
+}
+.breaker-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.breaker-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.breaker-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.card:hover {
+  border-color: var(--color-accent-cyan);
+}
+</style>

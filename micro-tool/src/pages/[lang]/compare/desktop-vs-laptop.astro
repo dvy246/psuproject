@@ -1,0 +1,108 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import DesktopVsLaptopTco from '../../../components/calculators/DesktopVsLaptopTco';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+import { DESKTOP_VS_LAPTOP_TRANSLATIONS } from '../../../i18n/desktopVsLaptop';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+const dtl = DESKTOP_VS_LAPTOP_TRANSLATIONS[lang] || DESKTOP_VS_LAPTOP_TRANSLATIONS.en;
+
+const pageTitle = `${dtl.title} — PSUCheck`;
+const pageDescription = dtl.desc;
+
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `${dtl.title} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/compare/desktop-vs-laptop`,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": pageDescription,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "inLanguage": lang
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={[webAppSchema]}
+  lang={lang}
+>
+  <section class="tco-page" aria-labelledby="tco-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href={l('/', lang)}>{t.nav.home}</a>
+        <span aria-hidden="true">›</span>
+        <a href={l('/compare', lang)}>{t.footer.calculatorsCol}</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{t.nav.desktopVsLaptop}</span>
+      </nav>
+
+      <header class="tco-header">
+        <div class="section-eyebrow">📉 {t.nav.desktopVsLaptop}</div>
+        <h1 id="tco-heading">
+          {dtl.title}
+        </h1>
+        <p class="tco-intro">
+          {dtl.desc}
+        </p>
+      </header>
+
+      {/* === PREACT DESKTOP VS LAPTOP ISLAND === */}
+      <div style="margin-bottom: 3rem;">
+        <DesktopVsLaptopTco client:load lang={lang} />
+      </div>
+
+      {/* === RELATED LINKS === */}
+      <section class="links-section" aria-labelledby="links-heading" style="margin-top: 3rem; padding-top: 2rem; border-top:1px solid var(--color-border-subtle);">
+        <h2 id="links-heading" style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom:1rem;">{t.nav.calculatorsDropdown}</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem;">
+          <a href={l('/psu-calculator', lang)} class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">{t.nav.psuCalculator}</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">{t.hero.subtitle}</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+          <a href={l('/compare/breaker-calculator', lang)} class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.25rem; text-decoration:none; border:1px solid var(--color-border-subtle); border-radius:var(--radius-lg); transition:border-color 0.15s;">
+            <div>
+              <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary); display:block;">{t.nav.breakerCalculator}</span>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">{t.seo.defaultDescription}</span>
+            </div>
+            <span style="color:var(--color-accent-cyan); font-weight:700;">→</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.tco-page {
+  padding: 3rem 0 6rem;
+}
+.tco-header {
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.tco-header h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.tco-intro {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+.card:hover {
+  border-color: var(--color-accent-cyan);
+}
+</style>

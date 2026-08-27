@@ -1,0 +1,139 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import type { LaptopIndex } from '../../../lib/charger-matcher';
+import laptopData from '../../../data/index/laptops.index.json';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+const laptops = laptopData.items as LaptopIndex[];
+
+const pageTitle = `${t.nav.usbCharger} — PSUCheck`;
+const pageDescription = "Find the best third-party GaN USB-C chargers for your laptop. Detailed sizing metrics for Apple MacBooks, Dell XPS, Lenovo ThinkPads, and gaming laptops.";
+
+const brands = Array.from(new Set(laptops.map(l => l.brand)));
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  lang={lang}
+>
+  <section class="charger-hub-page" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href={l('/', lang)}>{t.nav.home}</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{t.nav.usbCharger}</span>
+      </nav>
+
+      <header class="hub-header">
+        <div class="section-eyebrow">💻 {t.nav.usbCharger}</div>
+        <h1 id="hub-heading">
+          USB-C PD Charger <span class="gradient-text">Sizing Database</span>
+        </h1>
+        <p class="hub-intro">
+          Select your laptop model below to analyze its maximum USB-C charging profile, verify compatibility with 30W-140W chargers, and browse top-rated third-party GaN chargers.
+        </p>
+      </header>
+
+      {/* === BRAND FILTERS & GRID === */}
+      <div class="brands-section">
+        {brands.map(brand => {
+          const brandLaptops = laptops.filter(l => l.brand === brand);
+          return (
+            <div class="brand-group" key={brand} style="margin-bottom: 2.5rem;">
+              <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+                {brand} Laptops
+              </h2>
+              <div class="laptop-grid">
+                {brandLaptops.map(laptop => (
+                  <div class="laptop-card card" key={laptop.id}>
+                    <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                      <span class="laptop-brand">{laptop.brand}</span>
+                      <h3 class="laptop-name">{laptop.name}</h3>
+                      <div class="laptop-specs">
+                        <span class="spec-tag">{laptop.maxChargeWatts}W Max</span>
+                        <span class="spec-tag">{laptop.connectorType}</span>
+                        <span class="spec-tag">{laptop.protocol}</span>
+                      </div>
+                    </div>
+                    <div class="laptop-action" style="margin-top: 1.5rem; display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:0.75rem; color:var(--text-tertiary); font-family:var(--font-mono);">{laptop.batteryCapacityWh}Wh Battery</span>
+                      <a href={l(`/charger-for/${laptop.id}`, lang)} class="btn btn-secondary btn-sm">Sizing Analysis →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+.charger-hub-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 3rem;
+}
+.hub-header h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.hub-intro {
+  font-size: 1.0625rem;
+  color: var(--text-secondary);
+  max-width: 68ch;
+  margin-top: 0.75rem;
+  line-height: 1.6;
+}
+.laptop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+.laptop-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.laptop-brand {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.laptop-name {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-top: 0.25rem;
+}
+.laptop-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.spec-tag {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+}
+</style>

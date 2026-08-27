@@ -1,0 +1,209 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import type { GpuIndex } from '../../../types/components';
+import gpuData from '../../../data/index/gpus.index.json';
+import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+
+export async function getStaticPaths() {
+  return TARGET_LOCALES.map(lang => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Locale;
+const t = useTranslations(lang);
+const gpus = gpuData.items as GpuIndex[];
+
+const pageTitle = `${t.nav.psuFinder} — PSUCheck`;
+const pageDescription = "Find the best power supply for your graphics card. Transient-aware PSU recommendations for NVIDIA RTX 5090, RTX 5080, RTX 4090, AMD RX 7900 XTX, and more.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": `${t.nav.psuFinder} — PSUCheck`,
+  "url": `https://psucheck.com/${lang}/psu-for/`,
+  "description": pageDescription,
+  "inLanguage": lang
+};
+
+const tiers = ['halo', 'ultra', 'high', 'mid', 'budget'] as const;
+const tierLabels: Record<string, string> = {
+  halo: 'Halo & Flagship Tier (500W+ Spikes)',
+  ultra: 'Enthusiast / Ultra Tier (350W–500W Spikes)',
+  high: 'High-End Gaming (250W–350W Spikes)',
+  mid: 'Mid-Range Gaming (150W–250W Spikes)',
+  budget: 'Budget / Entry Tier (<150W Spikes)'
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schema}
+  lang={lang}
+>
+  <section class="finder-hub-page" aria-labelledby="hub-heading">
+    <div class="container">
+      <nav class="calc-breadcrumb" aria-label="Breadcrumb">
+        <a href={l('/', lang)}>{t.nav.home}</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">{t.nav.psuFinder}</span>
+      </nav>
+
+      <header class="hub-header">
+        <div class="section-eyebrow">🎯 {t.nav.psuFinder}</div>
+        <h1 id="hub-heading">
+          Best PSU for <span class="gradient-text">Every Graphics Card</span>
+        </h1>
+        <p class="hub-intro">
+          Select your GPU below for curated, transient-safe power supply recommendations. Every pairing accounts for sub-millisecond power excursions, 12V-2x6 cable safety, and 5-year operating efficiency.
+        </p>
+      </header>
+
+      {/* === TIERS LIST === */}
+      {tiers.map(tier => {
+        const tierGpus = gpus.filter(g => g.tier === tier);
+        if (tierGpus.length === 0) return null;
+        return (
+          <div class="tier-block" key={tier}>
+            <h2 class="tier-title">{tierLabels[tier]}</h2>
+            <div class="gpu-grid">
+              {tierGpus.map(gpu => (
+                <a href={l(`/psu-for/${gpu.slug}`, lang)} class="gpu-card" key={gpu.id}>
+                  <div class="gpu-card-header">
+                    <span class="gpu-name">{gpu.name}</span>
+                    <span class="gpu-tbp">{gpu.tbp}W TBP</span>
+                  </div>
+                  <div class="gpu-card-body">
+                    <div class="gpu-stat">
+                      <span class="stat-label">Transient Multiplier:</span>
+                      <span class="stat-value highlight">{gpu.transientSpikeMultiplier}×</span>
+                    </div>
+                    <div class="gpu-stat">
+                      <span class="stat-label">Recommended Minimum:</span>
+                      <span class="stat-value">{gpu.recommendedPsuWattage}W</span>
+                    </div>
+                  </div>
+                  <div class="gpu-card-footer">
+                    <span>View PSU Pairings</span>
+                    <span class="arrow">→</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+</Layout>
+
+<style>
+.finder-hub-page {
+  padding: 3rem 0 6rem;
+}
+.hub-header {
+  margin-top: 1.5rem;
+  margin-bottom: 3rem;
+}
+.hub-header h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.hub-intro {
+  font-size: 1.0625rem;
+  color: var(--text-secondary);
+  max-width: 68ch;
+  margin-top: 0.75rem;
+  line-height: 1.6;
+}
+.tier-block {
+  margin-bottom: 3.5rem;
+}
+.tier-title {
+  font-size: 1.25rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.gpu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.gpu-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.gpu-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent-cyan);
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.08);
+}
+.gpu-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+.gpu-name {
+  font-weight: 750;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+.gpu-tbp {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+.gpu-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+}
+.gpu-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+}
+.stat-label {
+  color: var(--text-secondary);
+}
+.stat-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.stat-value.highlight {
+  color: var(--color-accent-cyan);
+}
+.gpu-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-accent-cyan);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.75rem;
+}
+.gpu-card:hover .arrow {
+  transform: translateX(4px);
+  transition: transform 0.2s ease;
+}
+</style>
