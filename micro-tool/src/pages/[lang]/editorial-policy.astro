@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../i18n';
+import { EDITORIAL_POLICY_TRANSLATIONS } from '../../i18n/editorialPolicy';
 
 export async function getStaticPaths() {
   return TARGET_LOCALES.map(lang => ({ params: { lang } }));
@@ -8,20 +9,21 @@ export async function getStaticPaths() {
 
 const lang = Astro.params.lang as Locale;
 const t = useTranslations(lang);
+const ep = EDITORIAL_POLICY_TRANSLATIONS[lang] || EDITORIAL_POLICY_TRANSLATIONS.en;
 
 const lastUpdated = "July 14, 2026";
 ---
 
 <Layout
   title={`${t.footer.editorialPolicy} — PSUCheck`}
-  description="PSUCheck editorial standards: data sourcing methodology, correction policy, update frequency, and content review practices."
+  description={ep.metaDesc}
   noIndex={false}
   lang={lang}
 >
   <div class="legal-page">
     <div class="legal-hero">
       <div class="container">
-        <div class="badge badge-safe" style="margin-bottom:1rem;">Editorial Standards</div>
+        <div class="badge badge-safe" style="margin-bottom:1rem;">{ep.badge}</div>
         <h1>{t.footer.editorialPolicy}</h1>
         <p class="legal-meta">Last updated: {lastUpdated}</p>
       </div>
@@ -32,85 +34,31 @@ const lastUpdated = "July 14, 2026";
         <div class="legal-content">
 
           <p class="about-lead" style="font-size:1.1rem;color:var(--text-secondary);line-height:1.7;">
-            PSUCheck is built by a team of PC hardware engineers and enthusiasts. This policy documents
-            how we source data, review content, handle corrections, and maintain editorial independence.
+            {ep.lead}
           </p>
 
-          <h2>1. Our Editorial Standards</h2>
-          <p>
-            PSUCheck is an independent, unbiased website. We do not accept payment from hardware
-            manufacturers for product placement, recommendations, or editorial coverage. Our content
-            is driven by engineering accuracy and verifiable data, not commercial relationships.
-          </p>
-          <p>
-            All calculator tools, guides, and comparison pages are produced by our team and reviewed
-            for technical accuracy against published specifications from manufacturers and independent
-            testing laboratories.
-          </p>
+          <h2>{ep.s1Title}</h2>
+          <p>{ep.s1P1}</p>
+          <p>{ep.s1P2}</p>
 
-          <h2>2. Data Sourcing Standards</h2>
-          <p>Every specification used in PSUCheck is sourced from published, verifiable references:</p>
+          <h2>{ep.s2Title}</h2>
+          <p>{ep.s2Lead}</p>
           <ul>
-            <li><strong>CPU Power Data:</strong> Intel PL2 (Maximum Turbo Power) from Intel ARK. AMD TDP from AMD official specifications.</li>
-            <li><strong>GPU Power Data:</strong> Total Board Power (TBP) from NVIDIA/AMD official product pages, cross-referenced with TechPowerUp GPU database.</li>
-            <li><strong>Transient Multipliers:</strong> GPU and CPU transient scaling factors from Cybenetics PSU Lab published methodology.</li>
-            <li><strong>ATX 3.1 Spec:</strong> Transient tolerance standards from Intel ATX 3.1 Design Guide (2024 revision).</li>
-            <li><strong>Efficiency Curves:</strong> 80 PLUS efficiency data from CLEAResult 80 PLUS certification program public records.</li>
-            <li><strong>PSU Quality Tiers:</strong> Based on Cultists Network PSU tier list cross-referenced with Cybenetics test results.</li>
-          </ul>
-          <p>
-            If a data point cannot be sourced from a published reference, it is explicitly labeled
-            as "estimated" or "unconfirmed." Leaked or rumored hardware specifications are flagged
-            with a warning. See our <a href={l('/methodology', lang)}>full methodology</a> for detailed formulas.
-          </p>
-
-          <h2>3. Correction Policy</h2>
-          <p>
-            PSUCheck is committed to accuracy. If you find an error — whether a stale price, incorrect
-            specification, or outdated recommendation — we want to correct it promptly:
-          </p>
-          <ul>
-            <li><strong>Data corrections:</strong> Reviewed within 48 hours of submission</li>
-            <li><strong>Specification errors:</strong> Corrected and deployed within one business week</li>
-            <li><strong>Pricing updates:</strong> Batch-updated on a quarterly schedule</li>
-          </ul>
-          <p>
-            To report an error, use our <a href={l('/contact', lang)}>Contact page</a> with subject "Data Correction."
-            Include the specific page URL, the incorrect information, and your source for the correction.
-          </p>
-
-          <h2>4. Update Frequency</h2>
-          <p>
-            PSUCheck content is updated on the following schedule:
-          </p>
-          <ul>
-            <li><strong>Calculator tools:</strong> Updated continuously as new hardware launches</li>
-            <li><strong>Component pricing:</strong> Reviewed and updated quarterly</li>
-            <li><strong>Core guides:</strong> Reviewed at least every 6 months</li>
-            <li><strong>Specification database:</strong> Updated within 2 weeks of new product launches</li>
+            <li><strong>CPU:</strong> {ep.s2Items.cpu}</li>
+            <li><strong>GPU:</strong> {ep.s2Items.gpu}</li>
+            <li><strong>Transient Multipliers:</strong> {ep.s2Items.transient}</li>
+            <li><strong>ATX 3.1:</strong> {ep.s2Items.atx}</li>
+            <li><strong>Efficiency:</strong> {ep.s2Items.efficiency}</li>
+            <li><strong>Quality Tiers:</strong> {ep.s2Items.tiers}</li>
           </ul>
 
-          <h2>5. Affiliate & Advertising Disclosure</h2>
-          <p>
-            PSUCheck participates in affiliate programs (Amazon Associates, Newegg Affiliate Program)
-            and displays ads via Google AdSense. These relationships do not influence our calculator
-            results, recommendations, or editorial content. See our <a href={l('/disclaimer', lang)}>full Disclaimer</a>
-            and <a href={l('/privacy-policy', lang)}>Privacy Policy</a> for details.
-          </p>
+          <h2>{ep.s3Title}</h2>
+          <p>{ep.s3P1}</p>
+          <p>{ep.s3P2}</p>
 
-          <h2>6. Independence & Impartiality</h2>
-          <p>
-            PSUCheck is not affiliated with any hardware manufacturer, retailer, or component brand.
-            Unlike manufacturer calculators that recommend only their own products, PSUCheck
-            recommends the best PSU for your build regardless of brand. Our recommendation algorithm
-            is based on technical specifications, value scoring, and compatibility — not commercial
-            relationships.
-          </p>
-
-          <h2>7. Contact</h2>
-          <p>
-            For questions about this editorial policy, please use our <a href={l('/contact', lang)}>Contact page</a>.
-          </p>
+          <h2>{ep.s4Title}</h2>
+          <p>{ep.s4P1}</p>
+          <p>{ep.s4P2}</p>
 
         </div>
       </div>

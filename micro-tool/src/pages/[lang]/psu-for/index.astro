@@ -3,6 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import type { GpuIndex } from '../../../types/components';
 import gpuData from '../../../data/index/gpus.index.json';
 import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+import { PSU_FINDER_TRANSLATIONS } from '../../../i18n/psuFinder';
 
 export async function getStaticPaths() {
   return TARGET_LOCALES.map(lang => ({ params: { lang } }));
@@ -10,28 +11,22 @@ export async function getStaticPaths() {
 
 const lang = Astro.params.lang as Locale;
 const t = useTranslations(lang);
+const pf = PSU_FINDER_TRANSLATIONS[lang] || PSU_FINDER_TRANSLATIONS.en;
 const gpus = gpuData.items as GpuIndex[];
 
-const pageTitle = `${t.nav.psuFinder} — PSUCheck`;
-const pageDescription = "Find the best power supply for your graphics card. Transient-aware PSU recommendations for NVIDIA RTX 5090, RTX 5080, RTX 4090, AMD RX 7900 XTX, and more.";
+const pageTitle = `${pf.metaTitle} — PSUCheck`;
+const pageDescription = pf.metaDescription;
 
 const schema = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": `${t.nav.psuFinder} — PSUCheck`,
+  "name": `${pf.metaTitle} — PSUCheck`,
   "url": `https://psucheck.com/${lang}/psu-for/`,
   "description": pageDescription,
   "inLanguage": lang
 };
 
 const tiers = ['halo', 'ultra', 'high', 'mid', 'budget'] as const;
-const tierLabels: Record<string, string> = {
-  halo: 'Halo & Flagship Tier (500W+ Spikes)',
-  ultra: 'Enthusiast / Ultra Tier (350W–500W Spikes)',
-  high: 'High-End Gaming (250W–350W Spikes)',
-  mid: 'Mid-Range Gaming (150W–250W Spikes)',
-  budget: 'Budget / Entry Tier (<150W Spikes)'
-};
 ---
 
 <Layout
@@ -51,10 +46,10 @@ const tierLabels: Record<string, string> = {
       <header class="hub-header">
         <div class="section-eyebrow">🎯 {t.nav.psuFinder}</div>
         <h1 id="hub-heading">
-          Best PSU for <span class="gradient-text">Every Graphics Card</span>
+          {pf.title} <span class="gradient-text">{pf.titleHighlight}</span>
         </h1>
         <p class="hub-intro">
-          Select your GPU below for curated, transient-safe power supply recommendations. Every pairing accounts for sub-millisecond power excursions, 12V-2x6 cable safety, and 5-year operating efficiency.
+          {pf.subtitle}
         </p>
       </header>
 
@@ -64,7 +59,7 @@ const tierLabels: Record<string, string> = {
         if (tierGpus.length === 0) return null;
         return (
           <div class="tier-block" key={tier}>
-            <h2 class="tier-title">{tierLabels[tier]}</h2>
+            <h2 class="tier-title">{pf.tierLabels[tier]}</h2>
             <div class="gpu-grid">
               {tierGpus.map(gpu => (
                 <a href={`/psu-for/${gpu.id}`} class="gpu-card" key={gpu.id}>
@@ -74,16 +69,16 @@ const tierLabels: Record<string, string> = {
                   </div>
                   <div class="gpu-card-body">
                     <div class="gpu-stat">
-                      <span class="stat-label">Transient Multiplier:</span>
+                      <span class="stat-label">{pf.transientMultiplier}</span>
                       <span class="stat-value highlight">{gpu.transientSpikeMultiplier}×</span>
                     </div>
                     <div class="gpu-stat">
-                      <span class="stat-label">Recommended Minimum:</span>
+                      <span class="stat-label">{pf.recommendedMin}</span>
                       <span class="stat-value">{gpu.recommendedPsuWattage}W</span>
                     </div>
                   </div>
                   <div class="gpu-card-footer">
-                    <span>View PSU Pairings</span>
+                    <span>{pf.viewPairings}</span>
                     <span class="arrow">→</span>
                   </div>
                 </a>

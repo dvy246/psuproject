@@ -3,6 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import type { LaptopIndex } from '../../../lib/charger-matcher';
 import laptopData from '../../../data/index/laptops.index.json';
 import { TARGET_LOCALES, useTranslations, l, type Locale } from '../../../i18n';
+import { CHARGER_FINDER_TRANSLATIONS } from '../../../i18n/chargerFinder';
 
 export async function getStaticPaths() {
   return TARGET_LOCALES.map(lang => ({ params: { lang } }));
@@ -10,10 +11,11 @@ export async function getStaticPaths() {
 
 const lang = Astro.params.lang as Locale;
 const t = useTranslations(lang);
+const cf = CHARGER_FINDER_TRANSLATIONS[lang] || CHARGER_FINDER_TRANSLATIONS.en;
 const laptops = laptopData.items as LaptopIndex[];
 
-const pageTitle = `${t.nav.usbCharger} — PSUCheck`;
-const pageDescription = "Find the best third-party GaN USB-C chargers for your laptop. Detailed sizing metrics for Apple MacBooks, Dell XPS, Lenovo ThinkPads, and gaming laptops.";
+const pageTitle = `${cf.metaTitle} — PSUCheck`;
+const pageDescription = cf.metaDescription;
 
 const brands = Array.from(new Set(laptops.map(l => l.brand)));
 ---
@@ -34,10 +36,10 @@ const brands = Array.from(new Set(laptops.map(l => l.brand)));
       <header class="hub-header">
         <div class="section-eyebrow">💻 {t.nav.usbCharger}</div>
         <h1 id="hub-heading">
-          USB-C PD Charger <span class="gradient-text">Sizing Database</span>
+          {cf.title} <span class="gradient-text">{cf.titleHighlight}</span>
         </h1>
         <p class="hub-intro">
-          Select your laptop model below to analyze its maximum USB-C charging profile, verify compatibility with 30W-140W chargers, and browse top-rated third-party GaN chargers.
+          {cf.subtitle}
         </p>
       </header>
 
@@ -48,7 +50,7 @@ const brands = Array.from(new Set(laptops.map(l => l.brand)));
           return (
             <div class="brand-group" key={brand} style="margin-bottom: 2.5rem;">
               <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); border-bottom: 2px solid var(--color-border-subtle); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
-                {brand} Laptops
+                {cf.brandHeading(brand)}
               </h2>
               <div class="laptop-grid">
                 {brandLaptops.map(laptop => (
@@ -57,14 +59,14 @@ const brands = Array.from(new Set(laptops.map(l => l.brand)));
                       <span class="laptop-brand">{laptop.brand}</span>
                       <h3 class="laptop-name">{laptop.name}</h3>
                       <div class="laptop-specs">
-                        <span class="spec-tag">{laptop.maxChargeWatts}W Max</span>
+                        <span class="spec-tag">{laptop.maxChargeWatts}W {cf.maxCharge}</span>
                         <span class="spec-tag">{laptop.connectorType}</span>
                         <span class="spec-tag">{laptop.protocol}</span>
                       </div>
                     </div>
                     <div class="laptop-action" style="margin-top: 1.5rem; display:flex; justify-content:space-between; align-items:center;">
-                      <span style="font-size:0.75rem; color:var(--text-tertiary); font-family:var(--font-mono);">{laptop.batteryCapacityWh}Wh Battery</span>
-                      <a href={`/charger-for/${laptop.id}`} class="btn btn-secondary btn-sm">Sizing Analysis →</a>
+                      <span style="font-size:0.75rem; color:var(--text-tertiary); font-family:var(--font-mono);">{laptop.batteryCapacityWh}Wh {cf.battery}</span>
+                      <a href={`/charger-for/${laptop.id}`} class="btn btn-secondary btn-sm">{cf.sizingAnalysis}</a>
                     </div>
                   </div>
                 ))}
